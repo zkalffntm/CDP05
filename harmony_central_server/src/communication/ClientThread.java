@@ -10,21 +10,13 @@ import java.net.Socket;
 import org.json.JSONObject;
 
 public class ClientThread extends Thread {
-	/**
-	 * ��� ������
-	 */
-	private ServerThread serverThread; // ���� ������ (parent)
-	private Socket clientSocket; // Ŭ���̾�Ʈ ����
+	
+	private ServerThread serverThread;
+	private Socket clientSocket;
 
 	private BufferedReader bufferedReader;
 	private PrintWriter printWriter;
 
-	/**
-	 * ������. ���� ��������� �ʱ�ȭ.
-	 * 
-	 * @param serverThread
-	 * @param clientSocket
-	 */
 	public ClientThread(ServerThread serverThread, Socket clientSocket) {
 
 		this.serverThread = serverThread;
@@ -33,48 +25,36 @@ public class ClientThread extends Thread {
 		this.printWriter = null;
 	}
 
-	/**
-	 * ������ ����κ�. while������ Ŭ���̾�Ʈ�κ��� �޽����� �ް� ���񽺸� ������.
-	 */
 	@Override
 	public void run() {
 
 		try {
 
-			// ����� ��Ʈ�� ����
 			this.bufferedReader = new BufferedReader(
 					new InputStreamReader(new DataInputStream(this.clientSocket.getInputStream())));
 			this.printWriter = new PrintWriter(new DataOutputStream(this.clientSocket.getOutputStream()));
 
-			// ���� ����
 			while (true) {
 
-				// Ŭ���̾�Ʈ�κ��� JSON �޽����� ����
 				String line = this.bufferedReader.readLine();
 				if (line == null) {
 					break;
 				}
 				JSONObject recvMsg = new JSONObject(line);
-				System.out.println(recvMsg.getString("MessageType"));
-				switch (recvMsg.getString("MessageType")) {
-				case "req_login":
-					// sendlogin(recvMsg);
+				switch (recvMsg.getString("key")) {
+				case "req_test":
 					break;
 				}
 			}
 		} catch (Exception e) {
 		}
 
-		// Ŭ���̾�Ʈ ���� �� �������� ����Ʈ�κ��� ���ŵ�.
-		System.out.println("Client ���� : " + clientSocket.getInetAddress().getHostName());
+		System.out.println("Client out : " + clientSocket.getInetAddress().getHostName());
 
 		this.closeClient();
 		this.serverThread.removeClientFromList(this);
 	}
 
-	/**
-	 * Ŭ���̾�Ʈ ����. ����½�Ʈ���� ������ ������.
-	 */
 	public void closeClient() {
 
 		try {
@@ -95,7 +75,7 @@ public class ClientThread extends Thread {
 			}
 
 		} catch (Exception e) {
-			System.out.println("ClientThread.stopClient()���� ���� �߻� : " + e.getMessage());
+			System.out.println("ClientThread.stopClient() : " + e.getMessage());
 		}
 	}
 }
