@@ -19,7 +19,7 @@ public class IpSearchService extends AbstractService {
 	 * 
 	 * @param argument
 	 *          gps(x,y)정보를 담은 double[2]
-	 * @return {박물관명,byte,byte,byte}
+	 * @return {박물관명,byte,byte,byte,byte}
 	 */
 	@Override
 	protected Object doQuery(Object argument) throws SQLException {
@@ -34,7 +34,18 @@ public class IpSearchService extends AbstractService {
 		pstmt.setDouble(2, gpsInfo[1]);
 		ResultSet resultSet = pstmt.executeQuery();
 
-		return null;
+		// 결과 레코드를 객체에 저장
+		Object[] objects = null;
+		if (resultSet.next()) {
+			objects = new Object[5];
+			objects[0] = resultSet.getString("exhibition_name");
+			String[] ips = resultSet.getString("exhibition_ip").split(".");
+			for (int i = 1; i < objects.length; i++) {
+				objects[i] = ips[i - 1];
+			}
+		}
+
+		return objects;
 	}
 
 }

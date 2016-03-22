@@ -32,7 +32,7 @@ public class ServerThread extends Thread {
 			while (true) {
 
 				Socket clientSocket = this.serverSocket.accept();
-				System.out.println("Client ���� : " + clientSocket.getInetAddress().getHostName());
+				System.out.println("Client 입장 : " + clientSocket.getInetAddress().getHostName());
 
 				ClientThread clientThread = new ClientThread(this, clientSocket);
 				clientThread.start();
