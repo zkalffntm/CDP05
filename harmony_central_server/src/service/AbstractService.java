@@ -42,6 +42,10 @@ public abstract class AbstractService {
 		return result;
 	}
 
+	protected Connection getDbConnection() {
+		return this.dbConnection;
+	}
+
 	/**
 	 * 서비스의 쿼리문 부분
 	 * 
@@ -51,8 +55,4 @@ public abstract class AbstractService {
 	 * @exception SQLException
 	 */
 	protected abstract Object doQuery(Object argument) throws SQLException;
-
-	protected Connection getDbConnection() {
-		return this.dbConnection;
-	}
 }

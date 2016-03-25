@@ -31,7 +31,6 @@ public class DbConnector {
 
 	// 생성자 - DB와 연결함.
 	private DbConnector() {
-
 		try {
 			Class.forName(DRIVER_NAME);
 			this.connection = DriverManager.getConnection(URL, USER, PASSWORD);
