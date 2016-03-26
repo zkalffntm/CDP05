@@ -47,5 +47,4 @@ public class IpSearchService extends AbstractService {
 
 		return objects;
 	}
-
 }

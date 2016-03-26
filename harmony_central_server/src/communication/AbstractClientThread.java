@@ -107,7 +107,7 @@ public abstract class AbstractClientThread extends Thread {
 	}
 
 	/**
-	 * 수신 JSON 메시지를 받아 본 서비스를 작업한다. 재구현 필요.
+	 * 수신 JSON 메시지를 받아 본 서비스를 작업한다.
 	 * 
 	 * @param recvJson
 	 *          수신 JSON 메시지

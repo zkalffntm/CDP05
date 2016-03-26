@@ -42,6 +42,11 @@ public abstract class AbstractService {
 		return result;
 	}
 
+	/**
+	 * 지정된 DbConnection 객체 반환
+	 * 
+	 * @return DbConnection
+	 */
 	protected Connection getDbConnection() {
 		return this.dbConnection;
 	}
