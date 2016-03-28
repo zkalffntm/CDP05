@@ -2,23 +2,25 @@ package bluetooth;
 
 import android.app.Activity;
 import android.bluetooth.*;
-import android.bluetooth..BluetoothAdapter.*;
+import android.bluetooth.BluetoothAdapter.LeScanCallback;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 public class BeaconInterface
 {
 	/******************* Singleton *******************/
-	private BeaconInterface self;
-	public BeaconInterface getInstance()
+	private static BeaconInterface self;
+	public static BeaconInterface getInstance()
 	{
 		if(self == null) self = new BeaconInterface();
 		return self;
 	}
 	private BeaconInterface() {}
 	/*************************************************/
-	
+
 	private BluetoothAdapter ba;
+	private LeScanCallback cb;
 	
 	/*************************************************/
 	
@@ -46,4 +48,21 @@ public class BeaconInterface
 		return true;
 	}
 	
+	// ½ºÄµ ½ÃÀÛ
+	public void startScan(LeScanCallback cb)
+	{
+		if(this.cb != null) return;
+		this.cb = cb;
+		
+        ba.startLeScan(cb);
+	}
+	
+	// ½ºÄµ ÁßÁö
+	public void stopScan()
+	{
+		if(cb == null) return;
+		cb = null;
+		
+        ba.stopLeScan(cb);
+	}
 }
