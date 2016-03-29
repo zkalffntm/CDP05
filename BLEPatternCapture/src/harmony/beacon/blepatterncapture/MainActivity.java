@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import bluetooth.BeaconInterface;
+import bluetooth.BeaconProp;
 
 public class MainActivity extends Activity
 {
@@ -67,8 +68,11 @@ public class MainActivity extends Activity
 				@Override
 				public void onLeScan(BluetoothDevice device, int rssi, byte[] record)
 				{
-					Log.i("BLETest", device.toString() + " -> "
-							+ device.getName() + " ~ " + rssi);
+					BeaconProp prop = BeaconInterface.parseRecord(record);
+					Log.i("BLETest", device.toString() + " ~ "
+							+ prop.getUUID() + " ~ "
+							+ prop.getMajor() + " ~ "
+							+ prop.getMinor() + " -> " + rssi);
 				}
 			};
 
