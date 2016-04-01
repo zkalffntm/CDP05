@@ -1,4 +1,4 @@
-package communication;
+package harmony.central.communication;
 
 import java.net.Socket;
 

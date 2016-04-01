@@ -1,4 +1,4 @@
-package communication;
+package harmony.central.communication;
 
 import java.net.Socket;
 import java.sql.SQLException;
@@ -6,7 +6,7 @@ import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import service.IpSearchService;
+import harmony.central.service.IpSearchService;
 
 /**
  * 중앙 서버의 클라이언트 스레드 클래스.<br>

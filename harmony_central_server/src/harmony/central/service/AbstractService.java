@@ -1,9 +1,9 @@
-package service;
+package harmony.central.service;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import database.DbConnector;
+import harmony.central.database.DbConnector;
 
 /**
  * 각 종 서비스를 수행하는 클래스들의 추상 클래스. 상속하여 doQuery(Object)를 구현하여야 함.

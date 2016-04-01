@@ -1,4 +1,4 @@
-package service;
+package harmony.central.service;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;

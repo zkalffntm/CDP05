@@ -1,4 +1,4 @@
-package communication;
+package harmony.central.communication;
 
 import java.io.IOException;
 import java.net.ServerSocket;
