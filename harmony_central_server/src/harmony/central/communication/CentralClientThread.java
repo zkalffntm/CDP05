@@ -6,16 +6,16 @@ import java.sql.SQLException;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import harmony.central.service.IpSearchService;
+import harmony.central.service.ProviderListService;
 
 /**
  * 중앙 서버의 클라이언트 스레드 클래스.<br>
- * 클라이언트로부터 접속 요청이 오면 해당 GPS 정보에 대해<br>
- * 알맞는 박물관 및 전시관 정보를 전송한다.
+ * 제공하는 서비스는 다음과 같다.<br>
+ * - 박물관 정보<br>
  * 
  * @author Seongjun Park
  * @since 2016/3/25
- * @version 2016/3/25
+ * @version 2016/4/1
  */
 public class CentralClientThread extends AbstractClientThread {
 
@@ -33,9 +33,12 @@ public class CentralClientThread extends AbstractClientThread {
 
 	@Override
 	protected void process(JSONObject recvJson) throws JSONException, SQLException, Exception {
-		switch (recvJson.getString("key")) {
-		case "req_test":
-			this.serviceIpSearch(recvJson.get("value"));
+		String key = recvJson.getString("key");
+		Object value = recvJson.get("value");
+
+		switch (key) {
+		case "req_provider_list":
+			this.doProviderListService(value);
 			break;
 		default:
 			throw new Exception("unacceptable message");
@@ -44,7 +47,7 @@ public class CentralClientThread extends AbstractClientThread {
 
 	/**
 	 * 클라이언트의 위치 gps를 JSON의 value에서 가져와 그 정보를 활용해<br>
-	 * IpSearchService를 수행한 결과를 클라이언트에게 응답한다.
+	 * {@link ProviderListService}를 수행한 결과를 클라이언트에게 응답한다.
 	 * 
 	 * @param value
 	 *          GPS 정보가 있는 Object 객체
@@ -53,10 +56,11 @@ public class CentralClientThread extends AbstractClientThread {
 	 * @throws JSONException
 	 *           JSON 관련 예외
 	 */
-	private void serviceIpSearch(Object value) throws JSONException, SQLException {
-
+	private void doProviderListService(Object value) throws JSONException, SQLException {
 		JSONObject sendJson = new JSONObject();
-		sendJson.put("value", new IpSearchService().doService(value));
+
+		sendJson.put("key", "res_provider_list");
+		sendJson.put("value", new ProviderListService().doService(value));
 
 		this.getPrintWriter().println(sendJson.toString());
 		this.getPrintWriter().flush();

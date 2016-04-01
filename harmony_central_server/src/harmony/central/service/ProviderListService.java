@@ -12,7 +12,7 @@ import java.sql.SQLException;
  * @since 2016/3/22
  * @version 2016/3/22
  */
-public class IpSearchService extends AbstractService {
+public class ProviderListService extends AbstractService {
 
 	/**
 	 * sql select문을 이용하여 ip를 찾음

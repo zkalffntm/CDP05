@@ -1,7 +1,7 @@
 package harmony.central.element;
 
 /**
- * Exhibition 테이블 레코드 클래스.
+ * exhibition 테이블 레코드 클래스.
  * 
  * @author Seongjun Park
  * @since 2016/3/22
