@@ -13,13 +13,22 @@ import java.util.List;
  * 
  * @author Seongjun Park
  * @since 2016/3/25
- * @version 2016/3/25
+ * @version 2016/4/4
  */
 public abstract class AbstractServerThread extends Thread {
-	public static final int DEFAULT_PORT = 6500;
-	private int port = DEFAULT_PORT;
+	private int port;
 	private ServerSocket serverSocket = null;
 	private List<AbstractClientThread> clientThreadList = new ArrayList<AbstractClientThread>();
+
+	/**
+	 * 추상 서버 스레드 생성자. 포트를 입력하여 생성한다.
+	 * 
+	 * @param port
+	 *          서버 포트 번호
+	 */
+	public AbstractServerThread(int port) {
+		this.port = port;
+	}
 
 	@Override
 	public void run() {
