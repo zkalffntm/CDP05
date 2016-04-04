@@ -14,7 +14,7 @@ import java.sql.SQLException;
 public class DbConnector {
 	private static DbConnector instance = null;
 	private static final String DRIVER_NAME = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://psj.iptime.org:9393/harmony_central_server";
+	private static final String URL = "jdbc:mysql://psjpi.iptime.org:9393/harmony_central_server";
 	private static final String USER = "test";
 	private static final String PASSWORD = "test";
 

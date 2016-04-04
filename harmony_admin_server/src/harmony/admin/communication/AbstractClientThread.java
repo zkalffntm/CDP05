@@ -20,7 +20,7 @@ import org.json.JSONObject;
  * 
  * @author Seongjun Park
  * @since 2016/3/25
- * @version 2016/3/25
+ * @version 2016/4/5
  */
 public abstract class AbstractClientThread extends Thread {
 	private AbstractServerThread serverThread;
@@ -62,8 +62,11 @@ public abstract class AbstractClientThread extends Thread {
 				this.process(new JSONObject(line));
 			}
 		} catch (JSONException e) {
+			System.out.println("Client " + clientSocket.getInetAddress().getHostName() + " : " + e.getMessage());
 		} catch (IOException e) {
+			System.out.println("Client " + clientSocket.getInetAddress().getHostName() + " : " + e.getMessage());
 		} catch (Exception e) {
+			System.out.println("Client " + clientSocket.getInetAddress().getHostName() + " : " + e.getMessage());
 		}
 
 		// 클라이언트와 접속을 끝내고 서버스레드에 있는 클라이언트 리스트에서
