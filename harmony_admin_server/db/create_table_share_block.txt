@@ -1,0 +1,10 @@
+create table share_block (
+	bl_num1 int,
+	m_num1 int,
+	bl_num2 int,
+	m_num2 int,
+
+	primary key(bl_num1, m_num1, bl_num2, m_num2),
+	foreign key(bl_num1, m_num1) references block(bl_num, m_num),
+	foreign key(bl_num2, m_num2) references block(bl_num, m_num)
+);

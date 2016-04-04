@@ -1,0 +1,8 @@
+create table ratio_offset (
+	r_o_num int,
+	be_sn int,
+	r_o_value double,
+
+	primary key(r_o_num),
+	foreign key(be_sn) refereces beacon(be_sn)
+);

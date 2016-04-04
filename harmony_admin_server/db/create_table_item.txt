@@ -1,0 +1,12 @@
+create table item (
+	i_num int,
+	bl_num int,
+	m_num int,
+	i_title varchar(20),
+	i_artist varchar(20),
+	i_image varchar(256),
+	i_content varchar(1024),
+
+	primary key(i_num),
+	foreign key(bl_num, m_num) references block(bl_num, m_num)
+);

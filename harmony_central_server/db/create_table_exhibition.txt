@@ -1,0 +1,9 @@
+create table exhibition (
+	e_num int,
+	e_name varchar(30),
+	e_ip varchar(20),
+	e_gps_x double,
+	e_gps_y double,
+
+	primary key(e_num)
+);

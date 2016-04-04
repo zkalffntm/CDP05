@@ -1,0 +1,8 @@
+create table beacon (
+	be_sn int,
+	be_major int,
+	be_minor int,
+	be_name varchar(30),
+
+	primary key(be_sn)
+);
