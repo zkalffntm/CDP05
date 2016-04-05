@@ -32,7 +32,7 @@ public class ItemContentService extends AbstractService {
 		int itemNum = (int) argument;
 
 		// 쿼리 실행
-		String sql = "select item_title, item_artist, item_content from item where item_num=?";
+		String sql = "select i_title, i_artist, i_content from item where i_num=?";
 		PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
 		pstmt.setInt(1, itemNum);
 		ResultSet resultSet = pstmt.executeQuery();
@@ -41,9 +41,9 @@ public class ItemContentService extends AbstractService {
 		String[] strings = null;
 		if (resultSet.next()) {
 			strings = new String[3];
-			strings[0] = resultSet.getString("item_title");
-			strings[1] = resultSet.getString("item_artist");
-			strings[2] = resultSet.getString("item_content");
+			strings[0] = resultSet.getString("i_title");
+			strings[1] = resultSet.getString("i_artist");
+			strings[2] = resultSet.getString("i_content");
 		}
 
 		return strings;

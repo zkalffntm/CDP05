@@ -17,7 +17,7 @@ import org.json.JSONObject;
  * @since 2016/4/4
  * @version 2016/4/4
  */
-public class TestClient {
+public class TestCentralClient {
 
 	/**
 	 * 메인 메소드
@@ -25,7 +25,7 @@ public class TestClient {
 	 * @param args
 	 *          사용 안 함
 	 * @throws Exception
-	 *           throws 되는 모든 예외
+	 *           모든 예외
 	 */
 	public static void main(String[] args) throws Exception {
 
@@ -42,6 +42,7 @@ public class TestClient {
 		System.out.println("test : req_provider_list");
 		doProviderListTest(bufferedReader, printWriter);
 
+		// 4. 연결 종료
 		socket.close();
 	}
 
@@ -55,32 +56,39 @@ public class TestClient {
 	 * @throws Exception
 	 *           모든 예외
 	 */
-	public static void doProviderListTest(BufferedReader bufferedReader, PrintWriter printWriter) throws Exception {
+	private static void doProviderListTest(BufferedReader bufferedReader, PrintWriter printWriter) throws Exception {
+		// 1. 요청 메시지 전송
 		JSONObject sendJson = new JSONObject();
 		sendJson.put("key", "req_provider_list");
-		sendJson.put("value", new double[] { 1.1, 2.2 });
+		sendJson.put("value", new double[] { 1.1, 3.3 });
 		printWriter.println(sendJson.toString());
 		printWriter.flush();
 
+		// 2. 응답 메시지 수신
 		String line = bufferedReader.readLine();
 		if (line == null) {
 			throw new Exception("req_provider_list 응답 수신 실패");
 		}
-
 		JSONObject recvJson = new JSONObject(line);
-		System.out.println("\tkey   : " + recvJson.getString("key"));
 
+		// 3. 수신 메시지 출력
+		System.out.println("\tkey   : " + recvJson.getString("key"));
 		System.out.println("\tvalue : ");
 		JSONArray recvValue = recvJson.getJSONArray("value");
-		for (int i = 0; i < recvValue.length(); i++) {
-			JSONArray row = recvValue.getJSONArray(i);
 
-			System.out.println("\t\t[" + i + "] : ");
-			System.out.println("\t\t\te_name  : " + row.getString(0));
-			System.out
-					.println("\t\t\te_ip    : " + row.getInt(1) + '.' + row.getInt(2) + '.' + row.getInt(3) + '.' + row.getInt(4));
-			System.out.println("\t\t\te_port  : " + row.getInt(5));
-			System.out.println("\t\t\te_major : " + row.getInt(6));
+		if (recvValue.length() == 0) {
+			System.out.println("\t\t자료가 없습니다.");
+		} else {
+			for (int i = 0; i < recvValue.length(); i++) {
+				JSONArray row = recvValue.getJSONArray(i);
+
+				System.out.println("\t\t[" + i + "] :");
+				System.out.println("\t\t\te_name  : " + row.getString(0));
+				System.out.println(
+						"\t\t\te_ip    : " + row.getInt(1) + '.' + row.getInt(2) + '.' + row.getInt(3) + '.' + row.getInt(4));
+				System.out.println("\t\t\te_port  : " + row.getInt(5));
+				System.out.println("\t\t\te_major : " + row.getInt(6));
+			}
 		}
 	}
 }
