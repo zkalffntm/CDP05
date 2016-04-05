@@ -4,6 +4,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import org.json.JSONException;
+
 /**
  * 고객으로부터 전시물 번호 정보를 받고, 그에 대한 전시물 설명을<br>
  * 제공하는 서비스
@@ -22,7 +24,7 @@ public class ItemContentService extends AbstractService {
 	 * @return String[] = {"작품명", "작가", 설명 내용"}
 	 */
 	@Override
-	protected Object doQuery(Object argument) throws SQLException {
+	protected Object doQuery(Object argument) throws SQLException, JSONException {
 
 		// 전시물 번호
 		int itemNum = (int) argument;

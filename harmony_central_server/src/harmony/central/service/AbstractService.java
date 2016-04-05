@@ -3,6 +3,8 @@ package harmony.central.service;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import org.json.JSONException;
+
 import harmony.central.database.DbConnector;
 
 /**
@@ -10,7 +12,7 @@ import harmony.central.database.DbConnector;
  * 
  * @author Seongjun Park
  * @since 2016/3/22
- * @version 2016/3/22
+ * @version 2016/4/5
  */
 public abstract class AbstractService {
 
@@ -25,8 +27,11 @@ public abstract class AbstractService {
 	 *          파라미터로 사용
 	 * @return 결과 객체
 	 * @throws SQLException
+	 *           SQL 관련 예외
+	 * @throws JSONException
+	 *           JSON 관련 예외
 	 */
-	public Object doService(Object argument) throws SQLException {
+	public Object doService(Object argument) throws SQLException, JSONException {
 		boolean commit = dbConnection.getAutoCommit();
 
 		// 오토커밋 비활성화
@@ -58,6 +63,9 @@ public abstract class AbstractService {
 	 *          파라미터로 사용
 	 * @return 결과 객체
 	 * @exception SQLException
+	 *              SQL 관련 예외
+	 * @throws JSONException
+	 *           JSON 관련 예외
 	 */
-	protected abstract Object doQuery(Object argument) throws SQLException;
+	protected abstract Object doQuery(Object argument) throws SQLException, JSONException;
 }

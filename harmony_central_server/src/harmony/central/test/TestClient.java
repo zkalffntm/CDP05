@@ -1,4 +1,4 @@
-package harmony.central.testclient;
+package harmony.central.test;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 /**
@@ -22,7 +23,7 @@ public class TestClient {
 	 * 메인 메소드
 	 * 
 	 * @param args
-	 *          필요없음
+	 *          사용 안 함
 	 * @throws Exception
 	 *           throws 되는 모든 예외
 	 */
@@ -38,6 +39,7 @@ public class TestClient {
 
 		// 3. 서비스 테스트
 		// 3-1. req_provider_list
+		System.out.println("test : req_provider_list");
 		doProviderListTest(bufferedReader, printWriter);
 
 		socket.close();
@@ -64,7 +66,20 @@ public class TestClient {
 		if (line == null) {
 			throw new Exception("req_provider_list 응답 수신 실패");
 		}
+
 		JSONObject recvJson = new JSONObject(line);
-		System.out.println("key : " + recvJson.getString("key"));
+		System.out.println("\tkey   : " + recvJson.getString("key"));
+
+		System.out.println("\tvalue : ");
+		JSONArray recvValue = recvJson.getJSONArray("value");
+		for (int i = 0; i < recvValue.length(); i++) {
+			JSONArray row = recvValue.getJSONArray(i);
+
+			System.out.println("\t\t[" + i + "] : ");
+			System.out.println("\t\t\te_name : " + row.getString(0));
+			System.out
+					.println("\t\t\te_ip   : " + row.getInt(1) + '.' + row.getInt(2) + '.' + row.getInt(3) + '.' + row.getInt(4));
+			System.out.println("\t\t\te_port : " + row.getInt(4));
+		}
 	}
 }
