@@ -1,7 +1,7 @@
 package harmony.central;
-import harmony.central.communication.AbstractServerThread;
 import harmony.central.communication.CentralServerThread;
 import harmony.central.database.DbConnector;
+import harmony.common.AbstractServerThread;
 
 /**
  * 중앙 서버를 돌리기 위한 메인 메소드가 있는 클래스.

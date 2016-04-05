@@ -2,6 +2,9 @@ package harmony.admin.communication;
 
 import java.net.Socket;
 
+import harmony.common.AbstractClientThread;
+import harmony.common.AbstractServerThread;
+
 /**
  * 관리자 서버의 스레드.
  * 

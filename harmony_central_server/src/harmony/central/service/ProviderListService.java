@@ -9,6 +9,8 @@ import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import harmony.common.AbstractService;
+
 /**
  * 고객으로부터 GPS(x,y) 정보를 받고, 해당 위치에 근접한 박물관/전시회의 <br>
  * 이름과 관리자 IP를 제공하는 서비스

@@ -2,6 +2,9 @@ package harmony.central.communication;
 
 import java.net.Socket;
 
+import harmony.common.AbstractClientThread;
+import harmony.common.AbstractServerThread;
+
 /**
  * 중앙 서버의 스레드.
  * 

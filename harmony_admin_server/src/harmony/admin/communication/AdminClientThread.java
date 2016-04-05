@@ -7,6 +7,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import harmony.admin.service.ItemContentService;
+import harmony.common.AbstractClientThread;
+import harmony.common.AbstractServerThread;
 
 /**
  * 관리자 서버의 클라이언트 스레드 클래스.<br>

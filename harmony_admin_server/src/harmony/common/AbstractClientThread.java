@@ -1,4 +1,4 @@
-package harmony.admin.communication;
+package harmony.common;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;

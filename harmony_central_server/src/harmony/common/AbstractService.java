@@ -1,4 +1,4 @@
-package harmony.central.service;
+package harmony.common;
 
 import java.sql.Connection;
 import java.sql.SQLException;
