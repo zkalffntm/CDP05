@@ -24,7 +24,7 @@ public class ProviderListService extends AbstractService {
 	 * 
 	 * @param argument
 	 *          JSONArray = {double, double}
-	 * @return Object[][6] = {{박물관명,int,int,int,int,int},...}
+	 * @return Object[][7] = {{박물관명,ip1,ip2,ip3,ip4,port,major},...}
 	 * @throws SQLException
 	 *           SQL 관련 예외
 	 * @throws JSONException
@@ -37,7 +37,7 @@ public class ProviderListService extends AbstractService {
 		JSONArray gpsInfo = (JSONArray) argument;
 
 		// 쿼리 실행
-		String sql = "select e_name, e_ip, e_port from exhibition where e_gps_x=? and e_gps_y=?";
+		String sql = "select e_name, e_ip, e_port, e_beacon_major from exhibition where e_gps_x=? and e_gps_y=?";
 		PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
 		pstmt.setDouble(1, gpsInfo.getDouble(0));
 		pstmt.setDouble(2, gpsInfo.getDouble(1));
@@ -46,13 +46,14 @@ public class ProviderListService extends AbstractService {
 		// 결과 레코드를 객체에 저장
 		List<Object[]> objArrList = new ArrayList<Object[]>();
 		while (resultSet.next()) {
-			Object[] objArr = new Object[6];
+			Object[] objArr = new Object[7];
 			objArr[0] = resultSet.getString("e_name");
 			String[] ips = resultSet.getString("e_ip").split("\\.");
-			for (int i = 1; i < objArr.length - 1; i++) {
+			for (int i = 1; i < 5; i++) {
 				objArr[i] = Integer.parseInt(ips[i - 1]);
 			}
 			objArr[5] = resultSet.getInt("e_port");
+			objArr[6] = resultSet.getInt("e_beacon_major");
 			objArrList.add(objArr);
 		}
 

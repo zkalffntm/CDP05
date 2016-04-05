@@ -76,10 +76,11 @@ public class TestClient {
 			JSONArray row = recvValue.getJSONArray(i);
 
 			System.out.println("\t\t[" + i + "] : ");
-			System.out.println("\t\t\te_name : " + row.getString(0));
+			System.out.println("\t\t\te_name  : " + row.getString(0));
 			System.out
-					.println("\t\t\te_ip   : " + row.getInt(1) + '.' + row.getInt(2) + '.' + row.getInt(3) + '.' + row.getInt(4));
-			System.out.println("\t\t\te_port : " + row.getInt(4));
+					.println("\t\t\te_ip    : " + row.getInt(1) + '.' + row.getInt(2) + '.' + row.getInt(3) + '.' + row.getInt(4));
+			System.out.println("\t\t\te_port  : " + row.getInt(5));
+			System.out.println("\t\t\te_major : " + row.getInt(6));
 		}
 	}
 }
