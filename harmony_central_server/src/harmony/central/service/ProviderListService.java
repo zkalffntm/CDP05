@@ -17,7 +17,7 @@ import harmony.common.AbstractService;
  * 
  * @author Seongjun Park
  * @since 2016/3/22
- * @version 2016/4/5
+ * @version 2016/4/8
  */
 public class ProviderListService extends AbstractService {
 
@@ -39,7 +39,7 @@ public class ProviderListService extends AbstractService {
 		JSONArray gpsInfo = (JSONArray) argument;
 
 		// 쿼리 실행
-		String sql = "select e_name, e_ip, e_port, e_beacon_major from exhibition where e_gps_x=? and e_gps_y=?";
+		String sql = "select e.e_name, e.e_ip, e.e_port, e.e_beacon_major from exhibition as e, gps as g where g.g_x=? and g.g_y=? and e.e_num=g.e_num";
 		PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
 		pstmt.setDouble(1, gpsInfo.getDouble(0));
 		pstmt.setDouble(2, gpsInfo.getDouble(1));

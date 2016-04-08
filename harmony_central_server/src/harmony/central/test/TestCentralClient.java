@@ -60,7 +60,7 @@ public class TestCentralClient {
 		// 1. 요청 메시지 전송
 		JSONObject sendJson = new JSONObject();
 		sendJson.put("key", "req_provider_list");
-		sendJson.put("value", new double[] { 1.1, 3.3 });
+		sendJson.put("value", new double[] { 1.1, 2.2 });
 		printWriter.println(sendJson.toString());
 		printWriter.flush();
 
