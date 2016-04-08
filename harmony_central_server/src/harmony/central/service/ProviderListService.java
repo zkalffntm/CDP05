@@ -60,11 +60,6 @@ public class ProviderListService extends AbstractService {
 		}
 
 		// List<Object[]> to Object[][]
-		Object[][] objArrArr = new Object[objArrList.size()][];
-		for (int i = 0; i < objArrArr.length; i++) {
-			objArrArr[i] = objArrList.get(i);
-		}
-
-		return objArrArr;
+		return (Object[][]) objArrList.toArray(new Object[objArrList.size()][7]);
 	}
 }
