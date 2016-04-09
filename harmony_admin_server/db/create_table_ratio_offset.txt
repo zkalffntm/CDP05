@@ -1,8 +1,9 @@
 create table ratio_offset (
-	r_o_num int,
-	be_sn int,
-	r_o_value double,
+	m_num int,
+	b_num int,
+	ro_beacon_minor int
+	ro_ratio float,
 
-	primary key(r_o_num),
-	foreign key(be_sn) refereces beacon(be_sn)
+	primary key(m_num, b_num, ro_beacon_minor),
+	foreign key(m_num, b_num) references block(m_num, b_num)
 );

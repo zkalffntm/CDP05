@@ -1,0 +1,9 @@
+create table gps (
+	e_num int,
+	g_x double,
+	g_y double,
+	g_coverage int,
+
+	primary key(e_num, g_x, g_y),
+	foreign key(e_num) references exhibition(e_num)
+);

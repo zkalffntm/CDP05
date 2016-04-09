@@ -1,9 +1,7 @@
 create table block (
-	bl_num int,
 	m_num int,
-	r_o_num int,
+	b_num int,
 
-	primary key(bl_num, m_num),
-	foreign key(m_num) references map(m_num),
-	foreign key(r_o_num) references ratio_offset(r_o_num)
+	primary key(m_num, b_num),
+	foreign key(m_num) references map(m_num)
 );
