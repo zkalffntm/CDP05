@@ -9,7 +9,14 @@ import java.util.Map;
 
 /**
  * 환경설정 등 dat파일의 내용을 읽는 클래스.<br>
- * 
+ * dat 파일 내의 key 값과 value 사이의 '='로 구분하여 해쉬맵에 데이터를 저장한다.<br>
+ * <br>
+ * - 아래는 dat류 들의 파일 내용 형식 -<br>
+ * <br>
+ * {@code ...}<br>
+ * {@code notice=www.google.com}<br>
+ * {@code key=value}<br>
+ * {@code ...}
  * 
  * @author Seongjun Park
  * @since 2016/4/9
@@ -33,11 +40,9 @@ public class DatFileReader {
 		// 라인 별로 읽음
 		while ((line = reader.readLine()) != null) {
 			int index = -1;
-
 			if ((index = line.indexOf('=')) < 1 || index >= line.length() - 1) {
 				continue;
 			}
-
 			this.dataMap.put(line.substring(0, index), line.substring(index + 1));
 		}
 
