@@ -8,23 +8,24 @@ import java.sql.SQLException;
 import org.json.JSONException;
 
 import harmony.common.AbstractService;
+import harmony.common.ImageManager;
 
 /**
- * 고객으로부터 전시물 번호 정보를 받고, 그에 대한 전시물 설명을<br>
+ * 고객으로부터 전시물 번호 정보를 받고, 그에 대한 전시물 이미지를<br>
  * 제공하는 서비스
  * 
  * @author Seongjun Park
- * @since 2016/4/1
- * @version 2016/4/1
+ * @since 2016/4/10
+ * @version 2016/4/10
  */
-public class ItemContentService extends AbstractService {
+public class ItemImageService extends AbstractService {
 
 	/**
-	 * sql select문을 이용하여 전시물 명, 작가, 설명을 찾음
+	 * sql select문을 이용하여 전시물 이미지경로를 찾고 그 경로의 이미지를 가져온다.
 	 * 
 	 * @param argument
 	 *          전시물 번호를 담은 int
-	 * @return String[] = {"작품명", "작가", 설명 내용"}
+	 * @return String = "이미지 파일 스트림"
 	 */
 	@Override
 	protected Object doQuery(Object argument) throws SQLException, JSONException, IOException {
@@ -33,20 +34,17 @@ public class ItemContentService extends AbstractService {
 		int itemNum = (int) argument;
 
 		// 쿼리 실행
-		String sql = "select i_title, i_artist, i_content from item where i_num=?";
+		String sql = "select i_image from item where i_num=?";
 		PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
 		pstmt.setInt(1, itemNum);
 		ResultSet resultSet = pstmt.executeQuery();
 
 		// 결과 레코드를 객체에 저장
-		String[] strings = null;
+		String imageStream = null;
 		if (resultSet.next()) {
-			strings = new String[3];
-			strings[0] = resultSet.getString("i_title");
-			strings[1] = resultSet.getString("i_artist");
-			strings[2] = resultSet.getString("i_content");
+			imageStream = ImageManager.readByteStringFromImage(resultSet.getString("i_image"));
 		}
 
-		return strings;
+		return imageStream;
 	}
 }

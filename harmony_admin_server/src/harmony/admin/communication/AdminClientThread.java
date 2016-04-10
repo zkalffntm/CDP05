@@ -1,5 +1,6 @@
 package harmony.admin.communication;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
 
@@ -7,6 +8,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import harmony.admin.service.ItemContentService;
+import harmony.admin.service.ItemImageService;
+import harmony.admin.service.NoitceService;
 import harmony.common.AbstractClientThread;
 import harmony.common.AbstractServerThread;
 
@@ -42,11 +45,19 @@ public class AdminClientThread extends AbstractClientThread {
 	@Override
 	protected void process(JSONObject recvJson) throws JSONException, SQLException, Exception {
 		String key = recvJson.getString("key");
-		Object value = recvJson.get("value");
+		Object value = null;
+		try {
+			value = recvJson.get("value"); // null이면 예외가 발생하는데 이때는 선택적으로 무시 가능. 예를 들면
+																			// 공지사항 기능은 req에선 value가 null임.
+		} catch (JSONException e) {
+		}
 
 		switch (key) {
 		case "req_notice":
 			this.doNoticeService();
+			break;
+		case "req_item_image":
+			this.doItemImageService(value);
 			break;
 		case "req_item_content":
 			this.doItemContentService(value);
@@ -58,19 +69,47 @@ public class AdminClientThread extends AbstractClientThread {
 
 	/**
 	 * 클라이언트에게 공지사항 정보를 전송한다.<br>
-	 * {@link }를 수행한 결과를 클라이언트에게 응답한다.
+	 * {@link NoitceService}를 수행한 결과를 클라이언트에게 응답한다.
 	 * 
 	 * @throws SQLException
 	 *           SQL 관련 예외
 	 * @throws JSONException
 	 *           JSON 관련 예외
+	 * @throws IOException
+	 *           IO 관련 예외
 	 */
-	private void doNoticeService() throws SQLException, JSONException {
-		// 미완성
+	private void doNoticeService() throws SQLException, JSONException, IOException {
+		JSONObject sendJson = new JSONObject();
+
+		sendJson.put("key", "res_notice");
+		sendJson.put("value", new NoitceService().doService(null));
+
+		this.getPrintWriter().println(sendJson.toString());
+		this.getPrintWriter().flush();
 	}
 
 	/**
-	 * 전시물 번호를 활용해{@link }를 수행한 결과를 클라이언트에게 응답한다.
+	 * 전시물 번호를 활용해 {@link ItemImageService}를 수행한 결과를 클라이언트에게 응답한다.
+	 * 
+	 * @param value
+	 *          전시물 번호 정보가 있는 Object 객체
+	 * @throws JSONException
+	 * @throws IOException
+	 * @throws SQLException
+	 */
+	private void doItemImageService(Object value) throws JSONException, SQLException, IOException {
+		JSONObject sendJson = new JSONObject();
+
+		sendJson.put("key", "res_item_image");
+		sendJson.put("value", new ItemImageService().doService(value));
+
+		this.getPrintWriter().println(sendJson.toString());
+		this.getPrintWriter().flush();
+
+	}
+
+	/**
+	 * 전시물 번호를 활용해 {@link ItemContentService}를 수행한 결과를 클라이언트에게 응답한다.
 	 * 
 	 * @param value
 	 *          전시물 번호 정보가 있는 Object 객체
@@ -78,8 +117,10 @@ public class AdminClientThread extends AbstractClientThread {
 	 *           SQL 관련 예외
 	 * @throws JSONException
 	 *           JSON 관련 예외
+	 * @throws IOException
+	 *           IO 관련 예외
 	 */
-	private void doItemContentService(Object value) throws JSONException, SQLException {
+	private void doItemContentService(Object value) throws JSONException, SQLException, IOException {
 		JSONObject sendJson = new JSONObject();
 
 		sendJson.put("key", "res_item_content");

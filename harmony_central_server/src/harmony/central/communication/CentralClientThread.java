@@ -1,5 +1,6 @@
 package harmony.central.communication;
 
+import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
 
@@ -57,8 +58,10 @@ public class CentralClientThread extends AbstractClientThread {
 	 *           SQL 관련 예외
 	 * @throws JSONException
 	 *           JSON 관련 예외
+	 * @throws IOException
+	 *           IO 관련 예외
 	 */
-	private void doProviderListService(Object value) throws JSONException, SQLException {
+	private void doProviderListService(Object value) throws JSONException, SQLException, IOException {
 		JSONObject sendJson = new JSONObject();
 
 		sendJson.put("key", "res_provider_list");
