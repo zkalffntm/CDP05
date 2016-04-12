@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import harmony.admin.service.ItemContentService;
 import harmony.admin.service.ItemImageService;
 import harmony.admin.service.NoitceService;
+import harmony.admin.service.UpdateDateService;
 import harmony.common.AbstractClientThread;
 import harmony.common.AbstractServerThread;
 
@@ -26,107 +27,136 @@ import harmony.common.AbstractServerThread;
  * 
  * @author Seongjun Park
  * @since 2016/4/1
- * @version 2016/4/1
+ * @version 2016/4/13
  */
 public class AdminClientThread extends AbstractClientThread {
 
-	/**
-	 * 생성자. 서버스레드와 클라이언트 소켓 객체를 설정한다.
-	 * 
-	 * @param serverThread
-	 *          서버스레드. 이 때 AdminServerThread이어야 함.
-	 * @param clientSocket
-	 *          클라이언트 소켓
-	 */
-	public AdminClientThread(AbstractServerThread serverThread, Socket clientSocket) {
-		super(serverThread, clientSocket);
-	}
+  /**
+   * 생성자. 서버스레드와 클라이언트 소켓 객체를 설정한다.
+   * 
+   * @param serverThread
+   *          서버스레드. 이 때 AdminServerThread이어야 함.
+   * @param clientSocket
+   *          클라이언트 소켓
+   */
+  public AdminClientThread(AbstractServerThread serverThread,
+      Socket clientSocket) {
+    super(serverThread, clientSocket);
+  }
 
-	@Override
-	protected void process(JSONObject recvJson) throws JSONException, SQLException, Exception {
-		String key = recvJson.getString("key");
-		Object value = null;
-		try {
-			value = recvJson.get("value"); // null이면 예외가 발생하는데 이때는 선택적으로 무시 가능. 예를 들면
-																			// 공지사항 기능은 req에선 value가 null임.
-		} catch (JSONException e) {
-		}
+  @Override
+  protected void process(JSONObject recvJson)
+      throws JSONException, SQLException, Exception {
+    String key = recvJson.getString("key");
+    Object value = null;
+    try {
+      value = recvJson.get("value"); // null이면 예외가 발생하는데 이때는 선택적으로 무시 가능. 예를 들면
+                                     // 공지사항 기능은 req에선 value가 null임.
+    } catch (JSONException e) {
+    }
 
-		switch (key) {
-		case "req_notice":
-			this.doNoticeService();
-			break;
-		case "req_item_image":
-			this.doItemImageService(value);
-			break;
-		case "req_item_content":
-			this.doItemContentService(value);
-			break;
-		default:
-			throw new Exception("unacceptable message");
-		}
-	}
+    switch (key) {
+    case "req_notice":
+      this.doNoticeService();
+      break;
+    case "req_item_image":
+      this.doItemImageService(value);
+      break;
+    case "req_item_content":
+      this.doItemContentService(value);
+      break;
+    case "req_update_date":
+      this.doUpdateDateService();
+      break;
+    default:
+      throw new Exception("unacceptable message");
+    }
+  }
 
-	/**
-	 * 클라이언트에게 공지사항 정보를 전송한다.<br>
-	 * {@link NoitceService}를 수행한 결과를 클라이언트에게 응답한다.
-	 * 
-	 * @throws SQLException
-	 *           SQL 관련 예외
-	 * @throws JSONException
-	 *           JSON 관련 예외
-	 * @throws IOException
-	 *           IO 관련 예외
-	 */
-	private void doNoticeService() throws SQLException, JSONException, IOException {
-		JSONObject sendJson = new JSONObject();
+  /**
+   * 클라이언트에게 공지사항 정보를 전송한다.<br>
+   * {@link NoitceService}를 수행한 결과를 클라이언트에게 응답한다.
+   * 
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws JSONException
+   *           JSON 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   */
+  private void doNoticeService()
+      throws SQLException, JSONException, IOException {
+    JSONObject sendJson = new JSONObject();
 
-		sendJson.put("key", "res_notice");
-		sendJson.put("value", new NoitceService().doService(null));
+    sendJson.put("key", "res_notice");
+    sendJson.put("value", new NoitceService().doService(null));
 
-		this.getPrintWriter().println(sendJson.toString());
-		this.getPrintWriter().flush();
-	}
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
 
-	/**
-	 * 전시물 번호를 활용해 {@link ItemImageService}를 수행한 결과를 클라이언트에게 응답한다.
-	 * 
-	 * @param value
-	 *          전시물 번호 정보가 있는 Object 객체
-	 * @throws JSONException
-	 * @throws IOException
-	 * @throws SQLException
-	 */
-	private void doItemImageService(Object value) throws JSONException, SQLException, IOException {
-		JSONObject sendJson = new JSONObject();
+  /**
+   * 전시물 번호를 활용해 {@link ItemImageService}를 수행한 결과를 클라이언트에게 응답한다.
+   * 
+   * @param value
+   *          전시물 번호 정보가 있는 Object 객체
+   * @throws JSONException
+   * @throws IOException
+   * @throws SQLException
+   */
+  private void doItemImageService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
 
-		sendJson.put("key", "res_item_image");
-		sendJson.put("value", new ItemImageService().doService(value));
+    sendJson.put("key", "res_item_image");
+    sendJson.put("value", new ItemImageService().doService(value));
 
-		this.getPrintWriter().println(sendJson.toString());
-		this.getPrintWriter().flush();
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
 
-	}
+  }
 
-	/**
-	 * 전시물 번호를 활용해 {@link ItemContentService}를 수행한 결과를 클라이언트에게 응답한다.
-	 * 
-	 * @param value
-	 *          전시물 번호 정보가 있는 Object 객체
-	 * @throws SQLException
-	 *           SQL 관련 예외
-	 * @throws JSONException
-	 *           JSON 관련 예외
-	 * @throws IOException
-	 *           IO 관련 예외
-	 */
-	private void doItemContentService(Object value) throws JSONException, SQLException, IOException {
-		JSONObject sendJson = new JSONObject();
+  /**
+   * 전시물 번호를 활용해 {@link ItemContentService}를 수행한 결과를 클라이언트에게 응답한다.
+   * 
+   * @param value
+   *          전시물 번호 정보가 있는 Object 객체
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws JSONException
+   *           JSON 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   */
+  private void doItemContentService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
 
-		sendJson.put("key", "res_item_content");
-		sendJson.put("value", new ItemContentService().doService(value));
+    sendJson.put("key", "res_item_content");
+    sendJson.put("value", new ItemContentService().doService(value));
 
-		this.getPrintWriter().println(sendJson.toString());
-		this.getPrintWriter().flush();
-	}
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
+
+  /**
+   * {@link UpdateDateService}를 수행한 결과를 클라이언트에게 응답한다.
+   * 
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws JSONException
+   *           JSON 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   */
+  private void doUpdateDateService()
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
+
+    sendJson.put("key", "res_update_date");
+    sendJson.put("value", new UpdateDateService().doService(null));
+
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
 }
