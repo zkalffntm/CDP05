@@ -16,16 +16,23 @@ import bluetooth.BeaconProp;
 public class MainActivity extends Activity
 {
 	private boolean 	scanning;
-	private TextView	txtStatus;
+	private int[]		avgRssi;
+	private TextView[]	txtStatus;
 	private Button		btnScan;
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-		txtStatus = (TextView)findViewById(R.id.txtStatus);
+		txtStatus = new TextView[4];
+		txtStatus[0] = (TextView)findViewById(R.id.textView1);
+		txtStatus[1] = (TextView)findViewById(R.id.textView2);
+		txtStatus[2] = (TextView)findViewById(R.id.textView3);
+		txtStatus[3] = (TextView)findViewById(R.id.textView4);
 		btnScan = (Button)findViewById(R.id.btnScan);
+		avgRssi = new int[4];
+		for(int iter : avgRssi) iter = 0;
 	}
 
 	@Override
@@ -69,13 +76,24 @@ public class MainActivity extends Activity
 				public void onLeScan(BluetoothDevice device, int rssi, byte[] record)
 				{
 					BeaconProp prop = BeaconInterface.parseRecord(record);
-					Log.i("BLETest", device.toString() + " ~ "
-							+ prop.getUUID() + " ~ "
-							+ prop.getMajor() + " ~ "
-							+ prop.getMinor() + " -> " + rssi);
+					
+					Log.i("test", prop.getUUID());
+					if(prop.getUUID().equals("78751DE4-040B-11E6-B512-3E1D05DEFE78"))
+					{
+						final int minor = prop.getMinor();
+						if(avgRssi[minor] == 0) avgRssi[minor] = rssi;
+						else avgRssi[minor] = (int)(avgRssi[minor] * 0.8 + rssi * 0.2);
+						
+						if(minor >= 0 || minor < 4)
+							runOnUiThread(new Runnable()
+							{
+								@Override
+								public void run()
+								{ txtStatus[minor].setText(minor + " : " + avgRssi[minor]); }
+							});
+					}
 				}
 			};
-
 			bi.startScan(cb);
 			scanning = true;
 			btnScan.setText("½ºÄµ ÁßÁö");
