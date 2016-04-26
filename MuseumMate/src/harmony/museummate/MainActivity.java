@@ -1,17 +1,26 @@
 package harmony.museummate;
 
-import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
-import android.support.v7.widget.Toolbar;
 
-public class MainActivity extends Activity
+public class MainActivity extends AppCompatActivity
 {
-	private ProgressBar progBar;
+	private ProgressBar 			progBar;
+	private Toolbar					toolbar;
+	private ActionBar				actionbar;
+	private DrawerLayout			layoutDrawer;
+	private ActionBarDrawerToggle	toggleDrawer;
 	
 	private LoadingHandler handler;
 	
@@ -29,10 +38,6 @@ public class MainActivity extends Activity
 		lParamProgBar.addRule(RelativeLayout.CENTER_IN_PARENT);
 		layoutLoading.addView(progBar, lParamProgBar);
 		
-		toolbar = (Toolbar) findViewById(R.id.toolbar); //툴바설정
-		toolbar.setTitleTextColor(Color.parseColor("#ffffff"));
-		setSupportActionBar(toolbar);
-		
 		handler = new LoadingHandler();
 		
 		loaded = false;
@@ -45,7 +50,23 @@ public class MainActivity extends Activity
 		super.onResume();
 		//progBar.setVisibility(View.VISIBLE);
 	}
+
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState)
+	{
+	    super.onPostCreate(savedInstanceState);
+	    
+	    if(toggleDrawer != null) toggleDrawer.syncState();
+	}
 	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig)
+	{
+	    super.onConfigurationChanged(newConfig);
+	    
+	    if(toggleDrawer != null) toggleDrawer.onConfigurationChanged(newConfig);
+	}
+
 	/*
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
@@ -84,17 +105,30 @@ public class MainActivity extends Activity
 			{
 			case SUCCESS:
 				loaded = true;
-				runOnUiThread(new Runnable()
-						{
-							@Override
-							public void run()
-							{ setContentView(R.layout.activity_main); }
-						});
+				runOnUiThread(new Runnable() { public void run() { loadMain(); } });
 				break;
 				
 			case FAILED:
 				
 			}
 		}
+	}
+	
+	private void loadMain()
+	{
+		setContentView(R.layout.activity_main);
+		
+		toolbar = (Toolbar)findViewById(R.id.toolbar);
+	    layoutDrawer = (DrawerLayout)findViewById(R.id.drawer_layout);
+	    
+		setSupportActionBar(toolbar);
+		actionbar = getSupportActionBar();
+		actionbar.setDisplayHomeAsUpEnabled(true); 
+		actionbar.setHomeButtonEnabled(true); 
+		//actionbar.setHomeAsUpIndicator(R.drawable.hamburger_icon);
+	    
+	    toggleDrawer = new ActionBarDrawerToggle(this, layoutDrawer, toolbar, R.string.app_name, R.string.app_name);
+	    layoutDrawer.addDrawerListener(toggleDrawer);
+	    toggleDrawer.syncState();
 	}
 }
