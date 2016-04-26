@@ -12,7 +12,6 @@ import android.support.v7.widget.Toolbar;
 public class MainActivity extends Activity
 {
 	private ProgressBar progBar;
-	private Toolbar		toolbar
 	
 	private LoadingHandler handler;
 	
