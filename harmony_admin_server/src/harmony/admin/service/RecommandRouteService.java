@@ -6,24 +6,24 @@ import java.sql.SQLException;
 import org.json.JSONException;
 
 import harmony.common.AbstractService;
-import harmony.common.DatFileManager;
+import harmony.common.RecommandRoute;
 
 /**
- * 최근 업데이트 날짜를 응답하는 서비스.
+ * 고객에게 추천경로 객체를 보내주는 서비스.
  * 
  * @author Seongjun Park
- * @since 2016/4/13
- * @version 2016/4/13
+ * @since 2016/5/8
+ * @version 2016/5/8
  */
-public class UpdateDateService extends AbstractService {
-  public static final String DEFAULT_DATA_KEY = "update";
+public class RecommandRouteService extends AbstractService {
 
   /**
-   * configuration file에서 최근 업데이트 날짜의 Long형을 가져옴.
+   * configuration file에 있는 정보를<br>
+   * {@link RecommandRoute}객체화한 여러개를 전송.
    * 
    * @param argument
    *          사용 안 함
-   * @return long = 업데이트 날짜 값
+   * @return RecommandRoute[]
    * @throws SQLException
    *           SQL 관련 예외
    * @throws JSONException
@@ -35,7 +35,6 @@ public class UpdateDateService extends AbstractService {
   protected Object doQuery(Object argument)
       throws SQLException, JSONException, IOException {
     // TODO Auto-generated method stub
-    return Long.parseLong(new DatFileManager().getData(DEFAULT_DATA_KEY));
+    return null;
   }
-
 }
