@@ -11,6 +11,7 @@ import harmony.admin.service.ItemContentService;
 import harmony.admin.service.ItemImageService;
 import harmony.admin.service.MapImageService;
 import harmony.admin.service.NoitceService;
+import harmony.admin.service.RecommandRouteService;
 import harmony.admin.service.UpdateDateService;
 import harmony.admin.service.UpdateService;
 import harmony.common.AbstractClientThread;
@@ -179,7 +180,7 @@ public class AdminClientThread extends AbstractClientThread {
 
   /**
    * 클라이언트에게 추천경로 정보들을 전송한다.<br>
-   * {@link REcommandRouteService}를 수행한 결과를 클라이언트에게 응답한다.
+   * {@link RecommandRouteService}를 수행한 결과를 클라이언트에게 응답한다.
    * 
    * @throws SQLException
    *           SQL 관련 예외
@@ -193,7 +194,7 @@ public class AdminClientThread extends AbstractClientThread {
     JSONObject sendJson = new JSONObject();
 
     sendJson.put("key", "res_recommand_route");
-    sendJson.put("value", new NoitceService().doService(null));
+    sendJson.put("value", new RecommandRouteService().doService(null));
 
     this.getPrintWriter().println(sendJson.toString());
     this.getPrintWriter().flush();

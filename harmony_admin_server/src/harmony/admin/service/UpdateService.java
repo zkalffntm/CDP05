@@ -26,7 +26,7 @@ public class UpdateService extends AbstractService {
    * 
    * @param argument
    *          사용 안 함
-   * @return 
+   * @return Object[5][][]
    * @throws SQLException
    *           SQL 관련 예외
    * @throws JSONException
@@ -37,7 +37,7 @@ public class UpdateService extends AbstractService {
   @Override
   protected Object doQuery(Object argument)
       throws SQLException, JSONException, IOException {
-    
+
     // [0]은 item, [1]은 block, [2]는 ratio_offset, [3]은 map, [4]는 share_block
     Object[][][] retval = new Object[5][][];
     retval[0] = this.getItems();
@@ -45,18 +45,19 @@ public class UpdateService extends AbstractService {
     retval[2] = this.getRatioOffsets();
     retval[3] = this.getMaps();
     retval[4] = this.getShareBlocks();
-    
-    return retval;    
+
+    return retval;
   }
-  
+
   /**
    * 
-   * @return
+   * @return Object[][3] = {{i_num, m_num, b_num}, ...}
    * @throws SQLException
+   *           SQL 관련 예외
    */
   private Object[][] getItems() throws SQLException {
     List<Object[]> objArrList = new ArrayList<Object[]>();
-    
+
     // 쿼리 실행
     String sql = "select i_num, m_num, b_num from item";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
@@ -71,19 +72,20 @@ public class UpdateService extends AbstractService {
       objArr[2] = resultSet.getInt("b_num");
       objArrList.add(objArr);
     }
-    
+
     // List<Object[]> to Object[][]
     return (Object[][]) objArrList.toArray(new Object[objArrList.size()][3]);
   }
 
   /**
    * 
-   * @return
+   * @return Object[][2] = {{m_num, b_num}, ...}
    * @throws SQLException
+   *           SQL 관련 예외
    */
   private Object[][] getBlocks() throws SQLException {
     List<Object[]> objArrList = new ArrayList<Object[]>();
-    
+
     // 쿼리 실행
     String sql = "select m_num, b_num from block";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
@@ -97,19 +99,20 @@ public class UpdateService extends AbstractService {
       objArr[1] = resultSet.getInt("b_num");
       objArrList.add(objArr);
     }
-    
+
     // List<Object[]> to Object[][]
     return (Object[][]) objArrList.toArray(new Object[objArrList.size()][2]);
   }
 
   /**
    * 
-   * @return
+   * @return Object[][2] = {{m_num, b_num, ro_beacon_minor, ro_ratio}, ...}
    * @throws SQLException
+   *           SQL 관련 예외
    */
   private Object[][] getRatioOffsets() throws SQLException {
     List<Object[]> objArrList = new ArrayList<Object[]>();
-    
+
     // 쿼리 실행
     String sql = "select m_num, b_num, ro_beacon_minor, ro_ratio from ratio_offset";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
@@ -125,19 +128,20 @@ public class UpdateService extends AbstractService {
       objArr[3] = resultSet.getFloat("ro_ratio");
       objArrList.add(objArr);
     }
-    
+
     // List<Object[]> to Object[][]
     return (Object[][]) objArrList.toArray(new Object[objArrList.size()][4]);
   }
 
   /**
    * 
-   * @return
+   * @return Object[][2] = {{m_num, m_name}, ...}
    * @throws SQLException
+   *           SQL 관련 예외
    */
   private Object[][] getMaps() throws SQLException {
     List<Object[]> objArrList = new ArrayList<Object[]>();
-    
+
     // 쿼리 실행
     String sql = "select m_num, m_name from map";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
@@ -151,19 +155,20 @@ public class UpdateService extends AbstractService {
       objArr[1] = resultSet.getString("m_name");
       objArrList.add(objArr);
     }
-    
+
     // List<Object[]> to Object[][]
     return (Object[][]) objArrList.toArray(new Object[objArrList.size()][2]);
   }
 
   /**
    * 
-   * @return
+   * @return Object[][4] = {{m_num1, b_num1, m_num2, b_num2}, ...}
    * @throws SQLException
+   *           SQL 관련 예외
    */
   private Object[][] getShareBlocks() throws SQLException {
     List<Object[]> objArrList = new ArrayList<Object[]>();
-    
+
     // 쿼리 실행
     String sql = "select m_num1, b_num1, m_num2, b_num2 from share_block";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
@@ -179,7 +184,7 @@ public class UpdateService extends AbstractService {
       objArr[3] = resultSet.getInt("b_num2");
       objArrList.add(objArr);
     }
-    
+
     // List<Object[]> to Object[][]
     return (Object[][]) objArrList.toArray(new Object[objArrList.size()][4]);
   }

@@ -2,6 +2,7 @@ package harmony.admin.service;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 import org.json.JSONException;
 
@@ -23,7 +24,7 @@ public class RecommandRouteService extends AbstractService {
    * 
    * @param argument
    *          사용 안 함
-   * @return RecommandRoute[]
+   * @return List<RecommandRoute>
    * @throws SQLException
    *           SQL 관련 예외
    * @throws JSONException
@@ -34,7 +35,14 @@ public class RecommandRouteService extends AbstractService {
   @Override
   protected Object doQuery(Object argument)
       throws SQLException, JSONException, IOException {
-    // TODO Auto-generated method stub
-    return null;
+    List<RecommandRoute> recommandRoute = null;
+
+    try {
+      recommandRoute = RecommandRoute.load();
+    } catch (ClassNotFoundException e) {
+      System.err.println("RecommandRouteService.doQuery() : " + e.getMessage());
+    }
+
+    return recommandRoute;
   }
 }

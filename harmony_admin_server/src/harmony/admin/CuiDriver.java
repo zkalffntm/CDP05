@@ -13,19 +13,18 @@ import harmony.common.AbstractServerThread;
  */
 public class CuiDriver {
 
-	/**
-	 * 메인 메소드.
-	 * 
-	 * @param args
-	 *          사용 안 함.
-	 * @throws InterruptedException
-	 *           스레드 인터럽트 예외
-	 */
-	public static void main(String[] args) throws InterruptedException {
-		AbstractServerThread serverThread = new AdminServerThread();
-		serverThread.startServer();
-		serverThread.join();
-		DbConnector.getInstance().closeConnection();
-
-	}
+  /**
+   * 메인 메소드.
+   * 
+   * @param args
+   *          사용 안 함.
+   * @throws InterruptedException
+   *           스레드 인터럽트 예외
+   */
+  public static void main(String[] args) throws InterruptedException {
+    AbstractServerThread serverThread = new AdminServerThread();
+    serverThread.startServer();
+    serverThread.join();
+    DbConnector.getInstance().closeConnection();
+  }
 }
