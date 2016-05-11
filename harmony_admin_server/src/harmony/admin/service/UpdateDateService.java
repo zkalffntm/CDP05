@@ -16,7 +16,7 @@ import harmony.common.DatFileManager;
  * @version 2016/4/13
  */
 public class UpdateDateService extends AbstractService {
-  public static final String DEFAULT_DATA_KEY = "update";
+  public static final String DEFAULT_UPDATE_DATE_KEY = "update";
 
   /**
    * configuration file에서 최근 업데이트 날짜의 Long형을 가져옴.
@@ -35,7 +35,7 @@ public class UpdateDateService extends AbstractService {
   protected Object doQuery(Object argument)
       throws SQLException, JSONException, IOException {
     // TODO Auto-generated method stub
-    return Long.parseLong(new DatFileManager().getData(DEFAULT_DATA_KEY));
+    return Long.parseLong(new DatFileManager().getData(DEFAULT_UPDATE_DATE_KEY));
   }
 
 }

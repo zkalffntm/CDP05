@@ -16,7 +16,7 @@ import harmony.common.DatFileManager;
  * @version 2016/4/13
  */
 public class NoitceService extends AbstractService {
-  public static final String DEFAULT_DATA_KEY = "notice";
+  public static final String DEFAULT_NOTICE_KEY = "notice";
 
   /**
    * configuration file에서 url 정보를 받아옴
@@ -34,6 +34,6 @@ public class NoitceService extends AbstractService {
   @Override
   protected Object doQuery(Object argument)
       throws SQLException, JSONException, IOException {
-    return new DatFileManager().getData(DEFAULT_DATA_KEY);
+    return new DatFileManager().getData(DEFAULT_NOTICE_KEY);
   }
 }

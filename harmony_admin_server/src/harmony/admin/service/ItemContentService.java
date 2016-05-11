@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import org.json.JSONException;
 
+import harmony.admin.database.DbLiteral;
 import harmony.common.AbstractService;
 
 /**
@@ -19,34 +20,37 @@ import harmony.common.AbstractService;
  */
 public class ItemContentService extends AbstractService {
 
-	/**
-	 * sql select문을 이용하여 전시물 명, 작가, 설명을 찾음
-	 * 
-	 * @param argument
-	 *          전시물 번호를 담은 int
-	 * @return String[] = {"작품명", "작가", 설명 내용"}
-	 */
-	@Override
-	protected Object doQuery(Object argument) throws SQLException, JSONException, IOException {
+  /**
+   * sql select문을 이용하여 전시물 명, 작가, 설명을 찾음
+   * 
+   * @param argument
+   *          전시물 번호를 담은 int
+   * @return String[] = {"작품명", "작가", 설명 내용"}
+   */
+  @Override
+  protected Object doQuery(Object argument)
+      throws SQLException, JSONException, IOException {
 
-		// 전시물 번호
-		int itemNum = (int) argument;
+    // 전시물 번호
+    int itemNum = (int) argument;
 
-		// 쿼리 실행
-		String sql = "select i_title, i_artist, i_content from item where i_num=?";
-		PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
-		pstmt.setInt(1, itemNum);
-		ResultSet resultSet = pstmt.executeQuery();
+    // 쿼리 실행
+    String sql = "select " + DbLiteral.I_TITLE + ", " + DbLiteral.I_ARTIST
+        + ", " + DbLiteral.I_CONTENT + " from " + DbLiteral.ITEM + " where "
+        + DbLiteral.I_NUM + "=?";
+    PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
+    pstmt.setInt(1, itemNum);
+    ResultSet resultSet = pstmt.executeQuery();
 
-		// 결과 레코드를 객체에 저장
-		String[] strings = null;
-		if (resultSet.next()) {
-			strings = new String[3];
-			strings[0] = resultSet.getString("i_title");
-			strings[1] = resultSet.getString("i_artist");
-			strings[2] = resultSet.getString("i_content");
-		}
+    // 결과 레코드를 객체에 저장
+    String[] strings = null;
+    if (resultSet.next()) {
+      strings = new String[3];
+      strings[0] = resultSet.getString(DbLiteral.I_TITLE);
+      strings[1] = resultSet.getString(DbLiteral.I_ARTIST);
+      strings[2] = resultSet.getString(DbLiteral.I_CONTENT);
+    }
 
-		return strings;
-	}
+    return strings;
+  }
 }

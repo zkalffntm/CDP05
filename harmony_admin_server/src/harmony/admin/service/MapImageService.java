@@ -7,6 +7,7 @@ import java.sql.SQLException;
 
 import org.json.JSONException;
 
+import harmony.admin.database.DbLiteral;
 import harmony.common.AbstractService;
 import harmony.common.ImageManager;
 
@@ -35,7 +36,8 @@ public class MapImageService extends AbstractService {
     int mapNum = (int) argument;
 
     // 쿼리 실행
-    String sql = "select m_image from map where m_num=?";
+    String sql = "select " + DbLiteral.M_IMAGE + " from " + DbLiteral.MAP
+        + " where " + DbLiteral.M_NUM + "=?";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     pstmt.setInt(1, mapNum);
     ResultSet resultSet = pstmt.executeQuery();
@@ -43,7 +45,8 @@ public class MapImageService extends AbstractService {
     // 결과 레코드를 객체에 저장
     String imageStream = null;
     if (resultSet.next()) {
-      imageStream = ImageManager.readByteStringFromImage(resultSet.getString("m_image"));
+      imageStream = ImageManager
+          .readByteStringFromImage(resultSet.getString(DbLiteral.M_IMAGE));
     }
 
     return imageStream;
