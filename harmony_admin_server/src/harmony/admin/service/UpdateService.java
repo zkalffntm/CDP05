@@ -41,7 +41,7 @@ public class UpdateService extends AbstractService {
 
     // [0]은 item, [1]은 block, [2]는 ratio_offset,
     // [3]은 map, [4]는 share_block, [5]는 recommend
-    Object[][][] retval = new Object[5][][];
+    Object[][][] retval = new Object[6][][];
     retval[0] = this.getItems();
     retval[1] = this.getBlocks();
     retval[2] = this.getRatioOffsets();
