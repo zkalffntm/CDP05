@@ -1,8 +1,7 @@
 package harmony.admin.gui;
 
-import java.awt.Component;
+import java.awt.Color;
 import java.awt.FlowLayout;
-import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -10,60 +9,55 @@ import java.util.ArrayList;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JLayeredPane;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.SpringLayout;
-
-import java.awt.Color;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.GridLayout;
-import java.awt.CardLayout;
 
 /*
  * 
  * 
  */
 
-public abstract class ManagePage extends JPanel{
+public abstract class ManagePage extends JFrame {
 	protected GUI_console gui;
 
-	protected JButton addTabBtn;					// �� �߰� ��ư
-	protected ArrayList<RoomButton> roomBtnList;	// �� ��ư ����Ʈ
+	protected JButton addTabBtn; // �� �߰� ��ư
+	protected ArrayList<RoomButton> roomBtnList; // �� ��ư ����Ʈ
 
 	// protect�� �ٲٱ�
-	protected JPanel tabPanel, dataPanel;
-	protected JScrollPane scroller; 
-	
+	protected JPanel tabPanel, mainPanel;
+	protected JScrollPane scroller;
+
+	protected JLayeredPane layer;
+
 	/*
 	 * 
 	 */
-	
+
 	public ManagePage() {
+
 		gui = gui.getInstance();
-		
+
+		layer = getLayeredPane();
+
 		setSize(1000, 800);
 		setLayout(null);
-		
+
 		roomBtnList = new ArrayList<RoomButton>();
 
-		dataPanel = new JPanel();
-		
-		scroller = new JScrollPane(dataPanel);
-		
+		mainPanel = new JPanel();
+
+		scroller = new JScrollPane(mainPanel);
+
 		scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
 		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		
 		
 		addTabBtn = new JButton();
 
 		/*
-		 * ���� �ø��� �̺�Ʈ 
-		 * ��ư�� ������ â�� �����Ǽ� ����Ʈ�� ����
+		 * ���� �ø��� �̺�Ʈ ��ư�� ������ â�� �����Ǽ� ����Ʈ�� ����
 		 */
 		addTabBtn.addMouseListener(new MouseAdapter() {
 			@Override
@@ -71,7 +65,11 @@ public abstract class ManagePage extends JPanel{
 
 				String str = null;
 				str = JOptionPane.showInputDialog("���ý� �̸�");
-				
+
+				// ��� ��������
+				if (str == "" || str == null)
+					return;
+
 				gui.roomNumIncrement();
 				RoomButton roomBtn = new RoomButton(gui.getRoomNum(), str);
 
@@ -81,8 +79,7 @@ public abstract class ManagePage extends JPanel{
 				addPane();
 				refreshView();
 
-				System.out.println("��ư�� ���Ƚ��ϴ�. roomNum : " +gui.getRoomNum());
-				
+				System.out.println("��ư�� ���Ƚ��ϴ�. roomNum : " + gui.getRoomNum());
 			}
 		});
 
@@ -97,8 +94,8 @@ public abstract class ManagePage extends JPanel{
 
 		tabPanel.add(addTabBtn);
 
-		add(tabPanel);
-		add(scroller);
+		layer.add(tabPanel, new Integer(300));
+		layer.add(scroller, new Integer(300));
 	}
 
 	/*
@@ -106,44 +103,43 @@ public abstract class ManagePage extends JPanel{
 	 * 
 	 */
 
-	public RoomButton getRoomButton(int roomNum){
+	public RoomButton getRoomButton(int roomNum) {
 		return roomBtnList.get(roomNum);
 	}
-
 
 	/*
 	 * abstract method
 	 */
-	public abstract void setView(int num);	// �� ��ư �������� ȭ�� ��ȯ
+	public abstract void setView(int num); // �� ��ư �������� ȭ�� ��ȯ
 
-	public abstract void addPane();			// �� �߰� ���� �� ȭ�� ����
+	public abstract void addPane(); // �� �߰� ���� �� ȭ�� ����
 
-	public abstract void refreshView();		// ȭ�� ���� �׸���(���� ��)
+	public abstract void refreshView(); // ȭ�� ���� �׸���(���� ��)
 
-	public abstract void removeRoom(int btnNum);	// ���ý� ����
-	
+	public abstract void removeRoom(int btnNum); // ���ý� ����
+
 	/*
 	 * �� ��ư
 	 */
-	protected class RoomButton extends JPanel{
+	protected class RoomButton extends JPanel {
 		int num;
 
 		JButton delBtn;
 		JLabel title;
-		
-		public RoomButton(int num, String name){
+
+		public RoomButton(int num, String name) {
 			this.num = num;
 			title = new JLabel(name);
 
 			setLayout(new FlowLayout());
 			setSize(100, 50);
-			
+
 			delBtn = new JButton();
 			delBtn.setText("x");
 			delBtn.setSize(20, 20);
-			
+
 			setBackground(Color.lightGray);
-			
+
 			/*
 			 * ���ý� ����
 			 */
@@ -153,30 +149,33 @@ public abstract class ManagePage extends JPanel{
 					removeRoom(num);
 				}
 			});
-			
+
 			/*
 			 * ���ý� �� ������ ��
 			 */
 			addMouseListener(new MouseAdapter() {
 				@Override
 				public void mouseClicked(MouseEvent arg0) {
-					System.out.println("�� Ŭ������!");
+					System.out.println(num + " �� �� Ŭ������!");
 					setView(num);
 					refreshView();
 				}
 			});
-			
+
 			add(title);
 			add(delBtn);
 		}
-
-		public String getName(){
+		
+		public String getName() {
 			return title.getText();
 		}
 
-		public int getRoomNum(){
+		public int getRoomNum() {
 			return num;
+		}
+		
+		public void setRoomNum(int num){
+			this.num = num;
 		}
 	}
 }
-
