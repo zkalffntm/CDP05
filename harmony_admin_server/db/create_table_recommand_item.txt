@@ -1,0 +1,9 @@
+create table recommand_item (
+	r_num int,
+	seq_num int,
+	i_num int,
+
+	primary key(r_num, seq_num),
+	foreign key(r_num) references recommand(r_num),
+	foreign key(i_num) references item(i_num)
+);
