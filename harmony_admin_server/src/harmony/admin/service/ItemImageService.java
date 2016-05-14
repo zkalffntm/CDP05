@@ -36,7 +36,7 @@ public class ItemImageService extends AbstractService {
     int itemNum = (int) argument;
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.I_IMAGE + " from " + DbLiteral.ITEM
+    String sql = "select " + DbLiteral.I_IMAGE_FORMAT + " from " + DbLiteral.ITEM
         + " where " + DbLiteral.I_NUM + "=?";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     pstmt.setInt(1, itemNum);
@@ -46,7 +46,7 @@ public class ItemImageService extends AbstractService {
     String imageStream = null;
     if (resultSet.next()) {
       imageStream = ImageManager
-          .readByteStringFromImage(resultSet.getString(DbLiteral.I_IMAGE));
+          .readByteStringFromImage(resultSet.getString(DbLiteral.I_IMAGE_FORMAT));
     }
 
     return imageStream;

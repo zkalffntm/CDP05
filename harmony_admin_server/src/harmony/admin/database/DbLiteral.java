@@ -5,7 +5,7 @@ package harmony.admin.database;
  * 
  * @author Seongjun Park
  * @since 2016/5/11
- * @version 2016/5/11
+ * @version 2016/5/14
  */
 public class DbLiteral {
   public static final String DB_NAME = "harmony_admin_server";
@@ -13,7 +13,7 @@ public class DbLiteral {
   public static final String MAP = "map";
   public static final String M_NUM = "m_num";
   public static final String M_NAME = "m_name";
-  public static final String M_IMAGE = "m_image";
+  public static final String M_IMAGE_FORMAT = "m_image_format";
   
   public static final String BEACON = "beacon";
   public static final String BE_MINOR = "be_minor";
@@ -35,8 +35,8 @@ public class DbLiteral {
   public static final String I_NUM = "i_num";
   public static final String I_TITLE = "i_title";
   public static final String I_ARTIST = "i_artist";
-  public static final String I_IMAGE = "i_image";
   public static final String I_CONTENT = "i_content";
+  public static final String I_IMAGE_FORMAT = "i_image_format";
   
   public static final String RECOMMEND = "recommend";
   public static final String R_NUM = "r_num";

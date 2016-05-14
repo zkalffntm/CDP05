@@ -2,7 +2,6 @@ package harmony.admin.gui;
 
 
 import javax.swing.JFrame;
-import test.PaneTest;
 
 public class GUI_console {
 
@@ -104,12 +103,6 @@ public class GUI_console {
 	public void moveRouteManagePage() {
 		RouteManagePage p = new RouteManagePage();
 		frame.setBounds(0, 0, 1000, 800);
-		frame.setContentPane(p);
-		frame.setVisible(true);
-	}
-
-	public void moveTestPage() {
-		PaneTest p = new PaneTest();
 		frame.setContentPane(p);
 		frame.setVisible(true);
 	}
