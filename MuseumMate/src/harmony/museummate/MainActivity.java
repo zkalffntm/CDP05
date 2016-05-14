@@ -17,31 +17,26 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 
 import android.app.Dialog;
 import android.app.FragmentManager;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceFragment;
-import android.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.view.ContextThemeWrapper;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -72,6 +67,11 @@ public class MainActivity	extends 	AppCompatActivity
 	private String id;
 	private Uri photo;
 	
+	// Museum Information
+	private String noticeUrl = "http://www.google.com/";
+	
+	// User Account
+	
 	// Loading Activity
 	private ProgressBar	progBar;
 	private LoadingHandler handler;
@@ -87,16 +87,15 @@ public class MainActivity	extends 	AppCompatActivity
     private TextView				txtUserName;
     private TextView				txtEmail;
 	
-    String[]		drawerListTitles;
-    private int[]	drawerListIcons = { R.drawable.ic_reader,
-    									R.drawable.ic_thumb_up,
-    									R.drawable.ic_directions_walk,
-    									R.drawable.ic_notifications,
-    									R.drawable.ic_settings };
+    private String[]				drawerListTitles;
+    private static final int[]	drawerListIcons = { R.drawable.ic_reader,
+    												R.drawable.ic_thumb_up,
+    												R.drawable.ic_directions_walk,
+    												R.drawable.ic_notifications,
+    												R.drawable.ic_settings };
 	
 	// Fragments
-    PreferenceFragment fragmentPref;
-    
+    private PreferenceFragment	fragmentPref;
     
     
 	@Override
@@ -121,7 +120,6 @@ public class MainActivity	extends 	AppCompatActivity
                 .build();
 	}
 	
-	
 	@Override
 	protected void onStart()
 	{
@@ -133,7 +131,6 @@ public class MainActivity	extends 	AppCompatActivity
 		}
 	}
 
-	
 	@Override
 	protected void onStop()
 	{
@@ -141,56 +138,28 @@ public class MainActivity	extends 	AppCompatActivity
 		if(client.isConnected()) client.disconnect();
 	}
 
-
-	@Override
-	protected void onResume()
-	{
-		super.onResume();
-	}
-
-	
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState)
 	{
 	    super.onPostCreate(savedInstanceState);
-	    
 	    if(toggleDrawer != null) toggleDrawer.syncState();
 	}
 	
-	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
+
 	{
 	    super.onConfigurationChanged(newConfig);
-	    
 	    if(toggleDrawer != null) toggleDrawer.onConfigurationChanged(newConfig);
 	}
-
-	
-	/*
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu)
-	{
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
-		return true;
-	}
-	
-	
+ 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		int id = item.getItemId();
-		if (id == R.id.action_settings)
-		{
-			return true;
-		}
-		return super.onOptionsItemSelected(item);
+		
+	    Log.i("test", Integer.toString(item.getItemId()));
+	    return toggleDrawer.onOptionsItemSelected(item);
 	}
-	*/
 	
 	/*************************** Google Account Operations ***************************/
 	
@@ -210,7 +179,6 @@ public class MainActivity	extends 	AppCompatActivity
 				getErrorDialog(this, result.getErrorCode(), 0).show();
 		}
 	}
-		
 	
 	@Override
     protected void onActivityResult(int requestCode, int responseCode, Intent intent)
@@ -299,11 +267,29 @@ public class MainActivity	extends 	AppCompatActivity
 		toolbar.setLogo(R.drawable.ic_launcher);
 		actionbar = getSupportActionBar();
 		actionbar.setDisplayUseLogoEnabled(true);
+		actionbar.setDisplayHomeAsUpEnabled(true);
 	    
-		toggleDrawer = new ActionBarDrawerToggle(this, layoutDrawer, toolbar, R.string.app_name, R.string.app_name);
+		toggleDrawer = new ActionBarDrawerToggle(this, layoutDrawer, toolbar, R.string.app_name, R.string.app_name)
+				        {
+							@Override
+				            public void onDrawerClosed(View view)
+				            {
+				                super.onDrawerClosed(view);
+				                invalidateOptionsMenu();
+				                syncState();
+				            }
+							
+							@Override
+				            public void onDrawerOpened(View view)
+							{
+				                super.onDrawerOpened(view);
+				                invalidateOptionsMenu();
+				                syncState();
+				            }
+				        };
 		toggleDrawer.syncState();
 		
-		callNotice();
+		showNotice();
 	}
 	
 	private void loadPhoto(Uri uri)
@@ -330,7 +316,7 @@ public class MainActivity	extends 	AppCompatActivity
 	    	switch(position)
 	    	{
 	    	case 3:
-	    		callNotice();
+	    		showNotice();
 	    		break;
 	    		
 	    	case 4:
@@ -350,15 +336,23 @@ public class MainActivity	extends 	AppCompatActivity
 			*/
 		    // Highlight the selected item, update the title, and close the drawer
 	    	listViewDrawer.setItemChecked(position, true);
-		    //setTitle(mPlanetTitles[position]);
 	    	layoutDrawer.closeDrawer(drawer);
 	    }
 	}
 	
 	
-	/*************************** Notice WebView Caller ***************************/
+	/*************************** Recommanded Fragment Shower ***************************/
 	
-	private void callNotice()
+	
+	/*************************** Recommanded Fragment Shower ***************************/
+	
+	
+	/*************************** Recommanded Fragment Shower ***************************/
+	
+	
+	/*************************** Notice WebView Shower ***************************/
+	
+	private void showNotice()
 	{
 		// Load XML
         final Dialog dialog = new Dialog(this);
@@ -380,7 +374,7 @@ public class MainActivity	extends 	AppCompatActivity
                 return true;
             }
         });
-        wv.loadUrl("http://www.google.com/");
+        wv.loadUrl(noticeUrl);
 
         // Set Exit Button
         btnExit.setOnClickListener(new OnClickListener()
@@ -422,13 +416,7 @@ public class MainActivity	extends 	AppCompatActivity
 	    fragmentManager.beginTransaction()
 	                   .replace(R.id.content_frame, fragmentPref)
 	                   .commit();
+	    actionbar.setTitle(drawerListTitles[4]);
+	    //actionbar..setSelectedNavigationItem(arg0);
 	}
-	
-	/*
-	@Override
-	public void setTitle(CharSequence title)
-	{
-	    mTitle = title;
-	    getActionBar().setTitle(mTitle);
-	}*/
 }
