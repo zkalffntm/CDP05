@@ -82,6 +82,16 @@
 			</LinearLayout>
 			
 		</LinearLayout>
+			
+		<View
+            android:layout_width="match_parent"
+		    android:layout_height="3dp"
+		    android:background="#FFFFFF" />
+		
+		<View
+            android:layout_width="match_parent"
+		    android:layout_height="10dp"
+		    android:background="#460000" />
 	
 		<ListView
 		    android:id="@+id/drawer_list"

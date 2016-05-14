@@ -16,6 +16,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
 import android.app.Dialog;
+import android.app.Fragment;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
@@ -96,6 +97,7 @@ public class MainActivity	extends 	AppCompatActivity
 	
 	// Fragments
     private PreferenceFragment	fragmentPref;
+    private VisitedFragment		fragmentVisited;
     
     
 	@Override
@@ -259,7 +261,7 @@ public class MainActivity	extends 	AppCompatActivity
 	    drawerListTitles = getResources().getStringArray(R.array.drawer_titles);
 	    for(int i = 0; i < 5; i++)
 	    	drawerListItems.add(new ListViewItem(drawerListTitles[i], drawerListIcons[i]));
-	    listViewDrawer.setAdapter(new CustomListViewAdapter(this, R.layout.drawerlist, drawerListItems));
+	    listViewDrawer.setAdapter(new CustomListViewAdapter(this, R.layout.drawer_item, drawerListItems));
 	    listViewDrawer.setOnItemClickListener(new DrawerItemClickListener());
 	    
 	    // Setup Toolbar
@@ -315,6 +317,10 @@ public class MainActivity	extends 	AppCompatActivity
 	    {
 	    	switch(position)
 	    	{
+	    	case 2:
+	    		showVisited();
+	    		break;
+	    		
 	    	case 3:
 	    		showNotice();
 	    		break;
@@ -347,8 +353,25 @@ public class MainActivity	extends 	AppCompatActivity
 	/*************************** Recommanded Fragment Shower ***************************/
 	
 	
-	/*************************** Recommanded Fragment Shower ***************************/
-	
+	/*************************** Visited Fragment Shower ***************************/
+
+	private void showVisited()
+	{
+	    if(fragmentVisited == null)
+	    {
+	    	fragmentVisited = new VisitedFragment();
+	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.visited_sample);
+	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    }
+	    
+	    showFragment(fragmentVisited, 2);
+	}
 	
 	/*************************** Notice WebView Shower ***************************/
 	
@@ -412,11 +435,20 @@ public class MainActivity	extends 	AppCompatActivity
 		    };
 	    }
 	    
+	    showFragment(fragmentPref, 4);
+	}
+	
+	
+	/*************************** Fragment Shower ***************************/
+	
+	private void showFragment(Fragment fragment, int position)
+	{
 	    FragmentManager fragmentManager = getFragmentManager();
 	    fragmentManager.beginTransaction()
-	                   .replace(R.id.content_frame, fragmentPref)
+	                   .replace(R.id.content_frame, fragment)
 	                   .commit();
-	    actionbar.setTitle(drawerListTitles[4]);
-	    //actionbar..setSelectedNavigationItem(arg0);
+	    
+	    actionbar.setTitle(drawerListTitles[position]);
 	}
+	
 }
