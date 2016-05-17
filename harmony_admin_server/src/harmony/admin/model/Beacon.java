@@ -9,7 +9,7 @@ package harmony.admin.model;
 public class Beacon {
   private int minor = 0;
   private String comment = "";
-  private Item item = null;
+  private int itemNum = 0;
 
   public int getMinor() {
     return this.minor;
@@ -27,11 +27,11 @@ public class Beacon {
     this.comment = comment;
   }
 
-  public Item getItem() {
-    return this.item;
+  public int getItemNum() {
+    return this.itemNum;
   }
 
-  public void setItem(Item item) {
-    this.item = item;
+  public void setItemNum(int itemNum) {
+    this.itemNum = itemNum;
   }
 }
