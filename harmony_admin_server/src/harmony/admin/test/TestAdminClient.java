@@ -105,7 +105,7 @@ public class TestAdminClient {
       System.out.println(
           "\t\t" + DbLiteral.I_ARTIST + "  : " + recvValue.getString(1));
       System.out.println(
-          "\t\t" + DbLiteral.I_CONTENT + " : " + recvValue.getString(2));
+          "\t\t" + DbLiteral.I_SIMPLE_CONTENT + " : " + recvValue.getString(2));
     }
   }
 

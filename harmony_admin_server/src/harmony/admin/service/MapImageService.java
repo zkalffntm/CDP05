@@ -36,8 +36,8 @@ public class MapImageService extends AbstractService {
     int mapNum = (int) argument;
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.M_IMAGE_FORMAT + " from " + DbLiteral.MAP
-        + " where " + DbLiteral.M_NUM + "=?";
+    String sql = "select " + DbLiteral.A_IMAGE + " from " + DbLiteral.AREA
+        + " where " + DbLiteral.A_NUM + "=?";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     pstmt.setInt(1, mapNum);
     ResultSet resultSet = pstmt.executeQuery();
@@ -46,7 +46,7 @@ public class MapImageService extends AbstractService {
     String imageStream = null;
     if (resultSet.next()) {
       imageStream = ImageManager
-          .readByteStringFromImage(resultSet.getString(DbLiteral.M_IMAGE_FORMAT));
+          .readByteStringFromImage(resultSet.getString(DbLiteral.A_IMAGE));
     }
 
     return imageStream;

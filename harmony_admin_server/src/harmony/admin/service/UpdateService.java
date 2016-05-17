@@ -62,7 +62,7 @@ public class UpdateService extends AbstractService {
     List<Object[]> objArrList = new ArrayList<Object[]>();
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.I_NUM + ", " + DbLiteral.M_NUM + ", "
+    String sql = "select " + DbLiteral.I_NUM + ", " + DbLiteral.A_NUM + ", "
         + DbLiteral.BL_NUM + " from " + DbLiteral.ITEM;
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     ResultSet resultSet = pstmt.executeQuery();
@@ -71,7 +71,7 @@ public class UpdateService extends AbstractService {
     while (resultSet.next()) {
       Object[] objArr = new Object[3];
       objArr[0] = resultSet.getInt(DbLiteral.I_NUM);
-      objArr[1] = resultSet.getInt(DbLiteral.M_NUM);
+      objArr[1] = resultSet.getInt(DbLiteral.A_NUM);
       objArr[2] = resultSet.getInt(DbLiteral.BL_NUM);
       objArrList.add(objArr);
     }
@@ -90,7 +90,7 @@ public class UpdateService extends AbstractService {
     List<Object[]> objArrList = new ArrayList<Object[]>();
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.M_NUM + ", " + DbLiteral.BL_NUM
+    String sql = "select " + DbLiteral.A_NUM + ", " + DbLiteral.BL_NUM
         + " from " + DbLiteral.BLOCK;
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     ResultSet resultSet = pstmt.executeQuery();
@@ -98,7 +98,7 @@ public class UpdateService extends AbstractService {
     // 결과 레코드를 객체에 저장
     while (resultSet.next()) {
       Object[] objArr = new Object[2];
-      objArr[0] = resultSet.getInt(DbLiteral.M_NUM);
+      objArr[0] = resultSet.getInt(DbLiteral.A_NUM);
       objArr[1] = resultSet.getInt(DbLiteral.BL_NUM);
       objArrList.add(objArr);
     }
@@ -117,7 +117,7 @@ public class UpdateService extends AbstractService {
     List<Object[]> objArrList = new ArrayList<Object[]>();
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.M_NUM + ", " + DbLiteral.BL_NUM + ", "
+    String sql = "select " + DbLiteral.A_NUM + ", " + DbLiteral.BL_NUM + ", "
         + DbLiteral.BE_MINOR + ", " + DbLiteral.RO_RATIO + " from "
         + DbLiteral.RATIO_OFFSET;
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
@@ -126,7 +126,7 @@ public class UpdateService extends AbstractService {
     // 결과 레코드를 객체에 저장
     while (resultSet.next()) {
       Object[] objArr = new Object[4];
-      objArr[0] = resultSet.getInt(DbLiteral.M_NUM);
+      objArr[0] = resultSet.getInt(DbLiteral.A_NUM);
       objArr[1] = resultSet.getInt(DbLiteral.BL_NUM);
       objArr[2] = resultSet.getInt(DbLiteral.BE_MINOR);
       objArr[3] = resultSet.getFloat(DbLiteral.RO_RATIO);
@@ -147,16 +147,16 @@ public class UpdateService extends AbstractService {
     List<Object[]> objArrList = new ArrayList<Object[]>();
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.M_NUM + ", " + DbLiteral.M_NAME
-        + " from " + DbLiteral.MAP;
+    String sql = "select " + DbLiteral.A_NUM + ", " + DbLiteral.A_NAME
+        + " from " + DbLiteral.AREA;
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     ResultSet resultSet = pstmt.executeQuery();
 
     // 결과 레코드를 객체에 저장
     while (resultSet.next()) {
       Object[] objArr = new Object[2];
-      objArr[0] = resultSet.getInt(DbLiteral.M_NUM);
-      objArr[1] = resultSet.getString(DbLiteral.M_NAME);
+      objArr[0] = resultSet.getInt(DbLiteral.A_NUM);
+      objArr[1] = resultSet.getString(DbLiteral.A_NAME);
       objArrList.add(objArr);
     }
 
@@ -205,13 +205,13 @@ public class UpdateService extends AbstractService {
 
     // 쿼리 실행
     String sql = "select " + DbLiteral.R + "." + DbLiteral.R_NUM + ", "
-        + DbLiteral.RI + "." + DbLiteral.SEQ_NUM + ", " + DbLiteral.R + "."
+        + DbLiteral.RI + "." + DbLiteral.RI_SEQ + ", " + DbLiteral.R + "."
         + DbLiteral.R_CONTENT + ", " + DbLiteral.RI + "." + DbLiteral.I_NUM
         + " from " + DbLiteral.RECOMMEND + " as " + DbLiteral.R + ", "
         + DbLiteral.RECOMMEND_ITEM + " as " + DbLiteral.RI + " where "
         + DbLiteral.R + "." + DbLiteral.R_NUM + "=" + DbLiteral.RI + "."
         + DbLiteral.R_NUM + " order by " + DbLiteral.R_NUM + ", "
-        + DbLiteral.SEQ_NUM;
+        + DbLiteral.RI_SEQ;
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     ResultSet resultSet = pstmt.executeQuery();
 

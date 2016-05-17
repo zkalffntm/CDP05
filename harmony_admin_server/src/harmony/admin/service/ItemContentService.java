@@ -36,7 +36,7 @@ public class ItemContentService extends AbstractService {
 
     // 쿼리 실행
     String sql = "select " + DbLiteral.I_TITLE + ", " + DbLiteral.I_ARTIST
-        + ", " + DbLiteral.I_CONTENT + " from " + DbLiteral.ITEM + " where "
+        + ", " + DbLiteral.I_SIMPLE_CONTENT + " from " + DbLiteral.ITEM + " where "
         + DbLiteral.I_NUM + "=?";
     PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
     pstmt.setInt(1, itemNum);
@@ -48,7 +48,7 @@ public class ItemContentService extends AbstractService {
       strings = new String[3];
       strings[0] = resultSet.getString(DbLiteral.I_TITLE);
       strings[1] = resultSet.getString(DbLiteral.I_ARTIST);
-      strings[2] = resultSet.getString(DbLiteral.I_CONTENT);
+      strings[2] = resultSet.getString(DbLiteral.I_SIMPLE_CONTENT);
     }
 
     return strings;
