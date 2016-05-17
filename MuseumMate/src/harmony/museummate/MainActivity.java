@@ -28,13 +28,13 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceFragment;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -58,8 +58,18 @@ public class MainActivity	extends 	AppCompatActivity
 {
 	private static final int SIGN_IN = 0;
 	private static final int RESOLUTION = 1;
-
+	
+	private static final int
+	MAP			= -1,
+	EXHIBITION	= 0,
+	RECOMMANDED = 1,
+	VISITED		= 2,
+	NOTICE		= 3,
+	PREFERENCE	= 4;
+	
+	// Stata Variable
 	private boolean loading;
+	private int curFragmentNum;
 	
 	// Google Account
 	private GoogleApiClient client;
@@ -69,7 +79,8 @@ public class MainActivity	extends 	AppCompatActivity
 	private Uri photo;
 	
 	// Museum Information
-	private String noticeUrl = "http://www.google.com/";
+	private String noticeUrl = "http://www.swgumho.es.kr/upload"
+			+ "/2016/04/19/3f6b73e553b874e14bdec8aabe8a8208.png";
 	
 	// User Account
 	
@@ -87,17 +98,22 @@ public class MainActivity	extends 	AppCompatActivity
     private ImageView				imageUserPhoto;
     private TextView				txtUserName;
     private TextView				txtEmail;
+    private FloatingActionButton	btnFloating;
 	
+    private String					showName = "전시회 이름";
     private String[]				drawerListTitles;
-    private static final int[]	drawerListIcons = { R.drawable.ic_reader,
-    												R.drawable.ic_thumb_up,
-    												R.drawable.ic_directions_walk,
-    												R.drawable.ic_notifications,
-    												R.drawable.ic_settings };
+    private static final int[]		drawerListIcons = { R.drawable.ic_reader,
+    													R.drawable.ic_thumb_up,
+    													R.drawable.ic_directions_walk,
+    													R.drawable.ic_notifications,
+    													R.drawable.ic_settings };
 	
 	// Fragments
     private PreferenceFragment	fragmentPref;
     private VisitedFragment		fragmentVisited;
+    private MapFragment			fragmentMap;
+    private ExhibitionFragment	fragmentExhibition;
+    private RecommandedFragment	fragmentRecommanded;
     
     
 	@Override
@@ -161,6 +177,12 @@ public class MainActivity	extends 	AppCompatActivity
 		
 	    Log.i("test", Integer.toString(item.getItemId()));
 	    return toggleDrawer.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void	onBackPressed()
+	{
+		super.onBackPressed();
 	}
 	
 	/*************************** Google Account Operations ***************************/
@@ -250,6 +272,7 @@ public class MainActivity	extends 	AppCompatActivity
 	    imageUserPhoto 	= (ImageView)findViewById(R.id.user_photo);
 	    txtUserName 	= (TextView)findViewById(R.id.user_name);
 	    txtEmail 		= (TextView)findViewById(R.id.user_email);
+	    btnFloating		= (FloatingActionButton)findViewById(R.id.btn_floating);
 	    
 	    // Update Profile
 	    new Thread() { public void run() { loadPhoto(photo); } }.start();
@@ -289,8 +312,15 @@ public class MainActivity	extends 	AppCompatActivity
 				                syncState();
 				            }
 				        };
+				        
 		toggleDrawer.syncState();
 		
+		// Setup Floating Button
+		btnFloating.setBackgroundColor(0xFF460000);
+		btnFloating.setOnClickListener(new OnClickListener()
+		{ @Override public void onClick(View v) { showMap(); } });
+		
+		showMap();
 		showNotice();
 	}
 	
@@ -317,41 +347,73 @@ public class MainActivity	extends 	AppCompatActivity
 	    {
 	    	switch(position)
 	    	{
-	    	case 2:
-	    		showVisited();
-	    		break;
-	    		
-	    	case 3:
-	    		showNotice();
-	    		break;
-	    		
-	    	case 4:
-	    		showPreference();
-	    		break;
+	    	case 0: showExhibition();	break;
+	    	case 1: showRecommanded();	break;
+	    	case 2: showVisited();		break;
+	    	case 3: showNotice();		break;
+	    	case 4: showPreference();	break;
 	    	}
-			/*
-		    // Create a new fragment and specify the planet to show based on position
-		    Fragment fragment = new PlanetFragment();
-		    fragment.setArguments(args);
-
-		    // Insert the fragment by replacing any existing fragment
-		    FragmentManager fragmentManager = getFragmentManager();
-		    fragmentManager.beginTransaction()
-		                   .replace(R.id.content_frame, fragment)
-		                   .commit();
-			*/
-		    // Highlight the selected item, update the title, and close the drawer
+	    	
 	    	listViewDrawer.setItemChecked(position, true);
 	    	layoutDrawer.closeDrawer(drawer);
 	    }
 	}
+
 	
+	/*************************** Map Fragment Shower ***************************/
+	
+	private void showMap()
+	{
+	    if(fragmentMap == null)
+	    {
+	    	fragmentMap = new MapFragment();
+	    }
+	    
+	    showFragment(fragmentMap, MAP);
+	}
+	
+	/*************************** Exhibition Fragment Shower ***************************/
+
+	private void showExhibition()
+	{
+	    if(fragmentExhibition == null)
+	    {
+	    	fragmentExhibition = new ExhibitionFragment();
+	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.exhibition_sample);
+
+	    	fragmentExhibition.addItem(path, "작품1", "아티스트", "간략한 설명");
+	    	fragmentExhibition.addItem(path, "작품2", "아티스트", "간략한 설명");
+	    	fragmentExhibition.addItem(path, "작품3", "아티스트", "간략한 설명");
+	    	fragmentExhibition.addItem(path, "작품4", "아티스트", "간략한 설명");
+	    	fragmentExhibition.addItem(path, "작품5", "아티스트", "간략한 설명");
+	    	fragmentExhibition.addItem(path, "작품6", "아티스트", "간략한 설명");
+	    	fragmentExhibition.addItem(path, "작품7", "아티스트", "간략한 설명");
+	    	fragmentExhibition.addItem(path, "작품8", "아티스트", "간략한 설명");
+	    }
+	    
+	    showFragment(fragmentExhibition, EXHIBITION);
+	}
 	
 	/*************************** Recommanded Fragment Shower ***************************/
-	
-	
-	/*************************** Recommanded Fragment Shower ***************************/
-	
+
+	private void showRecommanded()
+	{
+	    if(fragmentRecommanded == null)
+	    {
+	    	fragmentRecommanded = new RecommandedFragment();
+	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.recommanded_sample);
+
+	    	fragmentRecommanded.addItem(path, "추천코스1", "간략한 설명");
+	    	fragmentRecommanded.addItem(path, "추천코스2", "간략한 설명");
+	    	fragmentRecommanded.addItem(path, "추천코스3", "간략한 설명");
+	    	fragmentRecommanded.addItem(path, "추천코스4", "간략한 설명");
+	    	fragmentRecommanded.addItem(path, "추천코스5", "간략한 설명");
+	    	fragmentRecommanded.addItem(path, "추천코스6", "간략한 설명");
+	    	fragmentRecommanded.addItem(path, "추천코스7", "간략한 설명");
+	    }
+	    
+	    showFragment(fragmentRecommanded, RECOMMANDED);
+	}
 	
 	/*************************** Visited Fragment Shower ***************************/
 
@@ -361,16 +423,16 @@ public class MainActivity	extends 	AppCompatActivity
 	    {
 	    	fragmentVisited = new VisitedFragment();
 	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.visited_sample);
-	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관 이름", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관1", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관2", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관3", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관4", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관5", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관6", "전시회 이름", "기간");
+	    	fragmentVisited.addItem(path, "전시관7", "전시회 이름", "기간");
 	    }
 	    
-	    showFragment(fragmentVisited, 2);
+	    showFragment(fragmentVisited, VISITED);
 	}
 	
 	/*************************** Notice WebView Shower ***************************/
@@ -381,7 +443,7 @@ public class MainActivity	extends 	AppCompatActivity
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.setContentView(R.layout.notice);
-        WebView wv 			= (WebView)dialog.findViewById(R.id.webview);
+        WebView wv = (WebView)dialog.findViewById(R.id.webview);
         ImageButton btnExit	= (ImageButton)dialog.findViewById(R.id.btn_exit);
         
         // Set WebView
@@ -435,7 +497,7 @@ public class MainActivity	extends 	AppCompatActivity
 		    };
 	    }
 	    
-	    showFragment(fragmentPref, 4);
+	    showFragment(fragmentPref, PREFERENCE);
 	}
 	
 	
@@ -443,12 +505,17 @@ public class MainActivity	extends 	AppCompatActivity
 	
 	private void showFragment(Fragment fragment, int position)
 	{
+		if(position == curFragmentNum) return;
+		
 	    FragmentManager fragmentManager = getFragmentManager();
 	    fragmentManager.beginTransaction()
 	                   .replace(R.id.content_frame, fragment)
 	                   .commit();
 	    
-	    actionbar.setTitle(drawerListTitles[position]);
+	    if(position == -1) actionbar.setTitle(showName);
+	    else actionbar.setTitle(drawerListTitles[position]);
+	    
+	    curFragmentNum = position;
 	}
 	
 }

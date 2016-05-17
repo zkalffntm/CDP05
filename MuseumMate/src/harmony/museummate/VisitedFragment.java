@@ -40,7 +40,7 @@ public class VisitedFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-    	View v = inflater.inflate(R.layout.visited, container, false);
+    	View v = inflater.inflate(R.layout.recycler_view, container, false);
     	layoutManager = new LinearLayoutManager(this.getActivity());
     	recyclerView = (RecyclerView)v.findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
