@@ -19,6 +19,31 @@ import harmony.admin.model.ShareBlock;
  */
 public class ShareBlockController {
 
+  public static ShareBlock[] getShareBlocks() throws SQLException {
+
+    // 레코드 조회 쿼리 실행
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select * from " + DbLiteral.SHARE_BLOCK + " order by "
+        + DbLiteral.SB_NUM;
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    // 레코드 하나씩 리스트에 추가
+    List<ShareBlock> shareBlockList = new ArrayList<ShareBlock>();
+    while (resultSet.next()) {
+      ShareBlock shareBlock = new ShareBlock();
+      shareBlock.setNum(resultSet.getInt(DbLiteral.SB_NUM));
+      shareBlock.setBlockNum1(resultSet.getInt(DbLiteral.BL_NUM1));
+      shareBlock.setBlockNum2(resultSet.getInt(DbLiteral.BL_NUM2));
+      shareBlockList.add(shareBlock);
+    }
+
+    // 타입 변형 : List<> -> Object[]
+    return (ShareBlock[]) shareBlockList
+        .toArray(new ShareBlock[shareBlockList.size()]);
+    
+  }
+  
   public static ShareBlock[] getShareBlocksByBlock(int blockNum)
       throws SQLException {
 

@@ -97,7 +97,7 @@ public class AreaController {
    * @return
    * @throws SQLException
    */
-  private static Area getAreaByNum(int num) throws SQLException {
+  public static Area getAreaByNum(int num) throws SQLException {
 
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();

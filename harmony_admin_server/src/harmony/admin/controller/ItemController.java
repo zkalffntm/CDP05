@@ -19,7 +19,7 @@ import harmony.admin.model.Item;
  */
 public class ItemController {
 
-  private static Item[] getItems() throws SQLException {
+  public static Item[] getItems() throws SQLException {
 
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();

@@ -36,7 +36,7 @@ public class Block {
     this.itemNum = itemNum;
   }
 
-  public int getArea() {
+  public int getAreaNum() {
     return this.areaNum;
   }
 

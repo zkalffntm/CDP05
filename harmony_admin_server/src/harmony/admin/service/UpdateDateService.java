@@ -26,14 +26,12 @@ public class UpdateDateService extends AbstractService {
    * @return long = 업데이트 날짜 값
    * @throws SQLException
    *           SQL 관련 예외
-   * @throws JSONException
-   *           JSON 관련 예외
    * @throws IOException
    *           IO 관련 예외
    */
   @Override
-  protected Object doQuery(Object argument)
-      throws SQLException, JSONException, IOException {
+  public Object doService(Object argument)
+      throws SQLException, IOException {
     // TODO Auto-generated method stub
     return Long.parseLong(new DatFileManager().getData(DEFAULT_UPDATE_DATE_KEY));
   }

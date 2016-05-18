@@ -1,13 +1,10 @@
 package harmony.admin.service;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.json.JSONException;
-
-import harmony.admin.database.DbLiteral;
+import harmony.admin.controller.AreaController;
+import harmony.admin.model.Area;
 import harmony.common.AbstractService;
 import harmony.common.ImageManager;
 
@@ -17,7 +14,7 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/8
- * @version 2016/5/8
+ * @version 2016/5/18
  */
 public class MapImageService extends AbstractService {
 
@@ -27,26 +24,21 @@ public class MapImageService extends AbstractService {
    * @param argument
    *          지도 번호를 담은 int
    * @return String = "이미지 파일 스트림"
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
    */
   @Override
-  protected Object doQuery(Object argument)
-      throws SQLException, JSONException, IOException {
-
-    // 지도 번호
-    int mapNum = (int) argument;
+  public Object doService(Object argument) throws SQLException, IOException {
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.A_IMAGE + " from " + DbLiteral.AREA
-        + " where " + DbLiteral.A_NUM + "=?";
-    PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
-    pstmt.setInt(1, mapNum);
-    ResultSet resultSet = pstmt.executeQuery();
+    Area area = AreaController.getAreaByNum((int) argument);
 
     // 결과 레코드를 객체에 저장
-    String imageStream = null;
-    if (resultSet.next()) {
-      imageStream = ImageManager
-          .readByteStringFromImage(resultSet.getString(DbLiteral.A_IMAGE));
+    String imageStream = "";
+    if (area != null) {
+      imageStream = ImageManager.readByteStringFromImage(area.getImage());
     }
 
     return imageStream;

@@ -19,6 +19,31 @@ import harmony.admin.model.Block;
  */
 public class BlockController {
 
+  public static Block[] getBlocks() throws SQLException {
+
+    // 레코드 조회 쿼리 실행
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select * from " + DbLiteral.BLOCK + " order by "
+        + DbLiteral.BL_NUM + ", " + DbLiteral.BL_SEQ;
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    // 레코드 하나씩 리스트에 추가
+    List<Block> blockList = new ArrayList<Block>();
+    while (resultSet.next()) {
+      Block block = new Block();
+      block.setNum(resultSet.getInt(DbLiteral.BL_NUM));
+      block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
+      block.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      block.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+      blockList.add(block);
+    }
+
+    // 타입 변형 : List<> -> Object[]
+    return (Block[]) blockList.toArray(new Block[blockList.size()]);
+
+  }
+
   private static Block[] getBlocksByItemNum(int itemNum) throws SQLException {
 
     // 레코드 조회 쿼리 실행

@@ -63,7 +63,8 @@ public class ItemImageController {
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();
     String sql = "select * from " + DbLiteral.ITEM_IMAGE + " where "
-        + DbLiteral.I_NUM + "=? order by " + DbLiteral.II_NUM;
+        + DbLiteral.I_NUM + "=? order by " + DbLiteral.II_NUM + ", "
+        + DbLiteral.II_SEQ;
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, itemNum);
     ResultSet resultSet = pstmt.executeQuery();

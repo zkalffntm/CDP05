@@ -3,8 +3,6 @@ package harmony.admin.service;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import org.json.JSONException;
-
 import harmony.common.AbstractService;
 import harmony.common.DatFileManager;
 
@@ -26,14 +24,11 @@ public class NoitceService extends AbstractService {
    * @return String = "URL"
    * @throws SQLException
    *           SQL 관련 예외
-   * @throws JSONException
-   *           JSON 관련 예외
    * @throws IOException
    *           IO 관련 예외
    */
   @Override
-  protected Object doQuery(Object argument)
-      throws SQLException, JSONException, IOException {
+  public Object doService(Object argument) throws SQLException, IOException {
     return new DatFileManager().getData(DEFAULT_NOTICE_KEY);
   }
 }
