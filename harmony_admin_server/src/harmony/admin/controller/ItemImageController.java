@@ -22,6 +22,37 @@ public class ItemImageController {
 
   /**
    * 
+   * @param num
+   * @return
+   * @throws SQLException
+   */
+  public static ItemImage getItemImageByNum(int num) throws SQLException {
+
+    // 레코드 조회 쿼리 실행
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select * from " + DbLiteral.ITEM_IMAGE + " where "
+        + DbLiteral.II_NUM + "=?";
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.setInt(1, num);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    // 반환
+    ItemImage itemImage = null;
+    if (resultSet.next()) {
+      itemImage = new ItemImage();
+      itemImage.setNum(num);
+      itemImage.setSeq(resultSet.getInt(DbLiteral.II_SEQ));
+      itemImage.setImage(resultSet.getString(DbLiteral.II_IMAGE));
+      itemImage.setMain(resultSet.getBoolean(DbLiteral.II_MAIN));
+      itemImage.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      itemImage.setImageEdited(false);
+    }
+
+    return itemImage;
+  }
+
+  /**
+   * 
    * @param itemNum
    * @return
    * @throws SQLException

@@ -1,13 +1,10 @@
 package harmony.admin.service;
 
 import java.io.IOException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import org.json.JSONException;
-
-import harmony.admin.database.DbLiteral;
+import harmony.admin.controller.ItemController;
+import harmony.admin.model.Item;
 import harmony.common.AbstractService;
 
 /**
@@ -21,34 +18,29 @@ import harmony.common.AbstractService;
 public class ItemContentService extends AbstractService {
 
   /**
-   * sql select문을 이용하여 전시물 명, 작가, 설명을 찾음
+   * 전시물명, 작가, 설명을 제공
    * 
    * @param argument
    *          전시물 번호를 담은 int
    * @return String[] = {"작품명", "작가", 설명 내용"}
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
    */
   @Override
-  protected Object doQuery(Object argument)
-      throws SQLException, JSONException, IOException {
-
-    // 전시물 번호
-    int itemNum = (int) argument;
+  public Object doService(Object argument) throws SQLException, IOException {
 
     // 쿼리 실행
-    String sql = "select " + DbLiteral.I_TITLE + ", " + DbLiteral.I_ARTIST
-        + ", " + DbLiteral.I_SIMPLE_CONTENT + " from " + DbLiteral.ITEM + " where "
-        + DbLiteral.I_NUM + "=?";
-    PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
-    pstmt.setInt(1, itemNum);
-    ResultSet resultSet = pstmt.executeQuery();
+    Item item = ItemController.getItemByNum((int) argument);
 
     // 결과 레코드를 객체에 저장
     String[] strings = null;
-    if (resultSet.next()) {
+    if (item != null) {
       strings = new String[3];
-      strings[0] = resultSet.getString(DbLiteral.I_TITLE);
-      strings[1] = resultSet.getString(DbLiteral.I_ARTIST);
-      strings[2] = resultSet.getString(DbLiteral.I_SIMPLE_CONTENT);
+      strings[0] = item.getTitle();
+      strings[1] = item.getArtist();
+      strings[2] = item.getDetailContent();
     }
 
     return strings;

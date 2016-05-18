@@ -48,6 +48,38 @@ public class ItemController {
 
   /**
    * 
+   * @param num
+   * @return
+   * @throws SQLException 
+   */
+  public static Item getItemByNum(int num) throws SQLException {
+
+    // 레코드 조회 쿼리 실행
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select * from " + DbLiteral.ITEM + " where " + DbLiteral.I_NUM
+        + "=?";
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.setInt(1, num);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    // 반환
+    Item item = null;
+    if(resultSet.next()) {
+      item = new Item();
+      item.setNum(num);
+      item.setTitle(resultSet.getString(DbLiteral.I_TITLE));
+      item.setArtist(resultSet.getString(DbLiteral.I_ARTIST));
+      item.setSimpleContent(resultSet.getString(DbLiteral.I_SIMPLE_CONTENT));
+      item.setDetailContent(resultSet.getString(DbLiteral.I_DETAIL_CONTENT));
+      item.setSize(resultSet.getString(DbLiteral.I_SIZE));
+      item.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+    }
+
+    return item;    
+  }
+
+  /**
+   * 
    * @param areaNum
    * @return
    * @throws SQLException
