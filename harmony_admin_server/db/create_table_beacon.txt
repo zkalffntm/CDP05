@@ -1,6 +1,0 @@
-create table beacon (
-	be_minor int,
-	be_comment varchar(30),
-
-	primary key(be_minor)
-);

@@ -1,6 +1,0 @@
-create table recommand (
-	r_num int,
-	r_content varchar(256),
-
-	primary key(r_num)
-);

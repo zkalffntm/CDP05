@@ -5,7 +5,7 @@ package harmony.admin.database;
  * 
  * @author Seongjun Park
  * @since 2016/5/11
- * @version 2016/5/17
+ * @version 2016/5/18
  */
 public class DbLiteral {
   public static final String DB_NAME = "harmony_admin_server";
@@ -21,6 +21,7 @@ public class DbLiteral {
 
   public static final String BLOCK = "block";
   public static final String BL_NUM = "bl_num";
+  public static final String BL_SEQ = "bl_seq";
 
   public static final String RATIO_OFFSET = "ratio_offset";
   public static final String RO_RATIO = "ro_ratio";

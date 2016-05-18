@@ -1,7 +1,0 @@
-create table map (
-	m_num int,
-	m_name varchar(20),
-	m_image varchar(256),
-
-	primary key(m_num)
-);

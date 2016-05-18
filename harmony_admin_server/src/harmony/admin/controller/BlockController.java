@@ -15,7 +15,7 @@ import harmony.admin.model.Block;
  * 
  * @author Seongjun Park
  * @since 2016/5/17
- * @version 2016/5/17
+ * @version 2016/5/18
  */
 public class BlockController {
 
@@ -34,6 +34,7 @@ public class BlockController {
     while (resultSet.next()) {
       Block block = new Block();
       block.setNum(resultSet.getInt(DbLiteral.BL_NUM));
+      block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
       block.setItemNum(itemNum);
       block.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
       blockList.add(block);
@@ -58,6 +59,7 @@ public class BlockController {
     while (resultSet.next()) {
       Block block = new Block();
       block.setNum(resultSet.getInt(DbLiteral.BL_NUM));
+      block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
       block.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
       block.setAreaNum(areaNum);
       blockList.add(block);

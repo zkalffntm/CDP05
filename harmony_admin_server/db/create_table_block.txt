@@ -1,7 +1,0 @@
-create table block (
-	m_num int,
-	bl_num int,
-
-	primary key(m_num, bl_num),
-	foreign key(m_num) references map(m_num)
-);
