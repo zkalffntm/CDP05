@@ -12,6 +12,7 @@ import java.util.List;
 import harmony.admin.database.DbConnector;
 import harmony.admin.database.DbLiteral;
 import harmony.admin.model.Recommend;
+import harmony.admin.model.RecommendItem;
 import harmony.common.ImageManager;
 
 /**
@@ -19,13 +20,20 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/14
- * @version 2016/5/14
+ * @version 2016/5/25
  *
  */
 public class RecommendController {
   private static final String RECOMMEND_IMAGE_DIR = "image" + File.separator
       + "recommend";
 
+  /**
+   * 추천경로 레코드들을 가져옴. 추천경로 목록을 볼때 호출을 함.
+   * 
+   * @return Recommend[]
+   * @throws SQLException
+   *           SQL 관련 예외
+   */
   public static Recommend[] getRecommends() throws SQLException {
 
     // 레코드 조회 쿼리 실행
@@ -52,25 +60,40 @@ public class RecommendController {
   }
 
   /**
+   * 추천경로와 그 추천 전시물들을 레코드로 저장함.
    * 
    * @param recommends
+   *          추천경로 객체 배열
+   * @param recommendItems
+   *          추천경로별 전시물 객체 2차 배열
+   * @throws IOException
+   *           IO 관련 예외
    * @throws SQLException
-   * @throws IOException 
+   *           SQL 관련 예외
    */
-  public static void saveRecommend(Recommend... recommends)
-      throws SQLException, IOException {
-  
+  public static void saveRecommends(Recommend[] recommends,
+      RecommendItem[][] recommendItems) throws IOException, SQLException {
+
     // 삽입 또는 갱신
-    for (Recommend recommend : recommends) {
-  
+    for (int i = 0; i < recommends.length; i++) {
+
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
-      if (recommend.getNum() == 0) {
-        insertRecommend(recommend);
+      int recommendNum = recommends[i].getNum();
+      if (recommendNum == 0) {
+        recommendNum = insertRecommend(recommends[i]);
       } else {
-        updateRecommend(recommend);
+        updateRecommend(recommends[i]);
+        RecommendItemController.deleteRecommendItemByRecommendNum(recommendNum);
+      }
+
+      // 하위 레코드 추가
+      for (int j = 0; j < recommendItems[i].length; j++) {
+        recommendItems[i][j].setRecommendNum(recommendNum);
+        recommendItems[i][j].setSeq(j + 1);
+        RecommendItemController.insertRecommendItem(recommendItems[i][j]);
       }
     }
-  
+
     // 삭제
     Recommend[] resultRecommends = getRecommends();
     for (Recommend resultRecommend : resultRecommends) {
@@ -81,7 +104,7 @@ public class RecommendController {
           break;
         }
       }
-  
+
       // 병합된 레코드들(result) 중 입력 레코드에 없는 것이면 삭제
       if (!exists) {
         deleteRecommendByNum(resultRecommend.getNum());
@@ -112,7 +135,7 @@ public class RecommendController {
     return recommend;
   }
 
-  private static void insertRecommend(Recommend recommend)
+  private static int insertRecommend(Recommend recommend)
       throws IOException, SQLException {
 
     // 이미지 파일 업로드
@@ -124,9 +147,10 @@ public class RecommendController {
     dbConnection.setAutoCommit(false);
 
     // 레코드 삽입 쿼리 실행
+    int num = getMaxRecommendNum() + 1;
     String sql = "insert into " + DbLiteral.RECOMMEND + " values (?, ?, ?)";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, getMaxRecommendNum() + 1);
+    pstmt.setInt(1, num);
     pstmt.setString(2, recommend.getContent());
     pstmt.setString(3, recommend.getImage());
     pstmt.executeUpdate();
@@ -134,6 +158,8 @@ public class RecommendController {
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);
+
+    return num;
   }
 
   private static void updateRecommend(Recommend recommend)
@@ -180,28 +206,28 @@ public class RecommendController {
     dbConnection.setAutoCommit(false);
 
     // 레코드 삭제 쿼리 실행
-    String sql = "delete from " + DbLiteral.RECOMMEND + " where " + DbLiteral.R_NUM
-        + "=?";
+    String sql = "delete from " + DbLiteral.RECOMMEND + " where "
+        + DbLiteral.R_NUM + "=?";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, num);
     pstmt.executeUpdate();
 
     // 커밋
     dbConnection.commit();
-    dbConnection.setAutoCommit(prevAutoCommit);    
+    dbConnection.setAutoCommit(prevAutoCommit);
   }
 
   private static String uploadRecommendImageFile(String imageSource)
       throws IOException {
-  
+
     // 스킵 조건
     if ("".equals(imageSource)) {
       return imageSource;
     }
-  
+
     // 디렉토리 경로 확보
     new File(RECOMMEND_IMAGE_DIR).mkdirs();
-  
+
     // 이미지 파일명 중복 체크 후 최종 저장될 경로 지정
     String imageName = new File(imageSource).getName();
     int indexOfDot = imageName.lastIndexOf('.');
@@ -214,11 +240,11 @@ public class RecommendController {
       imageName = prefix + "_" + (i++) + suffix;
     }
     String imageDest = RECOMMEND_IMAGE_DIR + File.separator + imageName;
-  
+
     // 이미지 파일 업로드
     ImageManager.writeImageFromByteString(
         ImageManager.readByteStringFromImage(imageSource), imageDest);
-  
+
     // 업로드된 이미지 파일명 반환
     return imageDest;
   }

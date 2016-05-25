@@ -15,10 +15,19 @@ import harmony.admin.model.RecommendItem;
  * 
  * @author Seongjun Park
  * @since 2016/5/17
- * @version 2016/5/17
+ * @version 2016/5/25
  */
 public class RecommendItemController {
 
+  /**
+   * 추천경로별 전시물 레코드들을 가져옴. 추천목록 보기 시 호출함.
+   * 
+   * @param recommendNum
+   *          추천경로 번호
+   * @return RecommendItem[]
+   * @throws SQLException
+   *           SQL 관련 예외
+   */
   public static RecommendItem[] getRecommendItemsByRecommendNum(
       int recommendNum) throws SQLException {
 
@@ -48,6 +57,32 @@ public class RecommendItemController {
 
   }
 
+  static int insertRecommendItem(RecommendItem recommendItem)
+      throws SQLException {
+
+    // 자동 커밋 일시 해제
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    boolean prevAutoCommit = dbConnection.getAutoCommit();
+    dbConnection.setAutoCommit(false);
+
+    // 레코드 삽입 쿼리 실행
+    int num = getMaxRecommendItemNum() + 1;
+    String sql = "insert into " + DbLiteral.RECOMMEND_ITEM
+        + " values (?, ?, ?, ?)";
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.setInt(1, num);
+    pstmt.setInt(2, recommendItem.getSeq());
+    pstmt.setInt(3, recommendItem.getRecommendNum());
+    pstmt.setInt(4, recommendItem.getItemNum());
+    pstmt.executeUpdate();
+
+    // 커밋
+    dbConnection.commit();
+    dbConnection.setAutoCommit(prevAutoCommit);
+
+    return num;
+  }
+
   static void deleteRecommendItemByItemNum(int itemNum) throws SQLException {
 
     // 자동 커밋 일시 해제
@@ -67,7 +102,7 @@ public class RecommendItemController {
     dbConnection.setAutoCommit(prevAutoCommit);
   }
 
-  public static void deleteRecommendItemByRecommendNum(int recommendNum)
+  static void deleteRecommendItemByRecommendNum(int recommendNum)
       throws SQLException {
 
     // 자동 커밋 일시 해제
@@ -85,5 +120,20 @@ public class RecommendItemController {
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);
+  }
+
+  private static int getMaxRecommendItemNum() throws SQLException {
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select max(" + DbLiteral.RI_NUM + ") as " + DbLiteral.RI_NUM
+        + " from " + DbLiteral.RECOMMEND_ITEM;
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    int maxNum = 0;
+    if (resultSet.next()) {
+      maxNum = resultSet.getInt(DbLiteral.RI_NUM);
+    }
+
+    return maxNum;
   }
 }
