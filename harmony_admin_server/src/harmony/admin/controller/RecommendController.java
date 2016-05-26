@@ -20,17 +20,19 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/14
- * @version 2016/5/25
+ * @version 2016/5/26
  *
  */
 public class RecommendController {
+
+  /** 추천코스 이미지 파일 저장 디렉토리 */
   private static final String RECOMMEND_IMAGE_DIR = "image" + File.separator
       + "recommend";
 
   /**
    * 추천경로 레코드들을 가져옴. 추천경로 목록을 볼때 호출을 함.
    * 
-   * @return Recommend[]
+   * @return Recommend 객체 배열
    * @throws SQLException
    *           SQL 관련 예외
    */
@@ -88,8 +90,8 @@ public class RecommendController {
 
       // 하위 레코드 추가
       for (int j = 0; j < recommendItems[i].length; j++) {
-        recommendItems[i][j].setRecommendNum(recommendNum);
         recommendItems[i][j].setSeq(j + 1);
+        recommendItems[i][j].setRecommendNum(recommendNum);
         RecommendItemController.insertRecommendItem(recommendItems[i][j]);
       }
     }
