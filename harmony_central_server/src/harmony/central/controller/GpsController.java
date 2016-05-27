@@ -10,6 +10,7 @@ import java.util.List;
 import harmony.central.database.DbConnector;
 import harmony.central.database.DbLiteral;
 import harmony.central.model.Gps;
+import harmony.common.DistanceManager;
 
 /**
  * 
@@ -51,7 +52,8 @@ public class GpsController {
     // coverage에 충족하는 gps 레코드만을 선별
     Gps[] gpss = getGpss();
     for (Gps gps : gpss) {
-      if (gps.getX() == x && gps.getY() == y) {
+      if (((int) DistanceManager.distance(x, y, gps.getX(), gps.getY())) <= gps
+          .getCoverage()) {
         filteredGpsList.add(gps);
       }
     }

@@ -13,6 +13,7 @@ import harmony.central.service.ProviderImageService;
 import harmony.central.service.ProviderListService;
 import harmony.common.AbstractClientThread;
 import harmony.common.AbstractServerThread;
+import harmony.common.PacketLiteral;
 
 /**
  * 중앙 서버의 클라이언트 스레드 클래스.<br>
@@ -41,17 +42,17 @@ public class CentralClientThread extends AbstractClientThread {
   @Override
   protected void process(JSONObject recvJson)
       throws JSONException, SQLException, Exception {
-    String key = recvJson.getString("key");
-    Object value = recvJson.get("value");
+    String key = recvJson.getString(PacketLiteral.KEY);
+    Object value = recvJson.get(PacketLiteral.VALUE);
 
     switch (key) {
-    case "req_login_admin":
+    case PacketLiteral.REQ_LOGIN_ADMIN:
       this.doLoginAdminService(value);
       break;
-    case "req_provider_image":
+    case PacketLiteral.REQ_PROVIDER_IMAGE:
       this.doProviderImageService(value);
       break;
-    case "req_provider_list":
+    case PacketLiteral.REQ_PROVIDER_LIST:
       this.doProviderListService(value);
       break;
     default:
@@ -66,8 +67,9 @@ public class CentralClientThread extends AbstractClientThread {
 
     jsonArray.put(this.getClientSocket().getInetAddress().getHostAddress());
 
-    sendJson.put("key", "res_login_admin");
-    sendJson.put("value", new LoginAdminService().doService(jsonArray));
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_LOGIN_ADMIN);
+    sendJson.put(PacketLiteral.VALUE,
+        new LoginAdminService().doService(jsonArray));
 
     this.getPrintWriter().println(sendJson.toString());
     this.getPrintWriter().flush();
@@ -84,8 +86,9 @@ public class CentralClientThread extends AbstractClientThread {
       throws JSONException, SQLException, IOException {
     JSONObject sendJson = new JSONObject();
 
-    sendJson.put("key", "res_provider_image");
-    sendJson.put("value", new ProviderImageService().doService(value));
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.REQ_PROVIDER_IMAGE);
+    sendJson.put(PacketLiteral.VALUE,
+        new ProviderImageService().doService(value));
 
     this.getPrintWriter().println(sendJson.toString());
     this.getPrintWriter().flush();
@@ -108,8 +111,9 @@ public class CentralClientThread extends AbstractClientThread {
       throws JSONException, SQLException, IOException {
     JSONObject sendJson = new JSONObject();
 
-    sendJson.put("key", "res_provider_list");
-    sendJson.put("value", new ProviderListService().doService(value));
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.REQ_PROVIDER_LIST);
+    sendJson.put(PacketLiteral.VALUE,
+        new ProviderListService().doService(value));
 
     this.getPrintWriter().println(sendJson.toString());
     this.getPrintWriter().flush();
