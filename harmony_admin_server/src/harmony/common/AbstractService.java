@@ -3,12 +3,14 @@ package harmony.common;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.json.JSONException;
+
 /**
  * 각 종 서비스를 수행하는 클래스들의 추상 클래스. 상속하여 doService(Object)를 구현하여야 함.
  * 
  * @author Seongjun Park
  * @since 2016/3/22
- * @version 2016/5/18
+ * @version 2016/5/27
  */
 public abstract class AbstractService {
 
@@ -21,7 +23,9 @@ public abstract class AbstractService {
    *           SQL 관련 예외
    * @throws IOException
    *           IO 관련 예외
+   * @throws JSONException
+   *           JSON 관련 예외
    */
   public abstract Object doService(Object argument)
-      throws SQLException, IOException;
+      throws SQLException, IOException, JSONException;
 }

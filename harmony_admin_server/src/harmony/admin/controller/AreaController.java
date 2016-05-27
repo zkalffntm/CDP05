@@ -12,6 +12,9 @@ import java.util.List;
 import harmony.admin.database.DbConnector;
 import harmony.admin.database.DbLiteral;
 import harmony.admin.model.Area;
+import harmony.admin.model.Block;
+import harmony.admin.model.Item;
+import harmony.admin.model.ItemImage;
 import harmony.common.ImageManager;
 
 /**
@@ -19,7 +22,7 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/14
- * @version 2016/5/14
+ * @version 2016/5/26
  */
 public class AreaController {
   private static final String AREA_IMAGE_DIR = "image" + File.separator
@@ -54,31 +57,106 @@ public class AreaController {
     return (Area[]) areaList.toArray(new Area[areaList.size()]);
   }
 
-  /**
-   * 
-   * @param areas
-   * @throws SQLException
-   * @throws IOException
-   */
-  public static void saveAreas(Area... areas) throws SQLException, IOException {
+  public static void saveAreas(Area[] areas, Item[][] items,
+      ItemImage[][][] itemImages) throws SQLException, IOException {
 
     // 삽입 또는 갱신
-    for (Area area : areas) {
+    for (int i = 0; i < areas.length; i++) {
 
-      // 번호가 0인 경우 이미지 업로드 후 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
-      if (area.getNum() == 0) {
-        insertArea(area);
+      // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
+      if (areas[i].getNum() == 0) {
+        int areaNum = insertArea(areas[i]);
+        areas[i].setNum(areaNum);
+        for (int j = 0; j < items[i].length; j++) {
+          items[i][j].setAreaNum(areaNum);
+        }
       } else {
-        updateArea(area);
+        updateArea(areas[i]);
       }
     }
+
+    // 1차원화 후 하위 레코드 추가
+    List<Item> itemList = new ArrayList<Item>();
+    for (int i = 0; i < items.length; i++) {
+      for (int j = 0; j < items[i].length; j++) {
+        itemList.add(items[i][j]);
+      }
+    }
+    List<ItemImage[]> itemImagesList = new ArrayList<ItemImage[]>();
+    for (int i = 0; i < itemImages.length; i++) {
+      for (int j = 0; j < itemImages[i].length; j++) {
+        itemImagesList.add(itemImages[i][j]);
+      }
+    }
+    ItemController.saveItems(
+        (Item[]) itemList.toArray(new Item[itemList.size()]),
+        (ItemImage[][]) itemImagesList
+            .toArray(new ItemImage[itemImagesList.size()][]));
 
     // 삭제
     Area[] resultAreas = getAreas();
     for (Area resultArea : resultAreas) {
       boolean exists = false;
-      for (Area area : areas) {
-        if (resultArea.getNum() == area.getNum()) {
+      for (Area recommend : areas) {
+        if (resultArea.getNum() == recommend.getNum()) {
+          exists = true;
+          break;
+        }
+      }
+
+      // 병합된 레코드들(result) 중 입력 레코드에 없는 것이면 삭제
+      if (!exists) {
+        deleteAreaByNum(resultArea.getNum());
+      }
+    }
+  }
+
+  public static void saveAreas(Area[] areas, Block[][] blocks,
+      Block[][][] blockPairs) throws SQLException, IOException {
+
+    // 삽입 또는 갱신
+    for (int i = 0; i < areas.length; i++) {
+
+      // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
+      if (areas[i].getNum() == 0) {
+        int areaNum = insertArea(areas[i]);
+        areas[i].setNum(areaNum);
+        for (int j = 0; j < blocks[i].length; j++) {
+          blocks[i][j].setAreaNum(areaNum);
+        }
+        for (int j = 0; j < blockPairs[i].length; j++) {
+          blockPairs[i][j][0].setAreaNum(areaNum);
+          blockPairs[i][j][1].setAreaNum(areaNum);
+        }
+      } else {
+        updateArea(areas[i]);
+      }
+    }
+
+    // 1차원화 후 하위 레코드 저장
+    List<Block> blockList = new ArrayList<Block>();
+    for (int i = 0; i < blocks.length; i++) {
+      for (int j = 0; j < blocks[i].length; j++) {
+        blockList.add(blocks[i][j]);
+      }
+    }
+    BlockController
+        .saveBlocks((Block[]) blockList.toArray(new Block[blockList.size()]));
+    List<Block[]> blockPairList = new ArrayList<Block[]>();
+    for (int i = 0; i < blockPairs.length; i++) {
+      for (int j = 0; j < blockPairs[i].length; j++) {
+        blockPairList.add(blockPairs[i][j]);
+      }
+    }
+    ShareBlockController.saveShareBlocks(
+        (Block[][]) blockPairList.toArray(new Block[blockPairList.size()][]));
+
+    // 삭제
+    Area[] resultAreas = getAreas();
+    for (Area resultArea : resultAreas) {
+      boolean exists = false;
+      for (Area recommend : areas) {
+        if (resultArea.getNum() == recommend.getNum()) {
           exists = true;
           break;
         }
@@ -126,7 +204,7 @@ public class AreaController {
    * @throws SQLException
    * @throws IOException
    */
-  private static void insertArea(Area area) throws SQLException, IOException {
+  private static int insertArea(Area area) throws SQLException, IOException {
 
     // 이미지 파일 업로드
     area.setImage(uploadAreaImageFile(area.getImage()));
@@ -137,9 +215,10 @@ public class AreaController {
     dbConnection.setAutoCommit(false);
 
     // 레코드 삽입 쿼리 실행
+    int areaNum = getMaxAreaNum() + 1;
     String sql = "insert into " + DbLiteral.AREA + " values (?, ?, ?)";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, getMaxAreaNum() + 1);
+    pstmt.setInt(1, areaNum);
     pstmt.setString(2, area.getName());
     pstmt.setString(3, area.getImage());
     pstmt.executeUpdate();
@@ -147,6 +226,8 @@ public class AreaController {
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);
+
+    return areaNum;
   }
 
   private static void updateArea(Area area) throws SQLException, IOException {

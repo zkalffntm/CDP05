@@ -4,9 +4,12 @@ import java.io.IOException;
 import java.net.Socket;
 import java.sql.SQLException;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import harmony.central.service.LoginAdminService;
+import harmony.central.service.ProviderImageService;
 import harmony.central.service.ProviderListService;
 import harmony.common.AbstractClientThread;
 import harmony.common.AbstractServerThread;
@@ -22,52 +25,93 @@ import harmony.common.AbstractServerThread;
  */
 public class CentralClientThread extends AbstractClientThread {
 
-	/**
-	 * 생성자. 서버스레드와 클라이언트 소켓 객체를 설정한다.
-	 * 
-	 * @param serverThread
-	 *          서버스레드. 이 때 CentralServerThread이어야 함.
-	 * @param clientSocket
-	 *          클라이언트 소켓
-	 */
-	public CentralClientThread(AbstractServerThread serverThread, Socket clientSocket) {
-		super(serverThread, clientSocket);
-	}
+  /**
+   * 생성자. 서버스레드와 클라이언트 소켓 객체를 설정한다.
+   * 
+   * @param serverThread
+   *          서버스레드. 이 때 CentralServerThread이어야 함.
+   * @param clientSocket
+   *          클라이언트 소켓
+   */
+  public CentralClientThread(AbstractServerThread serverThread,
+      Socket clientSocket) {
+    super(serverThread, clientSocket);
+  }
 
-	@Override
-	protected void process(JSONObject recvJson) throws JSONException, SQLException, Exception {
-		String key = recvJson.getString("key");
-		Object value = recvJson.get("value");
+  @Override
+  protected void process(JSONObject recvJson)
+      throws JSONException, SQLException, Exception {
+    String key = recvJson.getString("key");
+    Object value = recvJson.get("value");
 
-		switch (key) {
-		case "req_provider_list":
-			this.doProviderListService(value);
-			break;
-		default:
-			throw new Exception("unacceptable message");
-		}
-	}
+    switch (key) {
+    case "req_login_admin":
+      this.doLoginAdminService(value);
+      break;
+    case "req_provider_image":
+      this.doProviderImageService(value);
+      break;
+    case "req_provider_list":
+      this.doProviderListService(value);
+      break;
+    default:
+      throw new Exception("unacceptable message");
+    }
+  }
 
-	/**
-	 * 클라이언트의 위치 gps를 JSON의 value에서 가져와 그 정보를 활용해<br>
-	 * {@link ProviderListService}를 수행한 결과를 클라이언트에게 응답한다.
-	 * 
-	 * @param value
-	 *          GPS 정보가 있는 Object 객체
-	 * @throws SQLException
-	 *           SQL 관련 예외
-	 * @throws JSONException
-	 *           JSON 관련 예외
-	 * @throws IOException
-	 *           IO 관련 예외
-	 */
-	private void doProviderListService(Object value) throws JSONException, SQLException, IOException {
-		JSONObject sendJson = new JSONObject();
+  private void doLoginAdminService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONArray jsonArray = (JSONArray) value;
+    JSONObject sendJson = new JSONObject();
 
-		sendJson.put("key", "res_provider_list");
-		sendJson.put("value", new ProviderListService().doService(value));
+    jsonArray.put(this.getClientSocket().getInetAddress().getHostAddress());
 
-		this.getPrintWriter().println(sendJson.toString());
-		this.getPrintWriter().flush();
-	}
+    sendJson.put("key", "res_login_admin");
+    sendJson.put("value", new LoginAdminService().doService(jsonArray));
+
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
+
+  /**
+   * 
+   * @param value
+   * @throws JSONException
+   * @throws SQLException
+   * @throws IOException
+   */
+  private void doProviderImageService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
+
+    sendJson.put("key", "res_provider_image");
+    sendJson.put("value", new ProviderImageService().doService(value));
+
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
+
+  /**
+   * 클라이언트의 위치 gps를 JSON의 value에서 가져와 그 정보를 활용해<br>
+   * {@link ProviderListService}를 수행한 결과를 클라이언트에게 응답한다.
+   * 
+   * @param value
+   *          GPS 정보가 있는 Object 객체
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws JSONException
+   *           JSON 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   */
+  private void doProviderListService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
+
+    sendJson.put("key", "res_provider_list");
+    sendJson.put("value", new ProviderListService().doService(value));
+
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
 }

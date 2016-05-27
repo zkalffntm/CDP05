@@ -20,7 +20,7 @@ import org.json.JSONObject;
  * 
  * @author Seongjun Park
  * @since 2016/3/25
- * @version 2016/4/5
+ * @version 2016/5/27
  */
 public abstract class AbstractClientThread extends Thread {
   private AbstractServerThread serverThread;
@@ -104,6 +104,10 @@ public abstract class AbstractClientThread extends Thread {
     } catch (IOException e) {
       System.out.println("ClientThread.stopClient() : " + e.getMessage());
     }
+  }
+
+  protected Socket getClientSocket() {
+    return this.clientSocket;
   }
 
   /**

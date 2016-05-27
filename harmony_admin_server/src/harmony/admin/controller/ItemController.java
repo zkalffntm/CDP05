@@ -1,5 +1,6 @@
 package harmony.admin.controller;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -10,6 +11,7 @@ import java.util.List;
 import harmony.admin.database.DbConnector;
 import harmony.admin.database.DbLiteral;
 import harmony.admin.model.Item;
+import harmony.admin.model.ItemImage;
 
 /**
  * 
@@ -50,7 +52,7 @@ public class ItemController {
    * 
    * @param num
    * @return
-   * @throws SQLException 
+   * @throws SQLException
    */
   public static Item getItemByNum(int num) throws SQLException {
 
@@ -64,7 +66,7 @@ public class ItemController {
 
     // 반환
     Item item = null;
-    if(resultSet.next()) {
+    if (resultSet.next()) {
       item = new Item();
       item.setNum(num);
       item.setTitle(resultSet.getString(DbLiteral.I_TITLE));
@@ -75,7 +77,53 @@ public class ItemController {
       item.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
     }
 
-    return item;    
+    return item;
+  }
+
+  static void saveItems(Item[] items, ItemImage[][] itemImages)
+      throws SQLException, IOException {
+
+    // 삽입 또는 갱신
+    for (int i = 0; i < items.length; i++) {
+
+      // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
+      if (items[i].getNum() == 0) {
+        int itemNum = insertItem(items[i]);
+        items[i].setNum(itemNum);
+        for (int j = 0; j < itemImages[i].length; j++) {
+          itemImages[i][j].setItemNum(itemNum);
+        }
+      } else {
+        updateItem(items[i]);
+      }
+    }
+
+    // 1차원화 후 하위 레코드 저장
+    List<ItemImage> itemImageList = new ArrayList<ItemImage>();
+    for (int i = 0; i < itemImages.length; i++) {
+      for (int j = 0; j < itemImages[i].length; j++) {
+        itemImageList.add(itemImages[i][j]);
+      }
+    }
+    ItemImageController.saveItemImages((ItemImage[]) itemImageList
+        .toArray(new ItemImage[itemImageList.size()]));
+
+    // 삭제
+    Item[] resultItems = getItems();
+    for (Item resultItem : resultItems) {
+      boolean exists = false;
+      for (Item item : items) {
+        if (resultItem.getNum() == item.getNum()) {
+          exists = true;
+          break;
+        }
+      }
+
+      // 병합된 레코드들(result) 중 입력 레코드에 없는 것이면 삭제
+      if (!exists) {
+        deleteItemByNum(resultItem.getNum());
+      }
+    }
   }
 
   /**
@@ -84,7 +132,7 @@ public class ItemController {
    * @return
    * @throws SQLException
    */
-  public static Item[] getItemsByAreaNum(int areaNum) throws SQLException {
+  private static Item[] getItemsByAreaNum(int areaNum) throws SQLException {
 
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();
@@ -112,43 +160,7 @@ public class ItemController {
     return (Item[]) itemList.toArray(new Item[itemList.size()]);
   }
 
-  /**
-   * 
-   * @param items
-   * @throws SQLException
-   */
-  public static void saveItems(Item... items) throws SQLException {
-
-    // 삽입 또는 갱신
-    for (Item item : items) {
-
-      // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
-      if (item.getNum() == 0) {
-        insertItem(item);
-      } else {
-        updateItem(item);
-      }
-    }
-
-    // 삭제
-    Item[] resultItems = getItems();
-    for (Item resultItem : resultItems) {
-      boolean exists = false;
-      for (Item item : items) {
-        if (resultItem.getNum() == item.getNum()) {
-          exists = true;
-          break;
-        }
-      }
-
-      // 병합된 레코드들(result) 중 입력 레코드에 없는 것이면 삭제
-      if (!exists) {
-        deleteItemByNum(resultItem.getNum());
-      }
-    }
-  }
-
-  private static void insertItem(Item item) throws SQLException {
+  private static int insertItem(Item item) throws SQLException {
 
     // 자동 커밋 일시 해제
     Connection dbConnection = DbConnector.getInstance().getConnection();
@@ -156,10 +168,11 @@ public class ItemController {
     dbConnection.setAutoCommit(false);
 
     // 레코드 삽입 쿼리 실행
+    int itemNum = getMaxItemNum() + 1;
     String sql = "insert into " + DbLiteral.ITEM
         + " values (?, ?, ?, ?, ?, ?, ?)";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, getMaxItemNum() + 1);
+    pstmt.setInt(1, itemNum);
     pstmt.setString(2, item.getTitle());
     pstmt.setString(3, item.getArtist());
     pstmt.setString(4, item.getSimpleContent());
@@ -171,6 +184,8 @@ public class ItemController {
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);
+
+    return itemNum;
   }
 
   private static void updateItem(Item item) throws SQLException {

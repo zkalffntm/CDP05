@@ -9,6 +9,7 @@ import java.util.List;
 
 import harmony.admin.database.DbConnector;
 import harmony.admin.database.DbLiteral;
+import harmony.admin.model.Block;
 import harmony.admin.model.ShareBlock;
 
 /**
@@ -41,9 +42,9 @@ public class ShareBlockController {
     // 타입 변형 : List<> -> Object[]
     return (ShareBlock[]) shareBlockList
         .toArray(new ShareBlock[shareBlockList.size()]);
-    
+
   }
-  
+
   public static ShareBlock[] getShareBlocksByBlock(int blockNum)
       throws SQLException {
 
@@ -72,6 +73,66 @@ public class ShareBlockController {
         .toArray(new ShareBlock[shareBlockList.size()]);
   }
 
+  static void saveShareBlocks(Block[][] blockPairs) throws SQLException {
+
+    // 모든 레코드 삭제
+    deleteShareBlock();
+    
+    // 삽입
+    for (int i = 0; i < blockPairs.length; i++) {
+      int blockNum1 = BlockController.getBlockBySeqAndAreaNum(
+          blockPairs[i][0].getSeq(), blockPairs[i][0].getAreaNum()).getNum();
+      int blockNum2 = BlockController.getBlockBySeqAndAreaNum(
+          blockPairs[i][1].getSeq(), blockPairs[i][1].getAreaNum()).getNum();
+      
+      ShareBlock shareBlock = new ShareBlock();
+      shareBlock.setBlockNum1(blockNum1);
+      shareBlock.setBlockNum2(blockNum2);
+      insertShareBlock(shareBlock);
+    }
+  }
+
+  private static int insertShareBlock(ShareBlock shareBlock) throws SQLException {
+
+    // 자동 커밋 일시 해제
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    boolean prevAutoCommit = dbConnection.getAutoCommit();
+    dbConnection.setAutoCommit(false);
+
+    // 레코드 삽입 쿼리 실행
+    int num = getMaxShareBlockNum() + 1;
+    String sql = "insert into " + DbLiteral.SHARE_BLOCK
+        + " values (?, ?, ?)";
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.setInt(1, num);
+    pstmt.setInt(2, shareBlock.getBlockNum1());
+    pstmt.setInt(3, shareBlock.getBlockNum2());
+    pstmt.executeUpdate();
+
+    // 커밋
+    dbConnection.commit();
+    dbConnection.setAutoCommit(prevAutoCommit);
+
+    return num;
+  }
+
+  private static void deleteShareBlock() throws SQLException {
+
+    // 자동 커밋 일시 해제
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    boolean prevAutoCommit = dbConnection.getAutoCommit();
+    dbConnection.setAutoCommit(false);
+
+    // 레코드 삭제 쿼리 실행
+    String sql = "delete from " + DbLiteral.SHARE_BLOCK;
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.executeUpdate();
+
+    // 커밋
+    dbConnection.commit();
+    dbConnection.setAutoCommit(prevAutoCommit);
+  }
+
   /**
    * 
    * @param blockNum
@@ -95,5 +156,20 @@ public class ShareBlockController {
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);
+  }
+
+  private static int getMaxShareBlockNum() throws SQLException {
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select max(" + DbLiteral.SB_NUM + ") as " + DbLiteral.SB_NUM
+        + " from " + DbLiteral.SHARE_BLOCK;
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    int maxNum = 0;
+    if (resultSet.next()) {
+      maxNum = resultSet.getInt(DbLiteral.SB_NUM);
+    }
+
+    return maxNum;
   }
 }

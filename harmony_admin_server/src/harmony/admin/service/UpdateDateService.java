@@ -3,8 +3,6 @@ package harmony.admin.service;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import org.json.JSONException;
-
 import harmony.common.AbstractService;
 import harmony.common.DatFileManager;
 
@@ -30,10 +28,10 @@ public class UpdateDateService extends AbstractService {
    *           IO 관련 예외
    */
   @Override
-  public Object doService(Object argument)
-      throws SQLException, IOException {
+  public Object doService(Object argument) throws SQLException, IOException {
     // TODO Auto-generated method stub
-    return Long.parseLong(new DatFileManager().getData(DEFAULT_UPDATE_DATE_KEY));
+    return Long
+        .parseLong(new DatFileManager().getData(DEFAULT_UPDATE_DATE_KEY));
   }
 
 }

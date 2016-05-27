@@ -47,8 +47,8 @@ public class UpdateService extends AbstractService {
   @Override
   public Object doService(Object argument) throws SQLException, IOException {
 
-    // [0]은 area, [1]은 item, [2]는 ratio_offset,
-    // [3]은 block, [4]는 share_block, [5]는 recommend
+    // [0]은 area, [1]은 item, [2]는 block,
+    // [3]은 share_block, [4]는 beacon, [5]는 recommend
     List<Object[][]> objList = new ArrayList<Object[][]>();
     objList.add(this.getAreas());
     objList.add(this.getItems());

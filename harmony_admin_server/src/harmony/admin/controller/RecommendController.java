@@ -80,21 +80,27 @@ public class RecommendController {
     for (int i = 0; i < recommends.length; i++) {
 
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
-      int recommendNum = recommends[i].getNum();
-      if (recommendNum == 0) {
-        recommendNum = insertRecommend(recommends[i]);
+      if (recommends[i].getNum() == 0) {
+        int recommendNum = insertRecommend(recommends[i]);
+        recommends[i].setNum(recommendNum);
+        for (int j = 0; j < recommendItems[i].length; j++) {
+          recommendItems[i][j].setRecommendNum(recommendNum);
+        }
       } else {
         updateRecommend(recommends[i]);
-        RecommendItemController.deleteRecommendItemByRecommendNum(recommendNum);
-      }
-
-      // 하위 레코드 추가
-      for (int j = 0; j < recommendItems[i].length; j++) {
-        recommendItems[i][j].setSeq(j + 1);
-        recommendItems[i][j].setRecommendNum(recommendNum);
-        RecommendItemController.insertRecommendItem(recommendItems[i][j]);
       }
     }
+
+    // 1차원화 후 하위 레코드 추가
+    List<RecommendItem> recommendItemList = new ArrayList<RecommendItem>();
+    for (int i = 0; i < recommendItems.length; i++) {
+      for (int j = 0; j < recommendItems[i].length; j++) {
+        recommendItemList.add(recommendItems[i][j]);
+      }
+    }
+    RecommendItemController
+        .saveRecommendItems((RecommendItem[]) recommendItemList
+            .toArray(new RecommendItem[recommendItemList.size()]));
 
     // 삭제
     Recommend[] resultRecommends = getRecommends();
