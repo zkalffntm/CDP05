@@ -17,7 +17,7 @@ import harmony.admin.model.ItemImage;
  * 
  * @author Seongjun Park
  * @since 2016/5/15
- * @version 2016/5/17
+ * @version 2016/5/31
  */
 public class ItemController {
 
@@ -88,13 +88,12 @@ public class ItemController {
 
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
       if (items[i].getNum() == 0) {
-        int itemNum = insertItem(items[i]);
-        items[i].setNum(itemNum);
-        for (int j = 0; j < itemImages[i].length; j++) {
-          itemImages[i][j].setItemNum(itemNum);
-        }
+        items[i].setNum(insertItem(items[i]));
       } else {
         updateItem(items[i]);
+      }
+      for (int j = 0; j < itemImages[i].length; j++) {
+        itemImages[i][j].setItemNum(items[i].getNum());
       }
     }
 
@@ -122,6 +121,18 @@ public class ItemController {
       // 병합된 레코드들(result) 중 입력 레코드에 없는 것이면 삭제
       if (!exists) {
         deleteItemByNum(resultItem.getNum());
+      }
+    }
+  }
+
+  static void saveItemsOnAreaPanel(Item[] items) throws SQLException {
+
+    // 삽입 또는 갱신
+    for (int i = 0; i < items.length; i++) {
+
+      // 번호가 0인 경우 DB에 새 레코드 삽입
+      if (items[i] != null && items[i].getNum() == 0) {
+        items[i].setNum(insertItem(items[i]));
       }
     }
   }

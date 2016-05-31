@@ -18,7 +18,7 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/17
- * @version 2016/5/17
+ * @version 2016/5/31
  */
 public class ItemImageController {
   private static final String ITEM_IMAGE_DIR = "image" + File.separator
@@ -126,8 +126,7 @@ public class ItemImageController {
 
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
       if (itemImages[i].getNum() == 0) {
-        int itemImageNum = insertItemImage(itemImages[i]);
-        itemImages[i].setNum(itemImageNum);
+        itemImages[i].setNum(insertItemImage(itemImages[i]));
       } else {
         updateItemImage(itemImages[i]);
       }

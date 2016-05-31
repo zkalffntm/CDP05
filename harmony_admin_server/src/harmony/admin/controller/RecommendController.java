@@ -20,7 +20,7 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/14
- * @version 2016/5/26
+ * @version 2016/5/31
  *
  */
 public class RecommendController {
@@ -81,13 +81,14 @@ public class RecommendController {
 
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
       if (recommends[i].getNum() == 0) {
-        int recommendNum = insertRecommend(recommends[i]);
-        recommends[i].setNum(recommendNum);
-        for (int j = 0; j < recommendItems[i].length; j++) {
-          recommendItems[i][j].setRecommendNum(recommendNum);
-        }
+        recommends[i].setNum(insertRecommend(recommends[i]));
       } else {
         updateRecommend(recommends[i]);
+      }
+
+      // 하위 레코드에 FK 번호를 부여
+      for (int j = 0; j < recommendItems[i].length; j++) {
+        recommendItems[i][j].setRecommendNum(recommends[i].getNum());
       }
     }
 

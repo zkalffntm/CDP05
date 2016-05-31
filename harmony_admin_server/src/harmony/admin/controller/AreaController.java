@@ -22,7 +22,7 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/14
- * @version 2016/5/26
+ * @version 2016/5/31
  */
 public class AreaController {
   private static final String AREA_IMAGE_DIR = "image" + File.separator
@@ -57,6 +57,20 @@ public class AreaController {
     return (Area[]) areaList.toArray(new Area[areaList.size()]);
   }
 
+  /**
+   * 구역, 전시물, 전시물이미지를 저장하는 기능. GUI의 전시물데이터 관리 화면에서 "저장"버튼에 해당
+   * 
+   * @param areas
+   *          구역 객체 1차원 배열 [구역수]
+   * @param items
+   *          전시물 객체 2차원 배열 [구역수][전시물수]
+   * @param itemImages
+   *          전시물이미지 객체3차원 배열 [구역수][전시물수][전시물이미지수]
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   */
   public static void saveAreas(Area[] areas, Item[][] items,
       ItemImage[][][] itemImages) throws SQLException, IOException {
 
@@ -65,13 +79,13 @@ public class AreaController {
 
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
       if (areas[i].getNum() == 0) {
-        int areaNum = insertArea(areas[i]);
-        areas[i].setNum(areaNum);
-        for (int j = 0; j < items[i].length; j++) {
-          items[i][j].setAreaNum(areaNum);
-        }
+        areas[i].setNum(insertArea(areas[i]));
       } else {
         updateArea(areas[i]);
+      }
+
+      for (int j = 0; j < items[i].length; j++) {
+        items[i][j].setAreaNum(areas[i].getNum());
       }
     }
 
@@ -97,8 +111,8 @@ public class AreaController {
     Area[] resultAreas = getAreas();
     for (Area resultArea : resultAreas) {
       boolean exists = false;
-      for (Area recommend : areas) {
-        if (resultArea.getNum() == recommend.getNum()) {
+      for (Area area : areas) {
+        if (resultArea.getNum() == area.getNum()) {
           exists = true;
           break;
         }
@@ -111,37 +125,76 @@ public class AreaController {
     }
   }
 
-  public static void saveAreas(Area[] areas, Block[][] blocks,
+  /**
+   * 구역, 전시물, 블록, 공유블록을 저장하는 기능. GUI의 지도 관리 화면에서 "저장"버튼에 해당.
+   * 
+   * @param areas
+   *          구역 객체 1차원 배열 [구역수]
+   * @param items
+   *          블록에 설정된 전시물 객체 3차원 배열 [구역수][블록수]. item 설정이 안된 index 부분은 item=null
+   * @param blockPairs
+   *          공유블럭용 객체 3차원 배열 [구역수][공유블록쌍수][공유할블록2개]
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   */
+  public static void saveAreas(Area[] areas, Item[][] items,
       Block[][][] blockPairs) throws SQLException, IOException {
+
+    Block[][] blocks = new Block[areas.length][];
 
     // 삽입 또는 갱신
     for (int i = 0; i < areas.length; i++) {
 
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
       if (areas[i].getNum() == 0) {
-        int areaNum = insertArea(areas[i]);
-        areas[i].setNum(areaNum);
-        for (int j = 0; j < blocks[i].length; j++) {
-          blocks[i][j].setAreaNum(areaNum);
-        }
-        for (int j = 0; j < blockPairs[i].length; j++) {
-          blockPairs[i][j][0].setAreaNum(areaNum);
-          blockPairs[i][j][1].setAreaNum(areaNum);
-        }
+        areas[i].setNum(insertArea(areas[i]));
       } else {
         updateArea(areas[i]);
+      }
+
+      // 하위 레코드에 FK 번호를 부여
+      for (int j = 0; j < items[i].length; j++) {
+        if (items[i][j] != null) {
+          items[i][j].setAreaNum(areas[i].getNum());
+        }
+      }
+      blocks[i] = new Block[items[i].length];
+      for (int j = 0; j < blocks[i].length; j++) {
+        blocks[i][j] = new Block();
+        blocks[i][j].setAreaNum(areas[i].getNum());
+      }
+      for (int j = 0; j < blockPairs[i].length; j++) {
+        for (int k = 0; k < blockPairs[i][j].length; k++) {
+          blockPairs[i][j][k].setAreaNum(areas[i].getNum());
+        }
       }
     }
 
     // 1차원화 후 하위 레코드 저장
+    List<Item> itemList = new ArrayList<Item>();
+    for (int i = 0; i < items.length; i++) {
+      for (int j = 0; j < items[i].length; j++) {
+        itemList.add(items[i][j]);
+      }
+    }
+    ItemController.saveItemsOnAreaPanel(
+        (Item[]) itemList.toArray(new Item[itemList.size()]));
+
     List<Block> blockList = new ArrayList<Block>();
-    for (int i = 0; i < blocks.length; i++) {
-      for (int j = 0; j < blocks[i].length; j++) {
+    for (int i = 0; i < items.length; i++) {
+      for (int j = 0; j < items[i].length; j++) {
+        blocks[i][j].setSeq(j + 1);
+        if (items[i][j] != null) {
+          blocks[i][j].setItemNum(items[i][j].getNum());
+        }
         blockList.add(blocks[i][j]);
       }
     }
     BlockController
         .saveBlocks((Block[]) blockList.toArray(new Block[blockList.size()]));
+
     List<Block[]> blockPairList = new ArrayList<Block[]>();
     for (int i = 0; i < blockPairs.length; i++) {
       for (int j = 0; j < blockPairs[i].length; j++) {

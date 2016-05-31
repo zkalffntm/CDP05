@@ -16,7 +16,7 @@ import harmony.admin.model.ShareBlock;
  * 
  * @author Seongjun Park
  * @since 2016/5/17
- * @version 2016/5/17
+ * @version 2016/5/31
  */
 public class ShareBlockController {
 
@@ -76,23 +76,24 @@ public class ShareBlockController {
   static void saveShareBlocks(Block[][] blockPairs) throws SQLException {
 
     // 모든 레코드 삭제
-    deleteShareBlock();
-    
+    deleteShareBlocks();
+
     // 삽입
     for (int i = 0; i < blockPairs.length; i++) {
       int blockNum1 = BlockController.getBlockBySeqAndAreaNum(
           blockPairs[i][0].getSeq(), blockPairs[i][0].getAreaNum()).getNum();
       int blockNum2 = BlockController.getBlockBySeqAndAreaNum(
           blockPairs[i][1].getSeq(), blockPairs[i][1].getAreaNum()).getNum();
-      
+
       ShareBlock shareBlock = new ShareBlock();
       shareBlock.setBlockNum1(blockNum1);
       shareBlock.setBlockNum2(blockNum2);
-      insertShareBlock(shareBlock);
+      shareBlock.setNum(insertShareBlock(shareBlock));
     }
   }
 
-  private static int insertShareBlock(ShareBlock shareBlock) throws SQLException {
+  private static int insertShareBlock(ShareBlock shareBlock)
+      throws SQLException {
 
     // 자동 커밋 일시 해제
     Connection dbConnection = DbConnector.getInstance().getConnection();
@@ -101,8 +102,7 @@ public class ShareBlockController {
 
     // 레코드 삽입 쿼리 실행
     int num = getMaxShareBlockNum() + 1;
-    String sql = "insert into " + DbLiteral.SHARE_BLOCK
-        + " values (?, ?, ?)";
+    String sql = "insert into " + DbLiteral.SHARE_BLOCK + " values (?, ?, ?)";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, num);
     pstmt.setInt(2, shareBlock.getBlockNum1());
@@ -116,7 +116,7 @@ public class ShareBlockController {
     return num;
   }
 
-  private static void deleteShareBlock() throws SQLException {
+  private static void deleteShareBlocks() throws SQLException {
 
     // 자동 커밋 일시 해제
     Connection dbConnection = DbConnector.getInstance().getConnection();

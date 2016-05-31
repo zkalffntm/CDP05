@@ -15,7 +15,7 @@ import harmony.admin.model.RecommendItem;
  * 
  * @author Seongjun Park
  * @since 2016/5/17
- * @version 2016/5/25
+ * @version 2016/5/31
  */
 public class RecommendItemController {
 
@@ -90,8 +90,7 @@ public class RecommendItemController {
 
       // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
       if (recommendItems[i].getNum() == 0) {
-        int recommendItemNum = insertRecommendItem(recommendItems[i]);
-        recommendItems[i].setNum(recommendItemNum);
+        recommendItems[i].setNum(insertRecommendItem(recommendItems[i]));
       } else {
         updateRecommendItem(recommendItems[i]);
       }
