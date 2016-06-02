@@ -45,17 +45,15 @@ public class ShareBlockController {
 
   }
 
-  public static ShareBlock[] getShareBlocksByBlock(int blockNum)
+  public static ShareBlock[] getShareBlocksByBlockNum1(int blockNum1)
       throws SQLException {
 
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();
     String sql = "select * from " + DbLiteral.SHARE_BLOCK + " where "
-        + DbLiteral.BL_NUM1 + "=? or " + DbLiteral.BL_NUM2 + "=? order by "
-        + DbLiteral.SB_NUM;
+        + DbLiteral.BL_NUM1 + "=? order by " + DbLiteral.SB_NUM;
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, blockNum);
-    pstmt.setInt(2, blockNum);
+    pstmt.setInt(1, blockNum1);
     ResultSet resultSet = pstmt.executeQuery();
 
     // 레코드 하나씩 리스트에 추가
@@ -63,7 +61,7 @@ public class ShareBlockController {
     while (resultSet.next()) {
       ShareBlock shareBlock = new ShareBlock();
       shareBlock.setNum(resultSet.getInt(DbLiteral.SB_NUM));
-      shareBlock.setBlockNum1(resultSet.getInt(DbLiteral.BL_NUM1));
+      shareBlock.setBlockNum1(resultSet.getInt(blockNum1));
       shareBlock.setBlockNum2(resultSet.getInt(DbLiteral.BL_NUM2));
       shareBlockList.add(shareBlock);
     }

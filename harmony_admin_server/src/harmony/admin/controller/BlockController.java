@@ -44,6 +44,29 @@ public class BlockController {
 
   }
 
+  public static Block getBlockByNum(int num) throws SQLException {
+
+    // 레코드 조회 쿼리 실행
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select * from " + DbLiteral.BLOCK + " where "
+        + DbLiteral.BL_NUM + "=?";
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.setInt(1, num);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    // 반환
+    Block block = null;
+    while (resultSet.next()) {
+      block = new Block();
+      block.setNum(resultSet.getInt(num));
+      block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
+      block.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      block.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+    }
+
+    return block;
+  }
+
   private static Block[] getBlocksByItemNum(int itemNum) throws SQLException {
 
     // 레코드 조회 쿼리 실행
@@ -70,7 +93,7 @@ public class BlockController {
     return (Block[]) blockList.toArray(new Block[blockList.size()]);
   }
 
-  private static Block[] getBlocksByAreaNum(int areaNum) throws SQLException {
+  public static Block[] getBlocksByAreaNum(int areaNum) throws SQLException {
 
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();
@@ -156,29 +179,6 @@ public class BlockController {
     return num;
   }
 
-  private static void updateBlock(Block block) throws SQLException {
-
-    // 자동 커밋 일시 해제
-    Connection dbConnection = DbConnector.getInstance().getConnection();
-    boolean prevAutoCommit = dbConnection.getAutoCommit();
-    dbConnection.setAutoCommit(false);
-
-    // 레코드 갱신 쿼리 실행
-    String sql = "update " + DbLiteral.BLOCK + " set " + DbLiteral.BL_SEQ
-        + "=?, " + DbLiteral.I_NUM + "=?, " + DbLiteral.A_NUM + "=? where "
-        + DbLiteral.BL_NUM + "=?";
-    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, block.getSeq());
-    pstmt.setInt(2, block.getItemNum());
-    pstmt.setInt(3, block.getAreaNum());
-    pstmt.setInt(4, block.getNum());
-    pstmt.executeUpdate();
-
-    // 커밋
-    dbConnection.commit();
-    dbConnection.setAutoCommit(prevAutoCommit);
-  }
-
   private static void deleteBlocks() throws SQLException {
 
     // 하위 테이블의 관련 레코드들을 지움
@@ -195,33 +195,6 @@ public class BlockController {
     // 레코드 삭제 쿼리 실행
     String sql = "delete from " + DbLiteral.BLOCK;
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.executeUpdate();
-
-    // 커밋
-    dbConnection.commit();
-    dbConnection.setAutoCommit(prevAutoCommit);
-  }
-
-  /**
-   * 
-   * @param num
-   * @throws SQLException
-   */
-  private static void deleteBlockByNum(int num) throws SQLException {
-
-    // 하위 테이블의 관련 레코드들을 지움
-    ShareBlockController.deleteShareBlockByBlockNum(num);
-
-    // 자동 커밋 일시 해제
-    Connection dbConnection = DbConnector.getInstance().getConnection();
-    boolean prevAutoCommit = dbConnection.getAutoCommit();
-    dbConnection.setAutoCommit(false);
-
-    // 레코드 삭제 쿼리 실행
-    String sql = "delete from " + DbLiteral.BLOCK + " where " + DbLiteral.BL_NUM
-        + "=?";
-    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, num);
     pstmt.executeUpdate();
 
     // 커밋

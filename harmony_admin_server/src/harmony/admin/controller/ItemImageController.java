@@ -102,7 +102,7 @@ public class ItemImageController {
 
     // 레코드 하나씩 리스트에 추가
     List<ItemImage> itemImageList = new ArrayList<ItemImage>();
-    if (resultSet.next()) {
+    while (resultSet.next()) {
       ItemImage itemImage = new ItemImage();
       itemImage.setNum(resultSet.getInt(DbLiteral.II_NUM));
       itemImage.setSeq(resultSet.getInt(DbLiteral.II_SEQ));

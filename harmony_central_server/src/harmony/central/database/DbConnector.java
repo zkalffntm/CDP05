@@ -9,7 +9,7 @@ import java.sql.SQLException;
  * 
  * @author Seongjun Park
  * @since 2016/3/22
- * @version 2016/3/22
+ * @version 2016/6/2
  */
 public class DbConnector {
   private static DbConnector instance = null;
@@ -50,12 +50,14 @@ public class DbConnector {
    */
   public void closeConnection() {
     try {
-      connection.close();
-
+      if (this.connection != null && !this.connection.isClosed()) {
+        connection.close();
+      }
       System.out.println("Success - Disconnect MySQL");
     } catch (SQLException e) {
       System.out.println("Failed - Disconnect MySQL : " + e.getMessage());
     }
+    this.connection = null;
   }
 
   /**

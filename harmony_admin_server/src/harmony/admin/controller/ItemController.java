@@ -101,6 +101,7 @@ public class ItemController {
     List<ItemImage> itemImageList = new ArrayList<ItemImage>();
     for (int i = 0; i < itemImages.length; i++) {
       for (int j = 0; j < itemImages[i].length; j++) {
+        itemImages[i][j].setSeq(j + 1);
         itemImageList.add(itemImages[i][j]);
       }
     }
@@ -143,7 +144,7 @@ public class ItemController {
    * @return
    * @throws SQLException
    */
-  private static Item[] getItemsByAreaNum(int areaNum) throws SQLException {
+  public static Item[] getItemsByAreaNum(int areaNum) throws SQLException {
 
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();

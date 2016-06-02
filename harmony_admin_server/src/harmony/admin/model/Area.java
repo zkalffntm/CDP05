@@ -7,9 +7,9 @@ package harmony.admin.model;
  * @version 2016/5/17
  */
 public class Area {
-  private int num;
-  private String name;
-  private String image;
+  private int num = 0;
+  private String name = "";
+  private String image = "";
   private boolean imageEdited = false;
 
   public int getNum() {

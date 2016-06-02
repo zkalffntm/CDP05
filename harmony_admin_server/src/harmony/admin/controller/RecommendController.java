@@ -96,6 +96,7 @@ public class RecommendController {
     List<RecommendItem> recommendItemList = new ArrayList<RecommendItem>();
     for (int i = 0; i < recommendItems.length; i++) {
       for (int j = 0; j < recommendItems[i].length; j++) {
+        recommendItems[i][j].setSeq(j + 1);
         recommendItemList.add(recommendItems[i][j]);
       }
     }
