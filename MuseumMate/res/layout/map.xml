@@ -1,5 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<uk.co.senab.photoview.PhotoView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/mapview"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android" 
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"
+	android:layout_gravity="center"> 
+	
+	<RelativeLayout
+	    android:id="@+id/canvas_layout"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" >
+	    
+	    <harmony.museummate.MapOverlay
+	        android:id="@+id/canvas"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent"
+	        android:background="#00000000"/>
+	    
+	</RelativeLayout>
+	
+	<uk.co.senab.photoview.PhotoView
+	    android:id="@+id/mapview"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent" />
+
+</FrameLayout>
+

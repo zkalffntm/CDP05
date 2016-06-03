@@ -3,6 +3,7 @@ package harmony.museummate;
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,6 +52,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
+import datatype.Exhibition;
 import tools.CustomMsg;
 
 public class MainActivity	extends 	AppCompatActivity 
@@ -366,7 +368,12 @@ public class MainActivity	extends 	AppCompatActivity
 	{
 	    if(fragmentMap == null)
 	    {
-	    	fragmentMap = new MapFragment();
+	    	Uri mapUri = Uri.parse("android.resource://harmony.museummate/" + R.drawable.map_sample);
+	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.exhibition_sample);
+	    	ArrayList<Exhibition> exhibitionList = new ArrayList<Exhibition>();
+	    	exhibitionList.add(new Exhibition(0, 1, 5, "샘플0", "작가0", "설명0", path));
+	    	
+	    	fragmentMap = new MapFragment(mapUri, exhibitionList);
 	    }
 	    
 	    showFragment(fragmentMap, MAP);
