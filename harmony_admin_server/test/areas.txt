@@ -1,3 +1,2 @@
 1;test1;image/area/test1.png;false
 2;test2;image/area/test2.png;false
-3;test3-1;test\image\area\test4.png;true

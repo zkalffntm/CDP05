@@ -1,6 +1,12 @@
 package harmony.admin.test;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -10,6 +16,8 @@ import harmony.admin.controller.ShareBlockController;
 import harmony.admin.database.DbConnector;
 import harmony.admin.model.Area;
 import harmony.admin.model.Block;
+import harmony.admin.model.Item;
+import harmony.admin.model.ItemImage;
 import harmony.admin.model.ShareBlock;
 
 /**

@@ -4,6 +4,3 @@
 2
 3;test_item3;tester3;simple_test3;detail_test3;256 x 256;2
 4;test_item4;tester4;simple_test4;detail_test4;128 x 128;2
-3
-5;test_item5-1;tester5;simple_test5;detail_test5;64 x 64;3
-6;test_item6-1;tester6;simple_test6;detail_test6;32 x 32;3

@@ -131,18 +131,18 @@ public class AreaController {
    * @param areas
    *          구역 객체 1차원 배열 [구역수]
    * @param items
-   *          블록에 설정된 전시물 객체 3차원 배열 [구역수][블록수]. item 설정이 안된 index 부분은 item=null
+   *          전시물 객체 2차원 배열 [구역수][블록수]. 존재하지 않으면 null도 포함
+   * @param blocks
+   *          블록 객체 2차원 배열 [구역수][블록수]
    * @param blockPairs
-   *          공유블럭용 객체 3차원 배열 [구역수][공유블록쌍수][공유할블록2개]
+   *          공유블록쌍 객체 3차원 배열 [구역수][공유블록수][2].
    * @throws SQLException
    *           SQL 관련 예외
    * @throws IOException
    *           IO 관련 예외
    */
-  public static void saveAreas(Area[] areas, Item[][] items,
+  public static void saveAreas(Area[] areas, Item[][] items, Block[][] blocks,
       Block[][][] blockPairs) throws SQLException, IOException {
-
-    Block[][] blocks = new Block[areas.length][];
 
     // 삽입 또는 갱신
     for (int i = 0; i < areas.length; i++) {
@@ -155,20 +155,11 @@ public class AreaController {
       }
 
       // 하위 레코드에 FK 번호를 부여
-      for (int j = 0; j < items[i].length; j++) {
+      for (int j = 0; j < blocks[i].length; j++) {
         if (items[i][j] != null) {
           items[i][j].setAreaNum(areas[i].getNum());
         }
-      }
-      blocks[i] = new Block[items[i].length];
-      for (int j = 0; j < blocks[i].length; j++) {
-        blocks[i][j] = new Block();
         blocks[i][j].setAreaNum(areas[i].getNum());
-      }
-      for (int j = 0; j < blockPairs[i].length; j++) {
-        for (int k = 0; k < blockPairs[i][j].length; k++) {
-          blockPairs[i][j][k].setAreaNum(areas[i].getNum());
-        }
       }
     }
 
