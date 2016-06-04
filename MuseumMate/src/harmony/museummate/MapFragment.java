@@ -2,6 +2,7 @@ package harmony.museummate;
 
 import java.util.List;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.RectF;
 import android.net.Uri;
@@ -25,9 +26,10 @@ public class MapFragment extends Fragment
 	private PhotoViewAttacher attacher;
 	private MapOverlay canvas;
 	private RelativeLayout canvasLayout;
-	
+	private RectObserver observer;
 	
 	private RectF mapRect;
+	
 	
 	public MapFragment(Uri uriMap, List<Exhibition> exhibitionList)
 	{
@@ -44,13 +46,15 @@ public class MapFragment extends Fragment
     	canvasLayout = (RelativeLayout)v.findViewById(R.id.canvas_layout);
     	photoMap.setImageURI(uriMap);
     	attacher = new PhotoViewAttacher(photoMap);
-    	new RectObserver().start();
+    	observer = new RectObserver();
+    	observer.start();
     	return v;
     }
-    
+
     public void updateCanvas()
     {
-    	getActivity().runOnUiThread(new Runnable()
+    	Activity currentActivity = getActivity();
+    	if(currentActivity != null) currentActivity.runOnUiThread(new Runnable()
 		{
 			@Override
 			public void run()
@@ -72,9 +76,9 @@ public class MapFragment extends Fragment
     	{
     		RectF mapRectPrev = new RectF(attacher.getDisplayRect());
 
-        	while(true)
+    		while(true)
         	{
-        		try{ Thread.sleep(16); } catch(Exception e) {}
+        		try{ Thread.sleep(8); } catch(Exception e) {}
         		
         		mapRect = new RectF(attacher.getDisplayRect());
         		
@@ -83,6 +87,8 @@ public class MapFragment extends Fragment
         			Math.abs(mapRect.top 	- mapRectPrev.top) 		> FLOAT_BIAS ||
         			Math.abs(mapRect.bottom - mapRectPrev.bottom) 	> FLOAT_BIAS)
         			updateCanvas();
+
+            	if(!isVisible()) break;
         	}
     	}
     }

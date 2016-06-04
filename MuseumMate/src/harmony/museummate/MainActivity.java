@@ -30,7 +30,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.preference.PreferenceFragment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.DrawerLayout;
+import uk.co.senab.photoview.sample.HackyDrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -93,7 +93,7 @@ public class MainActivity	extends 	AppCompatActivity
 	// Main Activity
 	private Toolbar					toolbar;
 	private ActionBar				actionbar;
-	private DrawerLayout			layoutDrawer;
+	private HackyDrawerLayout		layoutDrawer;
 	private ActionBarDrawerToggle	toggleDrawer;
     private ListView				listViewDrawer;
     private	LinearLayout			drawer;
@@ -268,7 +268,7 @@ public class MainActivity	extends 	AppCompatActivity
 		Log.i("test", "loaded");
 		setContentView(R.layout.activity_main);
 		toolbar 		= (Toolbar)findViewById(R.id.toolbar);
-	    layoutDrawer 	= (DrawerLayout)findViewById(R.id.drawer_layout);
+	    layoutDrawer 	= (HackyDrawerLayout)findViewById(R.id.drawer_layout);
 	    listViewDrawer 	= (ListView)findViewById(R.id.drawer_list);
 	    drawer 			= (LinearLayout)findViewById(R.id.drawer);
 	    imageUserPhoto 	= (ImageView)findViewById(R.id.user_photo);

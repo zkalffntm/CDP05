@@ -4,13 +4,12 @@ import java.io.Serializable;
 
 import android.net.Uri;
 
-public class Exhibition implements Serializable
+public class Exhibition	implements Item, Serializable
 {
-	public Exhibition(	int id, int mapNum, int blockNum, String name, 
+	public Exhibition(	int id, int blockNum, String name, 
 						String author, String description, Uri imageUri)
 	{
 		this.id = id;
-		this.mapNum = mapNum;
 		this.blockNum = blockNum;
 		this.name = name;
 		this.author = author;
@@ -19,17 +18,20 @@ public class Exhibition implements Serializable
 	}
 	
 	private int id;
-	private int mapNum;
+	private Area area;
 	private int blockNum;
 	
 	private String name;
 	private String author;
 	private String description;
 	private Uri imageUri;
+
 	
+	@Override
+	public TYPE getType() { return TYPE.EXHIBITION; }
 	
 	public int getId()				{ return id; }
-	public int getMapNum()			{ return mapNum; }
+	public Area getArea()			{ return area; }
 	public int getBlockNum()		{ return blockNum; }
 	public String getName()			{ return name; }
 	public String getAuthor()		{ return author; }

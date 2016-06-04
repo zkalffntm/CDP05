@@ -756,13 +756,15 @@ int drawable loading_grad 0x7f020092
 int drawable loading_text 0x7f020093
 int drawable logo 0x7f020094
 int drawable map_sample 0x7f020095
-int drawable notification_template_icon_bg 0x7f02009c
+int drawable notification_template_icon_bg 0x7f02009e
 int drawable places_ic_clear 0x7f020096
 int drawable places_ic_search 0x7f020097
 int drawable powered_by_google_dark 0x7f020098
 int drawable powered_by_google_light 0x7f020099
 int drawable recommanded_sample 0x7f02009a
-int drawable visited_sample 0x7f02009b
+int drawable spot 0x7f02009b
+int drawable spot_selected 0x7f02009c
+int drawable visited_sample 0x7f02009d
 int id action0 0x7f0b00b2
 int id action_bar 0x7f0b0081
 int id action_bar_activity_content 0x7f0b0003
