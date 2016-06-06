@@ -12,12 +12,14 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
+import datatype.Area;
 
 class MapOverlay extends View
 {
 	private static final int BLOCK_SIZE = 30;
 	private static final float SPOT_SIZE = 20;
 	
+	private Area area;
 	private List<Point> pointList;
 	private List<Line> lineList;
 	
@@ -26,19 +28,14 @@ class MapOverlay extends View
 	private float density;
 	
 	public MapOverlay(Context context)
-	{
-		super(context);
-		initialize();
-	}
+	{ super(context); }
 	
 	public MapOverlay(Context context, AttributeSet attributeSet)
-	{
-		super(context, attributeSet);
-		initialize();
-	}
+	{ super(context, attributeSet); }
 	
-	private void initialize()
+	public void initialize(Area area)
 	{
+		this.area = area;
 		pointList = new ArrayList<Point>();
 		lineList = new ArrayList<Line>();
 		selectedSpot = BitmapFactory.decodeResource(getResources(), R.drawable.spot_selected);

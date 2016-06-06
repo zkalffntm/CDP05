@@ -1,16 +1,19 @@
 package harmony.museummate;
 
-import java.util.List;
-
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.ContentResolver;
+import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore.Images;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import datatype.Area;
 import datatype.Exhibition;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -19,8 +22,7 @@ public class MapFragment extends Fragment
 {
 	private static final float FLOAT_BIAS = 0.01f;
 	
-	private Uri uriMap;
-	private List<Exhibition> exhibitionList;
+	private static Area area;
 	
 	private PhotoView photoMap;
 	private PhotoViewAttacher attacher;
@@ -31,11 +33,7 @@ public class MapFragment extends Fragment
 	private RectF mapRect;
 	
 	
-	public MapFragment(Uri uriMap, List<Exhibition> exhibitionList)
-	{
-		this.uriMap = uriMap;
-		this.exhibitionList = exhibitionList;
-	}
+	//public MapFragment(Area area)
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -44,7 +42,18 @@ public class MapFragment extends Fragment
     	canvas = (MapOverlay)v.findViewById(R.id.canvas);
     	photoMap = (PhotoView)v.findViewById(R.id.mapview);
     	canvasLayout = (RelativeLayout)v.findViewById(R.id.canvas_layout);
-    	photoMap.setImageURI(uriMap);
+    	
+    	// initialize overlay
+    	canvas.initialize(area);
+    	
+    	// get informed on bitmap and set image
+    	try
+    	{
+    		ContentResolver cr = getActivity().getContentResolver();
+    		Bitmap bm = Images.Media.getBitmap(cr, area.getImage());
+        	photoMap.setImageBitmap(bm);
+    	} catch(Exception e) { Log.i("test", e.getMessage()); }
+    	
     	attacher = new PhotoViewAttacher(photoMap);
     	observer = new RectObserver();
     	observer.start();

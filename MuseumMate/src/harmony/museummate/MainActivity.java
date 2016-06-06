@@ -370,8 +370,7 @@ public class MainActivity	extends 	AppCompatActivity
 	    {
 	    	Uri mapUri = Uri.parse("android.resource://harmony.museummate/" + R.drawable.map_sample);
 	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.exhibition_sample);
-	    	ArrayList<Exhibition> exhibitionList = new ArrayList<Exhibition>();
-	    	exhibitionList.add(new Exhibition(0, 1, 5, "샘플0", "작가0", "설명0", path));
+
 	    	
 	    	fragmentMap = new MapFragment(mapUri, exhibitionList);
 	    }
