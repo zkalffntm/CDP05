@@ -1,18 +1,17 @@
 package datatype;
 
-import android.net.Uri;
-
-public class Exhibition	extends Item
+public class Exhibition	extends Placement
 {
 	public Exhibition(	int id, String name, String author,
-						String summary, String description, String image)
+						String summary, String description,
+						int[] imageIds)
 	{
 		this.id = id;
+		this.imageIds = imageIds;
 		this.name = name;
 		this.author = author;
 		this.summary = summary;
 		this.description = description;
-		this.image = image;
 	}
 
 	private int id;
@@ -20,7 +19,7 @@ public class Exhibition	extends Item
 	private String author;
 	private String summary;
 	private String description;
-	private String image;
+	private int[] imageIds;
 	
 	
 	@Override
@@ -31,5 +30,5 @@ public class Exhibition	extends Item
 	public String	getAuthor()			{ return author; }
 	public String	getSummary()		{ return summary; }
 	public String	getDescription()	{ return description; }
-	public String	getImage()			{ return image; }
+	public int[]	getImageIds()		{ return imageIds; }
 }

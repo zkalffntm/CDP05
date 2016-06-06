@@ -27,6 +27,7 @@ class MapOverlay extends View
 	private Bitmap deSelectedSpot;
 	private float density;
 	
+	
 	public MapOverlay(Context context)
 	{ super(context); }
 	

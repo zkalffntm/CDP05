@@ -13,7 +13,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class RecommandedFragment extends Fragment
+public class RecommandationFragment extends Fragment
 {
 	class ItemData
 	{

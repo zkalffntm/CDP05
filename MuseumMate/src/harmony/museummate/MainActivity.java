@@ -62,12 +62,12 @@ public class MainActivity	extends 	AppCompatActivity
 	private static final int RESOLUTION = 1;
 	
 	private static final int
-	MAP			= -1,
-	EXHIBITION	= 0,
-	RECOMMANDED = 1,
-	VISITED		= 2,
-	NOTICE		= 3,
-	PREFERENCE	= 4;
+	MAP				= -1,
+	EXHIBITION		= 0,
+	RECOMMANDATION	= 1,
+	VISITED			= 2,
+	NOTICE			= 3,
+	PREFERENCE		= 4;
 	
 	// Stata Variable
 	private boolean loading;
@@ -115,7 +115,7 @@ public class MainActivity	extends 	AppCompatActivity
     private VisitedFragment		fragmentVisited;
     private MapFragment			fragmentMap;
     private ExhibitionFragment	fragmentExhibition;
-    private RecommandedFragment	fragmentRecommanded;
+    private RecommandationFragment	fragmentRecommandation;
     
     
 	@Override
@@ -350,7 +350,7 @@ public class MainActivity	extends 	AppCompatActivity
 	    	switch(position)
 	    	{
 	    	case 0: showExhibition();	break;
-	    	case 1: showRecommanded();	break;
+	    	case 1: showRecommandation();	break;
 	    	case 2: showVisited();		break;
 	    	case 3: showNotice();		break;
 	    	case 4: showPreference();	break;
@@ -400,25 +400,25 @@ public class MainActivity	extends 	AppCompatActivity
 	    showFragment(fragmentExhibition, EXHIBITION);
 	}
 	
-	/*************************** Recommanded Fragment Shower ***************************/
+	/*************************** recommandation Fragment Shower ***************************/
 
-	private void showRecommanded()
+	private void showRecommandation()
 	{
-	    if(fragmentRecommanded == null)
+	    if(fragmentRecommandation == null)
 	    {
-	    	fragmentRecommanded = new RecommandedFragment();
-	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.recommanded_sample);
+	    	fragmentRecommandation = new RecommandationFragment();
+	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.recommandation_sample);
 
-	    	fragmentRecommanded.addItem(path, "추천코스1", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스2", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스3", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스4", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스5", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스6", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스7", "간략한 설명");
+	    	fragmentRecommandation.addItem(path, "추천코스1", "간략한 설명");
+	    	fragmentRecommandation.addItem(path, "추천코스2", "간략한 설명");
+	    	fragmentRecommandation.addItem(path, "추천코스3", "간략한 설명");
+	    	fragmentRecommandation.addItem(path, "추천코스4", "간략한 설명");
+	    	fragmentRecommandation.addItem(path, "추천코스5", "간략한 설명");
+	    	fragmentRecommandation.addItem(path, "추천코스6", "간략한 설명");
+	    	fragmentRecommandation.addItem(path, "추천코스7", "간략한 설명");
 	    }
 	    
-	    showFragment(fragmentRecommanded, RECOMMANDED);
+	    showFragment(fragmentRecommandation, RECOMMANDATION);
 	}
 	
 	/*************************** Visited Fragment Shower ***************************/

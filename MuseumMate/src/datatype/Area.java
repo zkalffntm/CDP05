@@ -1,10 +1,8 @@
 package datatype;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
-import android.net.Uri;
+import android.util.SparseArray;
 
 public class Area implements Serializable
 {
@@ -13,15 +11,14 @@ public class Area implements Serializable
 	private String image;
 	private int columnCount;
 	
-	transient private List<Location> locationList;
+	transient private SparseArray<Placement> placementList;
 	
 	
-	public Area(int num, String name, String image)
+	public Area(int num, String name)
 	{
 		this.num = num;
 		this.name = name;
-		this.image = image;
-		locationList = new ArrayList<Location>();
+		placementList = new SparseArray<Placement>();
 	}
 	
 	public int		getNumber()			{ return num; }
@@ -34,5 +31,8 @@ public class Area implements Serializable
 	public void	setImage(String image)			{ this.image = image; }
 	public void setColumnCount(int columnCount)	{ this.columnCount = columnCount; }
 	
-	public List<Location> getLocatedItem() { return locationList; }
+	public void addPlacement(Placement placement)
+	{ placementList.append(placement.getBlockNumber(), placement); }
+	
+	public SparseArray<Placement> getplacements() { return placementList; }
 }

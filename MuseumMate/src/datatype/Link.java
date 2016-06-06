@@ -1,20 +1,20 @@
 package datatype;
 
-public class Link extends Item
+public class Link extends Placement
 {
-	private Area area;
-	private int blockNum;
+	private Area destArea;
+	private int destBlockNum;
 	
 	
-	public Link(Area area, int blockNum)
+	public Link(Area destArea, int destBlockNum)
 	{
-		this.area = area;
-		this.blockNum = blockNum;
+		this.destArea = destArea;
+		this.destBlockNum = destBlockNum;
 	}
 	
 	@Override
 	public TYPE getType() { return TYPE.LINK; }
 	
-	public Area	getArea()			{ return area; }
-	public int	getBlockNumber()	{ return blockNum; }
+	public Area	getDestinationArea()		{ return destArea; }
+	public int	getDestinationBlockNumber()	{ return destBlockNum; }
 }

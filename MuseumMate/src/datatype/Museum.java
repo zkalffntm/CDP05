@@ -12,11 +12,10 @@ public class Museum implements Serializable
 	private int port;
 
 	// Containing Data
-	private long lastUpdated;
+	private long lastUpdate;
 	private List<Area> areaList;
 	private List<Exhibition> exhibitionList;
-	private List<Link> linkList;
-	private List<Location> locationList;
+	private List<Recommandation> recommandationList;
 	
 	
 	/********************************* Setters *********************************/
@@ -25,8 +24,8 @@ public class Museum implements Serializable
 	public void setIP(String ip)		{ this.ip = ip; }
 	public void setPort(int port)		{ this.port = port; }
 	
-	public void setLastUpdated(long lastUpdated)
-	{ this.lastUpdated = lastUpdated; }
+	public void setLastUpdate(long lastUpdate)
+	{ this.lastUpdate = lastUpdate; }
 	
 	public void setAreaList(List<Area> areaList)
 	{ this.areaList = areaList; }
@@ -34,11 +33,8 @@ public class Museum implements Serializable
 	public void setExhibitionList(List<Exhibition> exhibitionList)
 	{ this.exhibitionList = exhibitionList; }
 	
-	public void setLinkList(List<Link> linkList)
-	{ this.linkList = linkList; }
-	
-	public void setLocationList(List<Location> locationList)
-	{ this.locationList = locationList; }
+	public void setRecommandationList(List<Recommandation> recommandationList)
+	{ this.recommandationList = recommandationList; }
 	/***************************************************************************/
 	
 	/********************************* Getters *********************************/
@@ -46,10 +42,9 @@ public class Museum implements Serializable
 	public String	getName()	{ return name; }
 	public String	getIP()		{ return ip; }
 	public int		getPort()	{ return port; }
-	public long getLastUpdated()				{ return lastUpdated; }
-	public List<Area> getAreaList()				{ return areaList; }
-	public List<Exhibition> getExhibitionList()	{ return exhibitionList; }
-	public List<Link> getLinkList()				{ return linkList; }
-	public List<Location> getLocationList()		{ return locationList; }
+	public long 				getLastUpdate()			{ return lastUpdate; }
+	public List<Area> 			getAreaList()			{ return areaList; }
+	public List<Exhibition> 	getExhibitionList()		{ return exhibitionList; }
+	public List<Recommandation> getRecommandationList()	{ return recommandationList; }
 	/***************************************************************************/
 }
