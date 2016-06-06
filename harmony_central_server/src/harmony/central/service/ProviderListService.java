@@ -20,7 +20,7 @@ import harmony.common.AbstractService;
  * 
  * @author Seongjun Park
  * @since 2016/3/22
- * @version 2016/4/8
+ * @version 2016/6/6
  */
 public class ProviderListService extends AbstractService {
 
@@ -29,7 +29,7 @@ public class ProviderListService extends AbstractService {
    * 
    * @param argument
    *          JSONArray = {double, double}
-   * @return Object[][8] = {{박물관번호,박물관명,ip1,ip2,ip3,ip4,port,major},...}
+   * @return Object[][7] = {{박물관명,ip1,ip2,ip3,ip4,port,major},...}
    * @throws SQLException
    *           SQL 관련 예외
    * @throws IOException
@@ -59,20 +59,19 @@ public class ProviderListService extends AbstractService {
         Exhibition exhibition = ExhibitionController
             .getExhibitionByNum(exhibitionNum);
 
-        Object[] objArr = new Object[8];
-        objArr[0] = exhibitionNum;
-        objArr[1] = exhibition.getName();
+        Object[] objArr = new Object[7];
+        objArr[0] = exhibition.getName();
         String[] ipParts = exhibition.getIp().split("\\.");
         for (int i = 0; i < 4; i++) {
-          objArr[i + 2] = Integer.parseInt(ipParts[i]);
+          objArr[i + 1] = Integer.parseInt(ipParts[i]);
         }
-        objArr[6] = exhibition.getPort();
-        objArr[7] = exhibition.getBeaconMajor();
+        objArr[5] = exhibition.getPort();
+        objArr[6] = exhibition.getBeaconMajor();
         objArrList.add(objArr);
       }
     }
 
     // List<Object[]> to Object[][]
-    return (Object[][]) objArrList.toArray(new Object[objArrList.size()][8]);
+    return (Object[][]) objArrList.toArray(new Object[objArrList.size()][]);
   }
 }

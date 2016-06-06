@@ -17,7 +17,7 @@ public class LoginAdminService extends AbstractService {
   /**
    * 
    * @param argument
-   *          JSONArray = {id, password, ip}
+   *          JSONArray = {id, password}
    * @return true or false
    * @throws SQLException
    *           SQL 관련 예외
@@ -34,13 +34,13 @@ public class LoginAdminService extends AbstractService {
     JSONArray accountInfo = (JSONArray) argument;
     String id = accountInfo.getString(0);
     String password = accountInfo.getString(1);
-    String ip = accountInfo.getString(2);
+    // String ip = accountInfo.getString(2);
 
     Account account = AccountController.getAccountByIdAndPassword(id, password);
     if (account != null) {
       Exhibition exhibition = ExhibitionController
           .getExhibitionByNum(account.getExhibitionNum());
-      if (exhibition != null && exhibition.getIp().equals(ip)) {
+      if (exhibition != null /* && exhibition.getIp().equals(ip) */) {
         return true;
       }
     }

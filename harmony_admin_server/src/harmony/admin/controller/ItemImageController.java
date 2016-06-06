@@ -18,21 +18,21 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/17
- * @version 2016/5/31
+ * @version 2016/6/6
  */
 public class ItemImageController {
   private static final String ITEM_IMAGE_DIR = "image" + File.separator
       + "item";
 
   private static ItemImage[] getItemImages() throws SQLException {
-  
+
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();
     String sql = "select * from " + DbLiteral.ITEM_IMAGE + " order by "
         + DbLiteral.I_NUM + ", " + DbLiteral.II_SEQ + ", " + DbLiteral.II_NUM;
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     ResultSet resultSet = pstmt.executeQuery();
-  
+
     // 레코드 하나씩 리스트에 추가
     List<ItemImage> itemImageList = new ArrayList<ItemImage>();
     while (resultSet.next()) {
@@ -45,7 +45,7 @@ public class ItemImageController {
       area.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
       itemImageList.add(area);
     }
-  
+
     // 타입 변형 : List<> -> Object[]
     return (ItemImage[]) itemImageList
         .toArray(new ItemImage[itemImageList.size()]);
@@ -94,8 +94,8 @@ public class ItemImageController {
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();
     String sql = "select * from " + DbLiteral.ITEM_IMAGE + " where "
-        + DbLiteral.I_NUM + "=? order by " + DbLiteral.I_NUM + ", "
-        + DbLiteral.II_SEQ + ", " + DbLiteral.II_NUM;
+        + DbLiteral.I_NUM + "=? order by " + DbLiteral.II_SEQ + ", "
+        + DbLiteral.II_NUM;
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, itemNum);
     ResultSet resultSet = pstmt.executeQuery();
@@ -152,15 +152,15 @@ public class ItemImageController {
 
   private static int insertItemImage(ItemImage itemImage)
       throws SQLException, IOException {
-  
+
     // 이미지 파일 업로드
     itemImage.setImage(uploadItemImageFile(itemImage.getImage()));
-  
+
     // 자동 커밋 일시 해제
     Connection dbConnection = DbConnector.getInstance().getConnection();
     boolean prevAutoCommit = dbConnection.getAutoCommit();
     dbConnection.setAutoCommit(false);
-  
+
     // 레코드 삽입 쿼리 실행
     int itemImageNum = getMaxItemImageNum() + 1;
     String sql = "insert into " + DbLiteral.ITEM_IMAGE
@@ -172,28 +172,28 @@ public class ItemImageController {
     pstmt.setBoolean(4, itemImage.isMain());
     pstmt.setInt(5, itemImage.getItemNum());
     pstmt.executeUpdate();
-  
+
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);
-  
+
     return itemImageNum;
   }
 
   private static void updateItemImage(ItemImage itemImage)
       throws SQLException, IOException {
-  
+
     // 변경했다면 이미지 파일 업로드
     if (itemImage.isImageEdited()) {
       removeItemImageFile(getItemImageByNum(itemImage.getNum()).getImage());
       itemImage.setImage(uploadItemImageFile(itemImage.getImage()));
     }
-  
+
     // 자동 커밋 일시 해제
     Connection dbConnection = DbConnector.getInstance().getConnection();
     boolean prevAutoCommit = dbConnection.getAutoCommit();
     dbConnection.setAutoCommit(false);
-  
+
     // 레코드 갱신 쿼리 실행
     String sql = "update " + DbLiteral.ITEM_IMAGE + " set " + DbLiteral.II_SEQ
         + "=?, " + DbLiteral.II_IMAGE + "=?, " + DbLiteral.II_MAIN + "=?, "
@@ -205,10 +205,10 @@ public class ItemImageController {
     pstmt.setInt(4, itemImage.getItemNum());
     pstmt.setInt(5, itemImage.getNum());
     pstmt.executeUpdate();
-  
+
     // 커밋
     dbConnection.commit();
-    dbConnection.setAutoCommit(prevAutoCommit);  
+    dbConnection.setAutoCommit(prevAutoCommit);
   }
 
   private static void deleteItemImageByNum(int num) throws SQLException {
@@ -260,15 +260,15 @@ public class ItemImageController {
 
   private static String uploadItemImageFile(String imageSource)
       throws IOException {
-  
+
     // 스킵 조건
     if ("".equals(imageSource)) {
       return imageSource;
     }
-  
+
     // 디렉토리 경로 확보
     new File(ITEM_IMAGE_DIR).mkdirs();
-  
+
     // 이미지 파일명 중복 체크 후 최종 저장될 경로 지정
     String imageName = new File(imageSource).getName();
     int indexOfDot = imageName.lastIndexOf('.');
@@ -280,11 +280,11 @@ public class ItemImageController {
       imageName = prefix + "_" + (i++) + suffix;
     }
     String imageDest = ITEM_IMAGE_DIR + File.separator + imageName;
-  
+
     // 이미지 파일 업로드
     ImageManager.writeImageFromByteString(
         ImageManager.readByteStringFromImage(imageSource), imageDest);
-  
+
     // 업로드된 이미지 파일명 반환
     return imageDest;
   }

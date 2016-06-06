@@ -8,9 +8,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import harmony.central.service.AppendVisitService;
 import harmony.central.service.LoginAdminService;
 import harmony.central.service.ProviderImageService;
 import harmony.central.service.ProviderListService;
+import harmony.central.service.VisitedService;
 import harmony.common.AbstractClientThread;
 import harmony.common.AbstractServerThread;
 import harmony.common.PacketLiteral;
@@ -46,6 +48,9 @@ public class CentralClientThread extends AbstractClientThread {
     Object value = recvJson.get(PacketLiteral.VALUE);
 
     switch (key) {
+    case PacketLiteral.REQ_APPEND_VISIT:
+      this.doAppendVisitService(value);
+      break;
     case PacketLiteral.REQ_LOGIN_ADMIN:
       this.doLoginAdminService(value);
       break;
@@ -55,11 +60,40 @@ public class CentralClientThread extends AbstractClientThread {
     case PacketLiteral.REQ_PROVIDER_LIST:
       this.doProviderListService(value);
       break;
+    case PacketLiteral.REQ_VISITED:
+      this.doVisitedService(value);
+      break;
     default:
       throw new Exception("unacceptable message");
     }
   }
 
+  /**
+   * 
+   * @param value
+   * @throws JSONException
+   * @throws SQLException
+   * @throws IOException
+   */
+  private void doAppendVisitService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
+
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_APPEND_VISIT);
+    sendJson.put(PacketLiteral.VALUE,
+        new AppendVisitService().doService(value));
+
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
+
+  /**
+   * 
+   * @param value
+   * @throws JSONException
+   * @throws SQLException
+   * @throws IOException
+   */
   private void doLoginAdminService(Object value)
       throws JSONException, SQLException, IOException {
     JSONArray jsonArray = (JSONArray) value;
@@ -86,7 +120,7 @@ public class CentralClientThread extends AbstractClientThread {
       throws JSONException, SQLException, IOException {
     JSONObject sendJson = new JSONObject();
 
-    sendJson.put(PacketLiteral.KEY, PacketLiteral.REQ_PROVIDER_IMAGE);
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_PROVIDER_IMAGE);
     sendJson.put(PacketLiteral.VALUE,
         new ProviderImageService().doService(value));
 
@@ -111,9 +145,27 @@ public class CentralClientThread extends AbstractClientThread {
       throws JSONException, SQLException, IOException {
     JSONObject sendJson = new JSONObject();
 
-    sendJson.put(PacketLiteral.KEY, PacketLiteral.REQ_PROVIDER_LIST);
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_PROVIDER_LIST);
     sendJson.put(PacketLiteral.VALUE,
         new ProviderListService().doService(value));
+
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
+
+  /**
+   * 
+   * @param value
+   * @throws JSONException
+   * @throws SQLException
+   * @throws IOException
+   */
+  private void doVisitedService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
+
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_VISITED);
+    sendJson.put(PacketLiteral.VALUE, new VisitedService().doService(value));
 
     this.getPrintWriter().println(sendJson.toString());
     this.getPrintWriter().flush();

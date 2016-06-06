@@ -14,7 +14,7 @@ import harmony.common.ImageManager;
  * 
  * @author Seongjun Park
  * @since 2016/5/27
- * @version 2016/5/27
+ * @version 2016/6/6
  */
 public class ProviderImageService extends AbstractService {
 
@@ -23,7 +23,8 @@ public class ProviderImageService extends AbstractService {
       throws SQLException, IOException, JSONException {
 
     // 쿼리 실행
-    Exhibition exhibition = ExhibitionController.getExhibitionByNum((int) argument);
+    Exhibition exhibition = ExhibitionController
+        .getExhibitionByMajor((int) argument);
 
     // 결과 레코드를 객체에 저장
     String imageStream = "";

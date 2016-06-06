@@ -41,4 +41,30 @@ public class ExhibitionController {
 
     return exhibition;
   }
+
+  public static Exhibition getExhibitionByMajor(int major) throws SQLException {
+
+    // 레코드 조회 쿼리 실행
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select * from " + DbLiteral.EXHIBITION + " where "
+        + DbLiteral.E_BEACON_MAJOR + "=?";
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.setInt(1, major);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    // 반환
+    Exhibition exhibition = null;
+    if (resultSet.next()) {
+      exhibition = new Exhibition();
+      exhibition.setNum(resultSet.getInt(DbLiteral.E_NUM));
+      exhibition.setName(resultSet.getString(DbLiteral.E_NAME));
+      exhibition.setBeaconMajor(major);
+      exhibition.setIp(resultSet.getString(DbLiteral.E_IP));
+      exhibition.setPort(resultSet.getInt(DbLiteral.E_PORT));
+      exhibition.setImage(resultSet.getString(DbLiteral.E_IMAGE));
+      exhibition.setImageEdited(false);
+    }
+
+    return exhibition;
+  }
 }
