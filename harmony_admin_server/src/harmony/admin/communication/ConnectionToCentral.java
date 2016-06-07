@@ -87,7 +87,7 @@ public class ConnectionToCentral {
     }
   }
 
-  public boolean doLogin(String id, String password) throws Exception {
+  public boolean doLogin(String id, String password) throws Exception  {
 
     this.connect();
 
