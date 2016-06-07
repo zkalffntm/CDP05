@@ -1,13 +1,6 @@
 package harmony.admin.gui;
 
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-
-import ProblemDomain.WorkData;
-
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
@@ -18,223 +11,234 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.util.ArrayList;
 
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ScrollPaneConstants;
 
-public class AddWorkToRoutePage extends JDialog implements ActionListener{
+import harmony.admin.gui.probremdomain.WorkData;
 
-	private GridBagConstraints constraints;
-	private JPanel btnPanel;
-	private JPanel mainPanel;
-	private JScrollPane scroller;
-	private JButton cancelBtn;
-	private JButton okBtn;
+public class AddWorkToRoutePage extends JDialog implements ActionListener {
 
-	private WorkData workData;
-	private ArrayList<SimpleDataPanel> simplePanelList;
-	private ArrayList<WorkData> workList;
+  private GridBagConstraints constraints;
+  private JPanel btnPanel;
+  private JPanel mainPanel;
+  private JScrollPane scroller;
+  private JButton cancelBtn;
+  private JButton okBtn;
 
-	private GUI_console gui;
+  private WorkData workData;
+  private ArrayList<SimpleDataPanel> simplePanelList;
+  private ArrayList<WorkData> workList;
 
-	private int selectedRoomIdx = 0;
-	private JPanel panel;
-	private JComboBox comboBox;
-	private Label label;
+  private GUI_console gui;
 
-	private String[] roomNameList;
-	private JButton btnNewButton;
+  private int selectedRoomIdx = 0;
+  private JPanel panel;
+  private JComboBox comboBox;
+  private Label label;
 
-	private int routeNum;
+  private String[] roomNameList;
+  private JButton btnNewButton;
 
-	public AddWorkToRoutePage(JFrame frame, String title) {
-		super(frame, title, true);
+  private int routeNum;
 
-		simplePanelList = new ArrayList<SimpleDataPanel>();
+  public AddWorkToRoutePage(JFrame frame, String title) {
+    super(frame, title, true);
 
-		setSize(500, 800);
-		setResizable(false);
+    simplePanelList = new ArrayList<SimpleDataPanel>();
 
-		gui = gui.getInstance();
+    setSize(500, 800);
+    setResizable(false);
 
-		roomNameList = new String[gui.getRoomCnt()];
+    gui = gui.getInstance();
 
-		for(int i=0; i<gui.getRoomCnt(); i++){
-			roomNameList[i] = gui.getRoomDataList().get(i).getName();
-		}
+    roomNameList = new String[gui.getRoomCnt()];
 
-		btnPanel = new JPanel();
-		getContentPane().add(btnPanel, BorderLayout.SOUTH);
-		btnPanel.setLayout(new BorderLayout(0, 0));
+    for (int i = 0; i < gui.getRoomCnt(); i++) {
+      roomNameList[i] = gui.getRoomDataList().get(i).getName();
+    }
 
-		mainPanel = new JPanel();
+    btnPanel = new JPanel();
+    getContentPane().add(btnPanel, BorderLayout.SOUTH);
+    btnPanel.setLayout(new BorderLayout(0, 0));
 
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.NORTHWEST;
+    mainPanel = new JPanel();
 
-		GridBagLayout gbl_dataPanel = new GridBagLayout();
+    constraints = new GridBagConstraints();
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.anchor = GridBagConstraints.NORTHWEST;
 
-		gbl_dataPanel.columnWidths = new int[] {0};
-		gbl_dataPanel.rowHeights = new int[] {0};
-		gbl_dataPanel.columnWeights = new double[] { Double.MIN_VALUE };
-		gbl_dataPanel.rowWeights = new double[] { Double.MIN_VALUE };
+    GridBagLayout gbl_dataPanel = new GridBagLayout();
 
-		mainPanel.setLayout(gbl_dataPanel);
+    gbl_dataPanel.columnWidths = new int[] { 0 };
+    gbl_dataPanel.rowHeights = new int[] { 0 };
+    gbl_dataPanel.columnWeights = new double[] { Double.MIN_VALUE };
+    gbl_dataPanel.rowWeights = new double[] { Double.MIN_VALUE };
 
-		scroller = new JScrollPane(mainPanel);
+    mainPanel.setLayout(gbl_dataPanel);
 
-		btnNewButton = new JButton("New button");
-		GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
-		gbc_btnNewButton.insets = new Insets(0, 0, 5, 5);
-		gbc_btnNewButton.gridx = 0;
-		gbc_btnNewButton.gridy = 0;
-		mainPanel.add(btnNewButton, gbc_btnNewButton);
-		scroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    scroller = new JScrollPane(mainPanel);
 
-		getContentPane().add(scroller, BorderLayout.CENTER);
+    btnNewButton = new JButton("New button");
+    GridBagConstraints gbc_btnNewButton = new GridBagConstraints();
+    gbc_btnNewButton.insets = new Insets(0, 0, 5, 5);
+    gbc_btnNewButton.gridx = 0;
+    gbc_btnNewButton.gridy = 0;
+    mainPanel.add(btnNewButton, gbc_btnNewButton);
+    scroller.setHorizontalScrollBarPolicy(
+        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    scroller.setVerticalScrollBarPolicy(
+        ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 
-		cancelBtn = new JButton("���");
-		cancelBtn.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				workList.clear();
-				
-				gui.getRmp().getPopUpPage().setVisible(false);
-			}
-		});
-		btnPanel.add(cancelBtn, BorderLayout.EAST);
+    getContentPane().add(scroller, BorderLayout.CENTER);
 
-		okBtn = new JButton("Ȯ��");
-		okBtn.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				gui.getRmp().getPopUpPage().setVisible(false);
-				
-				gui.getRouteList().get(routeNum-1).setWorkDataList(workList);
-			
-				System.out.println(routeNum + " �� ��õ���");
-				for(int i=0; i<gui.getRouteList().get(routeNum-1).getWorkDataList().size(); i++){
-					System.out.print(gui.getRouteList().get(routeNum-1).getWorkDataList().get(i).getRoomNum() + "�� �� : ");
-					System.out.println(gui.getRouteList().get(routeNum-1).getWorkDataList().get(i).getTitle());
-				}	
-			}
-		});
-		btnPanel.add(okBtn, BorderLayout.CENTER);
+    cancelBtn = new JButton("���");
+    cancelBtn.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent arg0) {
+        workList.clear();
 
-		panel = new JPanel();
-		panel.setLayout(new BorderLayout());
+        gui.getRmp().getPopUpPage().setVisible(false);
+      }
+    });
+    btnPanel.add(cancelBtn, BorderLayout.EAST);
 
-		getContentPane().add(panel, BorderLayout.NORTH);
+    okBtn = new JButton("Ȯ��");
+    okBtn.addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent arg0) {
+        gui.getRmp().getPopUpPage().setVisible(false);
 
-		label = new Label();
-		label.setFont(new Font("���ý� ����", Font.BOLD, 20));
-		label.setText("���ý� ����");
+        gui.getRouteList().get(routeNum - 1).setWorkDataList(workList);
 
-		comboBox = new JComboBox(roomNameList);
-		comboBox.addActionListener(this);
+        System.out.println(routeNum + " �� ��õ���");
+        for (int i = 0; i < gui.getRouteList().get(routeNum - 1)
+            .getWorkDataList().size(); i++) {
+          System.out.print(gui.getRouteList().get(routeNum - 1)
+              .getWorkDataList().get(i).getRoomNum() + "�� �� : ");
+          System.out.println(gui.getRouteList().get(routeNum - 1)
+              .getWorkDataList().get(i).getTitle());
+        }
+      }
+    });
+    btnPanel.add(okBtn, BorderLayout.CENTER);
 
-		panel.add(comboBox, BorderLayout.CENTER);
-		panel.add(label, BorderLayout.WEST);
-	}
+    panel = new JPanel();
+    panel.setLayout(new BorderLayout());
 
-	public int getRouteNum() {
-		return routeNum;
-	}
+    getContentPane().add(panel, BorderLayout.NORTH);
 
-	public void setRouteNum(int routeNum) {
-		this.routeNum = routeNum;
-	}
+    label = new Label();
+    label.setFont(new Font("���ý� ����", Font.BOLD, 20));
+    label.setText("���ý� ����");
 
-	public void refreshList(){
-		if(gui.getRouteList().size() > routeNum-1)
-			workList = (ArrayList<WorkData>)(gui.getRouteList().get(routeNum-1).getWorkDataList().clone());
-		
-		else
-			workList = new ArrayList<WorkData>();
-	}
-	
-	public void refresh(){
-		simplePanelList.clear();
-		mainPanel.removeAll();
+    comboBox = new JComboBox(roomNameList);
+    comboBox.addActionListener(this);
 
-		constraints = new GridBagConstraints();
-		constraints.gridx = 0;
-		constraints.gridy = 0;
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.anchor = GridBagConstraints.NORTHWEST;
+    panel.add(comboBox, BorderLayout.CENTER);
+    panel.add(label, BorderLayout.WEST);
+  }
 
-		GridBagLayout gbl_dataPanel = new GridBagLayout();
+  public int getRouteNum() {
+    return routeNum;
+  }
 
-		gbl_dataPanel.columnWidths = new int[] { SimpleDataPanel.WIDTH };
-		gbl_dataPanel.rowHeights = new int[] { SimpleDataPanel.HEIGHT };
-		gbl_dataPanel.columnWeights = new double[] { Double.MIN_VALUE };
-		gbl_dataPanel.rowWeights = new double[] { Double.MIN_VALUE };
+  public void setRouteNum(int routeNum) {
+    this.routeNum = routeNum;
+  }
 
-		mainPanel.setLayout(gbl_dataPanel);
+  public void refreshList() {
+    if (gui.getRouteList().size() > routeNum - 1)
+      workList = (ArrayList<WorkData>) (gui.getRouteList().get(routeNum - 1)
+          .getWorkDataList().clone());
 
-		if(gui.getRoomCnt() > 0){
-			for(int i=0; i<gui.getRoomDataList().get(selectedRoomIdx).getWorkCnt(); i++){
-				constraints.gridy = i;
-				SimpleDataPanel temp = new SimpleDataPanel(gui.getRoomDataList()
-						.get(selectedRoomIdx).getWorkDataList().get(i));
+    else
+      workList = new ArrayList<WorkData>();
+  }
 
-				if(workList != null)
-					for(int j=0; j<workList.size(); j++){
-						if(workList.get(j).equals(gui.getRoomDataList().get(selectedRoomIdx).getWorkDataList().get(i)))
-						{
-							temp.setSelected(true);
-							temp.validate();
-							temp.repaint();
-						}
-					}
+  public void refresh() {
+    simplePanelList.clear();
+    mainPanel.removeAll();
 
-				temp.setWorkIdx(i);
+    constraints = new GridBagConstraints();
+    constraints.gridx = 0;
+    constraints.gridy = 0;
+    constraints.fill = GridBagConstraints.HORIZONTAL;
+    constraints.anchor = GridBagConstraints.NORTHWEST;
 
-				temp.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseClicked(MouseEvent e) {
-						if(temp.isSelected()){
-							workList.remove((WorkData)(gui.getWorkHashMap().get((int)(temp.getWorkData().getRealNum()))));
-							temp.setSelected(false);
-						}
-						else{
-							workList.add((WorkData)(gui.getWorkHashMap().get((int)(temp.getWorkData().getRealNum()))));
-							temp.setSelected(true);
-						}
-						temp.validate();
-						temp.repaint();
+    GridBagLayout gbl_dataPanel = new GridBagLayout();
 
-						for(int i=0; i<workList.size(); i++){
-							System.out.println("��õ��� ��ǰ�� : " + workList.size());
-							System.out.println(workList.get(i).getTitle());
-						}
-					}
-				});
-				simplePanelList.add(temp);
-				mainPanel.add(temp, constraints);
-			}
-			validate();
-			repaint();
-		}
-	}
+    gbl_dataPanel.columnWidths = new int[] { SimpleDataPanel.WIDTH };
+    gbl_dataPanel.rowHeights = new int[] { SimpleDataPanel.HEIGHT };
+    gbl_dataPanel.columnWeights = new double[] { Double.MIN_VALUE };
+    gbl_dataPanel.rowWeights = new double[] { Double.MIN_VALUE };
 
-	public void paintComponents(Graphics g){
+    mainPanel.setLayout(gbl_dataPanel);
 
-	}
+    if (gui.getRoomCnt() > 0) {
+      for (int i = 0; i < gui.getRoomDataList().get(selectedRoomIdx)
+          .getWorkCnt(); i++) {
+        constraints.gridy = i;
+        SimpleDataPanel temp = new SimpleDataPanel(gui.getRoomDataList()
+            .get(selectedRoomIdx).getWorkDataList().get(i));
 
-	public void actionPerformed(ActionEvent e) {
-		JComboBox cb = (JComboBox)e.getSource();
-		selectedRoomIdx = cb.getSelectedIndex();
+        if (workList != null)
+          for (int j = 0; j < workList.size(); j++) {
+            if (workList.get(j).equals(gui.getRoomDataList()
+                .get(selectedRoomIdx).getWorkDataList().get(i))) {
+              temp.setSelected(true);
+              temp.validate();
+              temp.repaint();
+            }
+          }
 
-		refresh();
-	}
+        temp.setWorkIdx(i);
+
+        temp.addMouseListener(new MouseAdapter() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            if (temp.isSelected()) {
+              workList.remove((WorkData) (gui.getWorkHashMap()
+                  .get((int) (temp.getWorkData().getRealNum()))));
+              temp.setSelected(false);
+            } else {
+              workList.add((WorkData) (gui.getWorkHashMap()
+                  .get((int) (temp.getWorkData().getRealNum()))));
+              temp.setSelected(true);
+            }
+            temp.validate();
+            temp.repaint();
+
+            for (int i = 0; i < workList.size(); i++) {
+              System.out.println("��õ��� ��ǰ�� : " + workList.size());
+              System.out.println(workList.get(i).getTitle());
+            }
+          }
+        });
+        simplePanelList.add(temp);
+        mainPanel.add(temp, constraints);
+      }
+      validate();
+      repaint();
+    }
+  }
+
+  public void paintComponents(Graphics g) {
+
+  }
+
+  public void actionPerformed(ActionEvent e) {
+    JComboBox cb = (JComboBox) e.getSource();
+    selectedRoomIdx = cb.getSelectedIndex();
+
+    refresh();
+  }
 }

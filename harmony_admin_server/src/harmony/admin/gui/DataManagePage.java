@@ -23,8 +23,10 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 
+import harmony.admin.controller.AreaController;
 import harmony.admin.gui.probremdomain.RoomData;
 import harmony.admin.gui.probremdomain.WorkData;
+import harmony.admin.model.Area;
 import net.miginfocom.swing.MigLayout;
 
 public class DataManagePage extends ManagePage {
@@ -81,8 +83,6 @@ public class DataManagePage extends ManagePage {
 						System.out.println(i + "�� ���ð��� " + j + "��° ���ù� : " + gui.getRoomDataList().get(i).getWorkDataList().get(j).getTitle());
 					}
 				}
-				// 160607 박성준 작업
-				
 				
 				
 				

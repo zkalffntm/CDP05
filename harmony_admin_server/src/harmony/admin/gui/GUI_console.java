@@ -10,9 +10,15 @@ import java.util.HashMap;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
+import harmony.admin.controller.AreaController;
+import harmony.admin.controller.RecommendController;
 import harmony.admin.gui.probremdomain.Data;
 import harmony.admin.gui.probremdomain.RoomData;
 import harmony.admin.gui.probremdomain.RouteData;
+import harmony.admin.gui.probremdomain.WorkData;
+import harmony.admin.model.Area;
+import harmony.admin.model.Item;
+import harmony.admin.model.ItemImage;
 
 public class GUI_console {
 
@@ -529,6 +535,50 @@ public class GUI_console {
         }
     }
 
+    /** 박성준 작업함. 2016.6.8 */
+    // 전시물 데이터 관리에서의 저장
+    Area[] areas = new Area[this.roomCnt];
+    Item[][] items = new Item[this.roomCnt][];
+    ItemImage[][][] itemImages = new ItemImage[this.roomCnt][][];
+    for (int i = 0; i < areas.length; i++) {
+      RoomData roomData = this.roomDataList.get(i);
+      areas[i] = new Area();
+      areas[i].setNum(roomData.getRealNum());
+      areas[i].setName(roomData.getName());
+      areas[i].setImage(roomData.getFilePath());
+      
+      items[i] = new Item[roomData.getWorkCnt()];
+      itemImages[i] = new ItemImage[roomData.getWorkCnt()][];
+      for (int j = 0; j < roomData.getWorkCnt(); j++) {
+        WorkData workData = roomData.getWorkDataList().get(j);
+        items[i][j] = new Item();
+        items[i][j].setNum(workData.getRealNum());
+        items[i][j].setTitle(workData.getTitle());
+        items[i][j].setArtist(workData.getArtist());
+        items[i][j].setSimpleContent(workData.getSimpleContents());
+        items[i][j].setDetailContent(workData.getContents());
+        items[i][j].setSize(""); // 으앙
+        items[i][j].setAreaNum(roomData.getRealNum());
+        
+        itemImages[i][j] = new ItemImage[workData.getImageScr().size()];
+        for (int k = 0; k < workData.getImageScr().size(); k++) {
+          String itemImagePath = workData.getImageScr().get(k);
+          itemImages[i][j][k] = new ItemImage();
+          itemImages[i][j][k].setNum(0); // 으앙
+          itemImages[i][j][k].setSeq(k + 1);
+          itemImages[i][j][k].setImage(itemImagePath);
+          itemImages[i][j][k].setMain(false); // 으앙
+          itemImages[i][j][k].setItemNum(workData.getRealNum());          
+        }
+      }
+    }
+    // AreaController.saveAreas(areas, items, itemImages);
+
+    // 지도 관리에서의 저장
+    // AreaController.saveAreas(areas, items, blocks, blockPairs);
+    
+    // 추천 경로 관리에서의 저장
+    // RecommendController.saveRecommends(recommends, recommendItems);
   }
 
   ///////////////// ����� ������ �ҷ����� //////////////////////
