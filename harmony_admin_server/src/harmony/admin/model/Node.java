@@ -7,8 +7,8 @@ package harmony.admin.model;
  * @version 2016/6/10
  */
 public class Node {
-  private int num;
-  private int blockNum;
+  private int num = 0;
+  private int blockNum = 0;
 
   public int getNum() {
     return this.num;
