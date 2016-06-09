@@ -2,20 +2,20 @@ package datatype;
 
 import java.io.Serializable;
 
-public abstract class Placement implements Serializable
+public class Node implements Serializable
 {
-	public enum TYPE { EXHIBITION, LINK };
+	public enum TYPE { EXHIBITION, LINK, NODE };
 	
 	private Area area;
 	private int blockNum;
 	
-	public abstract TYPE getType();
+	public TYPE getType() { return TYPE.NODE; }
 	
 	public void place(Area area, int blockNum)
 	{
 		this.area = area;
 		this.blockNum = blockNum;
-		area.addPlacement(this);
+		area.addNode(this);
 	}
 	
 	public Area	getArea()			{ return area; }

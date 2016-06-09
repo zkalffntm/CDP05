@@ -1,6 +1,6 @@
 package bluetooth;
 
-public class BeaconProp // 비콘 등록정보
+public class BeaconProp
 {
 	private String	uuid;
 	private int		major;

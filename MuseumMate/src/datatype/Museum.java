@@ -5,6 +5,8 @@ import java.util.List;
 
 public class Museum implements Serializable
 {
+	private static Museum selectedMuseum;
+	
 	// Basic Informations
 	private int major;
 	private String name;
@@ -17,6 +19,9 @@ public class Museum implements Serializable
 	private List<Exhibition> exhibitionList;
 	private List<Recommandation> recommandationList;
 	
+	
+	public static void selectMuseum(Museum museum)	{ selectedMuseum = museum; }
+	public static Museum getSelectedMuseum() 		{ return selectedMuseum; }
 	
 	/********************************* Setters *********************************/
 	public void setMajor(int major)		{ this.major = major; }

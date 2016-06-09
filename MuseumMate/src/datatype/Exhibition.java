@@ -1,6 +1,6 @@
 package datatype;
 
-public class Exhibition	extends Placement
+public class Exhibition	extends Node
 {
 	public Exhibition(	int id, String name, String author,
 						String summary, String description,

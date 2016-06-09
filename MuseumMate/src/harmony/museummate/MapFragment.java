@@ -7,14 +7,21 @@ import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 import datatype.Area;
 import datatype.Exhibition;
+import datatype.Museum;
+import tools.CustomMsg;
+import tools.DynamicLoader;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
 
@@ -22,18 +29,23 @@ public class MapFragment extends Fragment
 {
 	private static final float FLOAT_BIAS = 0.01f;
 	
-	private static Area area;
-	
 	private PhotoView photoMap;
 	private PhotoViewAttacher attacher;
 	private MapOverlay canvas;
 	private RelativeLayout canvasLayout;
+	private ProgressBar progressBar;
+	
 	private RectObserver observer;
+	private MapLoadingHandler handler;
 	
+	private Area area;
 	private RectF mapRect;
+
 	
-	
-	//public MapFragment(Area area)
+	public MapFragment()
+	{
+		
+	}
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -42,21 +54,19 @@ public class MapFragment extends Fragment
     	canvas = (MapOverlay)v.findViewById(R.id.canvas);
     	photoMap = (PhotoView)v.findViewById(R.id.mapview);
     	canvasLayout = (RelativeLayout)v.findViewById(R.id.canvas_layout);
+    	progressBar = (ProgressBar)v.findViewById(R.id.progress);
     	
-    	// initialize overlay
-    	canvas.initialize(area);
-    	
+		//new DynamicLoader(getActivity()).setAreaImage(photoMap, area.getNumber(), handler);
     	// get informed on bitmap and set image
+		
     	try
     	{
     		ContentResolver cr = getActivity().getContentResolver();
-    		Bitmap bm = Images.Media.getBitmap(cr, area.getImage());
+    		Bitmap bm = Images.Media.getBitmap(cr, 
+    				Uri.parse("android.resource://harmony.museummate/" + R.drawable.map_sample));
         	photoMap.setImageBitmap(bm);
     	} catch(Exception e) { Log.i("test", e.getMessage()); }
     	
-    	attacher = new PhotoViewAttacher(photoMap);
-    	observer = new RectObserver();
-    	observer.start();
     	return v;
     }
 
@@ -101,4 +111,29 @@ public class MapFragment extends Fragment
         	}
     	}
     }
+	
+	class MapLoadingHandler extends Handler
+	{
+		@Override
+		public void handleMessage(Message msg)
+		{
+			progressBar.setVisibility(View.INVISIBLE);
+			
+			switch(msg.what)
+			{
+			case CustomMsg.SUCCESS:
+				canvas.setMapWidth(msg.arg1);
+		    	attacher = new PhotoViewAttacher(photoMap);
+		    	observer = new RectObserver();
+		    	observer.start();
+				break;
+				
+			case CustomMsg.FAILED:
+				Toast.makeText(getActivity(), R.string.unable_to_connect, Toast.LENGTH_LONG).show();
+			}
+			
+			super.handleMessage(msg);
+		}
+		
+	}
 }

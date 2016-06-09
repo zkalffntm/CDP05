@@ -15,10 +15,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
- * JSON client to specific host
+ * JSON client to specific host.
  * Kind of factory pattern.
- * Keep connection alive while any request remains.
- * Connections and reqeust counts are managed with 'clientList' HashMap.
+ * Keeps connection alive while any request remains.
+ * Connections and reqeust counts are managed with HashMap.
  * 
  * @author Kyuho
  */
@@ -78,7 +78,8 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message or saving image
 	 */
-	public void requestImage(String requestKey, Object requestValue, String filepath) throws JSONException, IOException
+	public void requestImage(String requestKey, Object requestValue, String filepath) 
+			throws JSONException, IOException
 	{
 		requestCount++;
 		
@@ -124,7 +125,8 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message
 	 */
-	public JSONObject requestObject(String requestKey, Object requestValue) throws JSONException, IOException
+	public JSONObject requestObject(String requestKey, Object requestValue) 
+			throws JSONException, IOException
 	{
 		JSONObject result;
 		requestCount++;
@@ -169,7 +171,8 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message
 	 */
-	public JSONObject requestObject(String requestKey, Object[] requestValue) throws JSONException, IOException
+	public JSONObject requestObject(String requestKey, Object[] requestValue) 
+			throws JSONException, IOException
 	{
 		JSONObject result;
 		requestCount++;
@@ -215,7 +218,8 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message
 	 */
-	public JSONArray requestArray(String requestKey, Object requestValue) throws JSONException, IOException
+	public JSONArray requestArray(String requestKey, Object requestValue) 
+			throws JSONException, IOException
 	{
 		JSONArray result;
 		requestCount++;
@@ -262,7 +266,8 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message
 	 */
-	public JSONArray requestArray(String requestKey, Object[] requestValue) throws JSONException, IOException
+	public JSONArray requestArray(String requestKey, Object[] requestValue) 
+			throws JSONException, IOException
 	{
 		JSONArray result;
 		requestCount++;

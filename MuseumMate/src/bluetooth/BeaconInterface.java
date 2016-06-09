@@ -7,48 +7,57 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
+/**
+ * 
+ * @author Kyuho
+ *
+ */
 public class BeaconInterface
 {
-	/******************* Singleton *******************/
-	private static BeaconInterface self;
+	// Singleton
+	private static volatile BeaconInterface self;
 	public static BeaconInterface getInstance()
 	{
-		if(self == null) self = new BeaconInterface();
-		return self;
+		synchronized(BeaconInterface.class)
+		{
+			if(self == null) self = new BeaconInterface();
+			return self;
+		}
 	}
+	
 	private BeaconInterface() {}
-	/*************************************************/
 
 	private BluetoothAdapter ba;
 	private LeScanCallback cb;
 	
-	/*************************************************/
-	
-	// 블루투스 켜기
-	// ret : true (블루투스 켜져 있음), false (블루투스 꺼져 있었고 켜라고 안내했음)
-	public boolean checkOn(Activity a)
+	/**
+	 * Turn on Bluetooth
+	 * 
+	 * @param	activity
+	 * @return	if the bluetooth was on
+	 */
+	public boolean checkOn(Activity activity)
 	{
-		// 어댑터 받기
+		// get adapter
 		if(ba == null)
 		{
 			final BluetoothManager bm = 
-					(BluetoothManager)a.getSystemService(Context.BLUETOOTH_SERVICE);
+					(BluetoothManager)activity.getSystemService(Context.BLUETOOTH_SERVICE);
 			ba = bm.getAdapter();
 		}
 		
-		// 꺼져 있으면 켜기
+		// turn on if is off
 		if(!ba.isEnabled())
 		{
 		    Intent btin = 
 		    		new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-		    a.startActivity(btin);
+		    activity.startActivity(btin);
 		    return false;
 		}
 		
 		return true;
 	}
 	
-	// 스캔 시작
 	public void startScan(LeScanCallback cb)
 	{
 		if(this.cb != null) return;
@@ -57,7 +66,6 @@ public class BeaconInterface
         ba.startLeScan(cb);
 	}
 	
-	// 스캔 중지
 	public void stopScan()
 	{
 		if(cb == null) return;
@@ -66,7 +74,12 @@ public class BeaconInterface
         ba.stopLeScan(cb);
 	}
 	
-	// record byte로 properties 식별
+	/**
+	 * Identify properties with the record bytes
+	 * 
+	 * @param record	BLE GATT record bytes
+	 * @return 			detected beacon's property
+	 */
 	public static BeaconProp parseRecord(byte[] record)
 	{
 		BeaconProp prop = null;
@@ -76,12 +89,12 @@ public class BeaconInterface
 			if(((int)record[ptr+2] & 0xff) == 0x02 &&
 			   ((int)record[ptr+3] & 0xff) == 0x15)
 			{
-				// 바이트 순서 변환
+				// relocate bytes
 				byte[] uuidBytes = new byte[16];
 		        System.arraycopy(record, ptr+4, uuidBytes, 0, 16);
 		        String hexString = bytesToHex(uuidBytes);
 
-		        // uuid 구하기
+		        // get uuid
 		        String uuid =  hexString.substring(0,8) + "-" + 
 		                hexString.substring(8,12) + "-" + 
 		                hexString.substring(12,16) + "-" + 
@@ -105,11 +118,13 @@ public class BeaconInterface
 	
 	/**
 	 * bytesToHex method
-	 * Found on the internet
-	 * http://stackoverflow.com/a/9855338
+	 * found on stackoverflow
+	 * 
+	 * @author maybeWeCouldStealAVan
+	 * @see http://stackoverflow.com/a/9855338
 	 */
-	static final char[] hexArray = "0123456789ABCDEF".toCharArray();
 	private static String bytesToHex(byte[] bytes) {
+		final char[] hexArray = "0123456789ABCDEF".toCharArray();
 	    char[] hexChars = new char[bytes.length * 2];
 	    for ( int j = 0; j < bytes.length; j++ ) {
 	        int v = bytes[j] & 0xFF;

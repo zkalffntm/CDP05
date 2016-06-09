@@ -367,13 +367,7 @@ public class MainActivity	extends 	AppCompatActivity
 	private void showMap()
 	{
 	    if(fragmentMap == null)
-	    {
-	    	Uri mapUri = Uri.parse("android.resource://harmony.museummate/" + R.drawable.map_sample);
-	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.exhibition_sample);
-
-	    	
-	    	fragmentMap = new MapFragment(mapUri, exhibitionList);
-	    }
+	    	fragmentMap = new MapFragment();
 	    
 	    showFragment(fragmentMap, MAP);
 	}

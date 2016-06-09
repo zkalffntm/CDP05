@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
 import datatype.Museum;
@@ -26,39 +28,46 @@ public class DynamicLoader
 	private String cacheDirStr;
 	private Museum museum;
 	
-	public DynamicLoader(Context context, Museum museum)
+	public DynamicLoader(Context context)
 	{
 		cacheDirStr = context.getCacheDir().getAbsolutePath();
-		this.museum = museum;
-	}
-
-	public void setExhibitionImage(ImageView view, int imageId)
-	{
-		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/e" + imageId,
-				PacketLiteral.REQ_ITEM_IMAGE, imageId);
+		this.museum = Museum.getSelectedMuseum();
 	}
 	
 	public void setAreaImage(ImageView view, int areaNum)
 	{
 		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/a" + areaNum,
-				PacketLiteral.REQ_AREA_IMAGE, areaNum);
+				PacketLiteral.REQ_AREA_IMAGE, areaNum, null);
+	}
+	
+	public void setAreaImage(ImageView view, int areaNum, Handler handler)
+	{
+		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/a" + areaNum,
+				PacketLiteral.REQ_AREA_IMAGE, areaNum, handler);
+	}
+
+	public void setExhibitionImage(ImageView view, int imageId)
+	{
+		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/e" + imageId,
+				PacketLiteral.REQ_ITEM_IMAGE, imageId, null);
 	}
 	
 	public void setRecommandationImage(ImageView view, int recommandationNum)
 	{
 		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/r" + recommandationNum,
-				PacketLiteral.REQ_RECOMMAND_IMAGE, recommandationNum);
+				PacketLiteral.REQ_RECOMMAND_IMAGE, recommandationNum, null);
 	}
 	
 	public void setMuseumImage(ImageView view, int major)
 	{
 		loadAsync(view, cacheDirStr + "/m" + museum.getMajor(),
-				PacketLiteral.REQ_PROVIDER_IMAGE, major);
+				PacketLiteral.REQ_PROVIDER_IMAGE, major, null);
 	}
 	
 	
-	private void loadAsync(ImageView view, String localPath, String remoteRequestKey, Integer imageId)
-	{ new AsyncLoader().execute(view, localPath, remoteRequestKey, imageId); }
+	private void loadAsync(ImageView view, String localPath, String remoteRequestKey, 
+			Integer imageId, Handler handler)
+	{ new AsyncLoader().execute(view, localPath, remoteRequestKey, imageId, handler); }
 	
 	
 	/**
@@ -68,20 +77,22 @@ public class DynamicLoader
 	 * @param String localPath
 	 * @param String remoteRequestKey	Should be PacketLiteral.blah~~~
 	 * @param Integer imageId
+	 * @param Handler handler that would receive an message with size data after the task
 	 * 
 	 * @author Kyuho
 	 *
 	 */
 	class AsyncLoader extends AsyncTask<Object, Integer, Bitmap>
 	{
+		private Handler handler;
 		private ImageView view;
-		private Bitmap bitmap;
 		
 		@Override
 		protected Bitmap doInBackground(Object... params)
 		{
 			view = (ImageView)params[0];
-			bitmap = BitmapFactory.decodeFile((String)params[1]);
+			handler = (Handler)params[4];
+			Bitmap bitmap = BitmapFactory.decodeFile((String)params[1]);
 			
 			if(bitmap == null)
 			{
@@ -103,6 +114,17 @@ public class DynamicLoader
 
 		@Override
         protected void onPostExecute(Bitmap bitmap)
-		{ if(view != null) view.setImageBitmap(bitmap); }
+		{
+			if(view != null) view.setImageBitmap(bitmap);
+			
+			if(handler != null)
+			{
+				Message msg = new Message();
+				msg.what = (bitmap != null) ? CustomMsg.SUCCESS : CustomMsg.FAILED;
+				msg.arg1 = bitmap.getWidth();
+				msg.arg2 = bitmap.getHeight();
+				handler.sendMessage(msg);
+			}
+		}
 	}
 }

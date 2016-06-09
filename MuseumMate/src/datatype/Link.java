@@ -1,6 +1,6 @@
 package datatype;
 
-public class Link extends Placement
+public class Link extends Node
 {
 	private Area destArea;
 	private int destBlockNum;
