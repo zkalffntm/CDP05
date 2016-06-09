@@ -1,17 +1,23 @@
 package harmony.admin.gui;
 
+import java.awt.Image;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import harmony.admin.controller.AreaController;
-import harmony.admin.controller.RecommendController;
+import harmony.admin.controller.ItemController;
+import harmony.admin.controller.ItemImageController;
 import harmony.admin.gui.probremdomain.Data;
 import harmony.admin.gui.probremdomain.RoomData;
 import harmony.admin.gui.probremdomain.RouteData;
@@ -520,7 +526,6 @@ public class GUI_console {
 
       oos.writeObject(data);
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
     } finally {
       if (fos != null)
@@ -536,6 +541,7 @@ public class GUI_console {
     }
 
     /** 박성준 작업함. 2016.6.8 */
+    // TODO
     // 전시물 데이터 관리에서의 저장
     Area[] areas = new Area[this.roomCnt];
     Item[][] items = new Item[this.roomCnt][];
@@ -546,7 +552,7 @@ public class GUI_console {
       areas[i].setNum(roomData.getRealNum());
       areas[i].setName(roomData.getName());
       areas[i].setImage(roomData.getFilePath());
-      
+
       items[i] = new Item[roomData.getWorkCnt()];
       itemImages[i] = new ItemImage[roomData.getWorkCnt()][];
       for (int j = 0; j < roomData.getWorkCnt(); j++) {
@@ -559,7 +565,7 @@ public class GUI_console {
         items[i][j].setDetailContent(workData.getContents());
         items[i][j].setSize(""); // 으앙
         items[i][j].setAreaNum(roomData.getRealNum());
-        
+
         itemImages[i][j] = new ItemImage[workData.getImageScr().size()];
         for (int k = 0; k < workData.getImageScr().size(); k++) {
           String itemImagePath = workData.getImageScr().get(k);
@@ -568,17 +574,22 @@ public class GUI_console {
           itemImages[i][j][k].setSeq(k + 1);
           itemImages[i][j][k].setImage(itemImagePath);
           itemImages[i][j][k].setMain(false); // 으앙
-          itemImages[i][j][k].setItemNum(workData.getRealNum());          
+          itemImages[i][j][k].setItemNum(workData.getRealNum());
         }
       }
     }
-    // AreaController.saveAreas(areas, items, itemImages);
+    try {
+      AreaController.saveAreas(areas, items, itemImages);
+    } catch (SQLException | IOException e) {
+      e.printStackTrace();
+    }
 
     // 지도 관리에서의 저장
     // AreaController.saveAreas(areas, items, blocks, blockPairs);
-    
+
     // 추천 경로 관리에서의 저장
     // RecommendController.saveRecommends(recommends, recommendItems);
+    /** end of 박성준 */
   }
 
   ///////////////// ����� ������ �ҷ����� //////////////////////
@@ -602,7 +613,6 @@ public class GUI_console {
       System.out.println("��õ ��� �� : " + routeCnt);
 
     } catch (Exception e) {
-      // TODO Auto-generated catch block
       e.printStackTrace();
       data = null;
 
@@ -622,5 +632,60 @@ public class GUI_console {
         } catch (Exception e) {
         }
     }
+
+    /** 박성준 작업 2016.6.8. */
+    try {
+      Area[] areas = AreaController.getAreas();
+      this.data.setRoomDataList(new ArrayList<RoomData>());
+      for (int i = 0; i < areas.length; i++) {
+        RoomData roomData = new RoomData(areas[i].getName());
+        roomData.setRoomNum(areas[i].getNum());
+        roomData.setBlock(null); // 으앙
+        roomData.setFilePath(null); // 으앙
+        roomData.setMap(null); // 으앙
+        roomData.setNodeCnt(-1); // 으앙
+        roomData.setRealNum(-1); // 으앙
+        roomData.setRoomNum(-1); // 으앙
+        roomData.setWorkCnt(-1); // 으앙
+        this.data.getRoomDataList().add(roomData);
+
+        Item[] items = ItemController.getItemsByAreaNum(areas[i].getNum());
+        this.data.setWorkHashMap(new HashMap());
+        for (int j = 0; j < items.length; j++) {
+          WorkData workData = new WorkData();
+          workData.setArtist(items[j].getArtist());
+          workData.setAssigned(false); // 으앙
+          workData.setContents(items[j].getDetailContent());
+          workData.setEdited(false); // 으앙
+
+          ItemImage[] itemImages = ItemImageController
+              .getItemImagseByItemNum(items[j].getNum());
+          workData.setImage(new ArrayList<Image>());
+          workData.setImageScr(new ArrayList<String>());
+          for (int k = 0; k < itemImages.length; k++) {
+            try {
+              Image image = ImageIO.read(new File(itemImages[k].getImage()));
+              workData.getImage().add(image);
+              workData.getImageScr().add(itemImages[k].getImage());
+            } catch (IOException e) {
+              e.printStackTrace();
+            }            
+          }
+          workData.setName(null); // 으앙
+          workData.setRealNum(-1); // 으앙
+          workData.setRoomNum(-1); // 으앙
+          workData.setSimpleContents(items[j].getSimpleContent());
+          workData.setTitle(items[j].getTitle());
+          // workData.setWorkData(image, imageScr, title, artist,
+          // simpleContents, contents, roomNum, workNum); 으앙?
+          workData.setWorkNum(-1); // 으앙
+          workData.setEdited(false);
+          this.data.getWorkHashMap().put(workData.getWorkNum(), workData); // 으앙
+        }
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+    /** end of 박성준 */
   }
 }

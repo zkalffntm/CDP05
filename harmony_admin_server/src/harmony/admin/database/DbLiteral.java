@@ -5,7 +5,7 @@ package harmony.admin.database;
  * 
  * @author Seongjun Park
  * @since 2016/5/11
- * @version 2016/5/18
+ * @version 2016/6/10
  */
 public class DbLiteral {
   public static final String DB_NAME = "harmony_admin_server";
@@ -44,6 +44,9 @@ public class DbLiteral {
   public static final String II_SEQ = "ii_seq";
   public static final String II_IMAGE = "ii_image";
   public static final String II_MAIN = "ii_main";
+  
+  public static final String NODE = "node";
+  public static final String N_NUM = "n_num";
 
   public static final String RECOMMEND = "recommend";
   public static final String R_NUM = "r_num";

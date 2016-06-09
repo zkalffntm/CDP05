@@ -15,6 +15,7 @@ import harmony.admin.model.Area;
 import harmony.admin.model.Block;
 import harmony.admin.model.Item;
 import harmony.admin.model.ItemImage;
+import harmony.admin.model.Node;
 import harmony.common.ImageManager;
 
 /**
@@ -135,14 +136,16 @@ public class AreaController {
    * @param blocks
    *          블록 객체 2차원 배열 [구역수][블록수]
    * @param blockPairs
-   *          공유블록쌍 객체 3차원 배열 [구역수][공유블록수][2].
+   *          공유블록쌍 객체 3차원 배열 [구역수][공유블록수][2]
+   * @param nodes
+   *          노드 객체 2차원 배열 [구역수][블록수]. 존재하지 않으면 null도 포함
    * @throws SQLException
    *           SQL 관련 예외
    * @throws IOException
    *           IO 관련 예외
    */
   public static void saveAreas(Area[] areas, Item[][] items, Block[][] blocks,
-      Block[][][] blockPairs) throws SQLException, IOException {
+      Block[][][] blockPairs, Node[][] nodes) throws SQLException, IOException {
 
     // 삽입 또는 갱신
     for (int i = 0; i < areas.length; i++) {
@@ -174,6 +177,7 @@ public class AreaController {
         (Item[]) itemList.toArray(new Item[itemList.size()]));
 
     List<Block> blockList = new ArrayList<Block>();
+    List<Node> nodeList = new ArrayList<Node>();
     for (int i = 0; i < items.length; i++) {
       for (int j = 0; j < items[i].length; j++) {
         blocks[i][j].setSeq(j + 1);
@@ -181,10 +185,12 @@ public class AreaController {
           blocks[i][j].setItemNum(items[i][j].getNum());
         }
         blockList.add(blocks[i][j]);
+        nodeList.add(nodes[i][j]);
       }
     }
-    BlockController
-        .saveBlocks((Block[]) blockList.toArray(new Block[blockList.size()]));
+    BlockController.saveBlocks(
+        (Block[]) blockList.toArray(new Block[blockList.size()]),
+        (Node[]) nodeList.toArray(new Node[nodeList.size()]));
 
     List<Block[]> blockPairList = new ArrayList<Block[]>();
     for (int i = 0; i < blockPairs.length; i++) {

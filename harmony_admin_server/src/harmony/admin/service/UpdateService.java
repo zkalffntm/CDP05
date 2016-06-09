@@ -9,6 +9,7 @@ import harmony.admin.controller.AreaController;
 import harmony.admin.controller.BlockController;
 import harmony.admin.controller.ItemController;
 import harmony.admin.controller.ItemImageController;
+import harmony.admin.controller.NodeController;
 import harmony.admin.controller.RecommendController;
 import harmony.admin.controller.RecommendItemController;
 import harmony.admin.controller.ShareBlockController;
@@ -16,6 +17,7 @@ import harmony.admin.model.Area;
 import harmony.admin.model.Block;
 import harmony.admin.model.Item;
 import harmony.admin.model.ItemImage;
+import harmony.admin.model.Node;
 import harmony.admin.model.Recommend;
 import harmony.admin.model.RecommendItem;
 import harmony.admin.model.ShareBlock;
@@ -27,12 +29,12 @@ import harmony.common.AbstractService;
  * 
  * @author Seonjun Park
  * @since 2016/5/8
- * @version 2016/6/6
+ * @version 2016/6/10
  */
 public class UpdateService extends AbstractService {
 
   /**
-   * DB에 있는 구역, 전시물, 블록, 공유블록, 추천경로 정보를 제공함.
+   * DB에 있는 구역, 전시물, 블록, 공유블록, 노드, 추천경로 정보를 제공함.
    * 
    * @param argument
    *          사용 안 함
@@ -46,12 +48,13 @@ public class UpdateService extends AbstractService {
   public Object doService(Object argument) throws SQLException, IOException {
 
     // [0]은 area, [1]은 item, [2]는 block,
-    // [3]은 share_block, [4]는 recommend
+    // [3]은 share_block, [4]는 node, [5]는 recommend
     List<Object[][]> objList = new ArrayList<Object[][]>();
     objList.add(this.getAreas());
     objList.add(this.getItems());
     objList.add(this.getBlocks());
     objList.add(this.getShareBlocks());
+    objList.add(this.getNodes());
     objList.add(this.getRecommends());
 
     return (Object[][][]) objList.toArray(new Object[objList.size()][][]);
@@ -152,6 +155,27 @@ public class UpdateService extends AbstractService {
       objList.add(block2.getSeq());
       objList.add(block1.getAreaNum());
       objList.add(block2.getAreaNum());
+      objArr2D[i] = (Object[]) objList.toArray(new Object[objList.size()]);
+    }
+
+    return objArr2D;
+  }
+
+  /**
+   * 
+   * @return Object[][] = {{bl_seq, a_num}, ...}
+   * @throws SQLException
+   *           SQL 관련 예외
+   */
+  private Object[][] getNodes() throws SQLException {
+    Node[] nodes = NodeController.getNodes();
+    Object[][] objArr2D = new Object[nodes.length][];
+
+    for (int i = 0; i < nodes.length; i++) {
+      Block block = BlockController.getBlockByNum(nodes[i].getBlockNum());
+      List<Object> objList = new ArrayList<Object>();
+      objList.add(block.getSeq());
+      objList.add(block.getAreaNum());
       objArr2D[i] = (Object[]) objList.toArray(new Object[objList.size()]);
     }
 

@@ -10,6 +10,7 @@ import java.util.List;
 import harmony.admin.database.DbConnector;
 import harmony.admin.database.DbLiteral;
 import harmony.admin.model.Block;
+import harmony.admin.model.Node;
 
 /**
  * 
@@ -144,7 +145,7 @@ public class BlockController {
     return block;
   }
 
-  static void saveBlocks(Block[] blocks) throws SQLException {
+  static void saveBlocks(Block[] blocks, Node[] nodes) throws SQLException {
 
     // 삽입 전 전부 삭제
     deleteBlocks();
@@ -152,7 +153,13 @@ public class BlockController {
     // 삽입
     for (int i = 0; i < blocks.length; i++) {
       blocks[i].setNum(insertBlock(blocks[i]));
+      if (nodes[i] != null) {
+        nodes[i].setBlockNum(blocks[i].getNum());
+      }
     }
+
+    // 하위 레코드 저장
+    NodeController.saveNodes(nodes);
   }
 
   private static int insertBlock(Block block) throws SQLException {
@@ -185,6 +192,7 @@ public class BlockController {
     Block[] blocks = getBlocks();
     for (Block block : blocks) {
       ShareBlockController.deleteShareBlockByBlockNum(block.getNum());
+      NodeController.deleteNodeByBlockNum(block.getNum());
     }
 
     // 자동 커밋 일시 해제
@@ -208,6 +216,7 @@ public class BlockController {
     Block[] blocks = getBlocksByItemNum(itemNum);
     for (Block block : blocks) {
       ShareBlockController.deleteShareBlockByBlockNum(block.getNum());
+      NodeController.deleteNodeByBlockNum(block.getNum());
     }
 
     // 자동 커밋 일시 해제
@@ -238,6 +247,7 @@ public class BlockController {
     Block[] blocks = getBlocksByAreaNum(areaNum);
     for (Block block : blocks) {
       ShareBlockController.deleteShareBlockByBlockNum(block.getNum());
+      NodeController.deleteNodeByBlockNum(block.getNum());
     }
 
     // 자동 커밋 일시 해제
