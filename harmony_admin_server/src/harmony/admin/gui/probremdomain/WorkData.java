@@ -5,40 +5,34 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class WorkData implements Serializable {
+  private ArrayList<Integer> imageRealNum = null;
   private ArrayList<Image> image = null;
   private ArrayList<String> imageScr = null;
 
-  private String title = null;
-  private String artist = null;;
-  private String simpleContents = null;;
-  private String contents = null;;
+  private String title = "";
+  private String artist = "";
+  private String simpleContents = "";
+  private String contents = "";
 
   private int roomNum = 0;
   private int workNum = 0;
-  private int realNum = 0;
+  private int hashNum = 0;
   private boolean assigned = false;
   private boolean edited = false;
 
+  private int realNum = 0;
+
   public WorkData() {
-
+    this.imageRealNum = new ArrayList<Integer>();
+    this.image = new ArrayList<Image>();
+    this.imageScr = new ArrayList<String>();
   }
 
-  public WorkData(ArrayList<Image> image, String title, String artist,
-      String simpleContents, String contents, int roomNum, int workNum) {
-
-    this.image = image;
-    this.title = title;
-    this.artist = artist;
-    this.simpleContents = simpleContents;
-    this.contents = contents;
-    this.roomNum = roomNum;
-    this.workNum = workNum;
-  }
-
-  public void setWorkData(ArrayList<Image> image, ArrayList<String> imageScr,
-      String title, String artist, String simpleContents, String contents,
-      int roomNum, int workNum) {
-
+  public void setWorkData(ArrayList<Integer> imageRealNum,
+      ArrayList<Image> image, ArrayList<String> imageScr, String title,
+      String artist, String simpleContents, String contents, int roomNum,
+      int workNum) {
+    this.imageRealNum = imageRealNum;
     this.image = image;
     this.imageScr = imageScr;
     this.title = title;
@@ -49,6 +43,14 @@ public class WorkData implements Serializable {
     this.workNum = workNum;
   }
 
+  public ArrayList<Integer> getImageRealNum() {
+    return this.imageRealNum;
+  }
+  
+  public void setImageRealNum(ArrayList<Integer> imageRealNum) {
+    this.imageRealNum = imageRealNum;
+  }
+  
   public ArrayList<String> getImageScr() {
     return imageScr;
   }
@@ -57,12 +59,12 @@ public class WorkData implements Serializable {
     this.imageScr = imageScr;
   }
 
-  public int getRealNum() {
-    return realNum;
+  public int getHashNum() {
+    return hashNum;
   }
 
-  public void setRealNum(int realNum) {
-    this.realNum = realNum;
+  public void setHashNum(int hashNum) {
+    this.hashNum = hashNum;
   }
 
   public void setTitle(String title) {
@@ -139,5 +141,13 @@ public class WorkData implements Serializable {
 
   public void setEdited(boolean edited) {
     this.edited = edited;
+  }
+
+  public int getRealNum() {
+    return this.realNum;
+  }
+
+  public void setRealNum(int realNum) {
+    this.realNum = realNum;
   }
 }

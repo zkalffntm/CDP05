@@ -19,31 +19,6 @@ import harmony.admin.model.RecommendItem;
  */
 public class RecommendItemController {
 
-  private static RecommendItem[] getRecommendItems() throws SQLException {
-
-    // 레코드 조회 쿼리 실행
-    Connection dbConnection = DbConnector.getInstance().getConnection();
-    String sql = "select * from " + DbLiteral.RECOMMEND_ITEM + " order by "
-        + DbLiteral.R_NUM + ", " + DbLiteral.RI_SEQ;
-    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    ResultSet resultSet = pstmt.executeQuery();
-
-    // 레코드 하나씩 리스트에 추가
-    List<RecommendItem> recommendItemList = new ArrayList<RecommendItem>();
-    while (resultSet.next()) {
-      RecommendItem recommendItem = new RecommendItem();
-      recommendItem.setNum(resultSet.getInt(DbLiteral.RI_NUM));
-      recommendItem.setSeq(resultSet.getInt(DbLiteral.RI_SEQ));
-      recommendItem.setRecommendNum(resultSet.getInt(DbLiteral.R_NUM));
-      recommendItem.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
-      recommendItemList.add(recommendItem);
-    }
-
-    // 타입 변형 : List<> -> Object[]
-    return (RecommendItem[]) recommendItemList
-        .toArray(new RecommendItem[recommendItemList.size()]);
-  }
-
   /**
    * 추천경로별 전시물 레코드들을 가져옴. 추천목록 보기 시 호출함.
    * 
@@ -82,35 +57,15 @@ public class RecommendItemController {
 
   }
 
-  public static void saveRecommendItems(RecommendItem[] recommendItems)
+  static void saveRecommendItems(RecommendItem[] recommendItems)
       throws SQLException {
 
-    // 삽입 또는 갱신
+    // 삽입 전 전부 삭제
+    deleteRecommendItems();
+
+    // 삽입
     for (int i = 0; i < recommendItems.length; i++) {
-
-      // 번호가 0인 경우 DB에 새 레코드 삽입, 그렇지 않은 경우 기존 레코드 갱신
-      if (recommendItems[i].getNum() == 0) {
-        recommendItems[i].setNum(insertRecommendItem(recommendItems[i]));
-      } else {
-        updateRecommendItem(recommendItems[i]);
-      }
-    }
-
-    // 삭제
-    RecommendItem[] resultRecommendItems = getRecommendItems();
-    for (RecommendItem resultItemImage : resultRecommendItems) {
-      boolean exists = false;
-      for (RecommendItem recommendItem : recommendItems) {
-        if (resultItemImage.getNum() == recommendItem.getNum()) {
-          exists = true;
-          break;
-        }
-      }
-
-      // 병합된 레코드들(result) 중 입력 레코드에 없는 것이면 삭제
-      if (!exists) {
-        deleteRecommendItemByNum(resultItemImage.getNum());
-      }
+      recommendItems[i].setNum(insertRecommendItem(recommendItems[i]));
     }
   }
 
@@ -140,29 +95,7 @@ public class RecommendItemController {
     return num;
   }
 
-  private static void updateRecommendItem(RecommendItem recommendItem)
-      throws SQLException {
-
-    // 자동 커밋 일시 해제
-    Connection dbConnection = DbConnector.getInstance().getConnection();
-    boolean prevAutoCommit = dbConnection.getAutoCommit();
-    dbConnection.setAutoCommit(false);
-
-    // 레코드 갱신 쿼리 실행
-    String sql = "update recommend_item set ri_seq=?, r_num=?, i_num=? where ri_num=?";
-    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, recommendItem.getSeq());
-    pstmt.setInt(2, recommendItem.getRecommendNum());
-    pstmt.setInt(3, recommendItem.getItemNum());
-    pstmt.setInt(4, recommendItem.getNum());
-    pstmt.executeUpdate();
-
-    // 커밋
-    dbConnection.commit();
-    dbConnection.setAutoCommit(prevAutoCommit);
-  }
-
-  private static void deleteRecommendItemByNum(int num) throws SQLException {
+  private static void deleteRecommendItems() throws SQLException {
 
     // 자동 커밋 일시 해제
     Connection dbConnection = DbConnector.getInstance().getConnection();
@@ -170,16 +103,13 @@ public class RecommendItemController {
     dbConnection.setAutoCommit(false);
 
     // 레코드 삭제 쿼리 실행
-    String sql = "delete from " + DbLiteral.RECOMMEND_ITEM + " where "
-        + DbLiteral.RI_NUM + "=?";
+    String sql = "delete from " + DbLiteral.RECOMMEND_ITEM;
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
-    pstmt.setInt(1, num);
     pstmt.executeUpdate();
 
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);
-
   }
 
   static void deleteRecommendItemByItemNum(int itemNum) throws SQLException {

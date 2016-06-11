@@ -118,7 +118,7 @@ public abstract class ManagePage extends JFrame {
 
         RoomData roomData = new RoomData(str);
         gui.roomCntIncrement();
-        roomData.setRealNum(gui.realRoomNumIncrement());
+        roomData.setRealNum(0);
         roomData.setRoomNum(gui.getRoomCnt());
         gui.getRoomDataList().add(roomData);
 

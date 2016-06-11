@@ -51,10 +51,10 @@ public class MapManagePage extends ManagePage {
   /*
    * ����
    */
-  private final int NONE = 0; // �ƹ��͵� �ƴ�
-  private final int NODE = 1; // ��� �߰� ��ư ������ ��
-  private final int WORK = 2; // ���ù� �߰� ��ư ������ ��
-  private final int SHARE = 3; // ���� ���
+  public final static int NONE = 0; // �ƹ��͵� �ƴ�
+  public final static int NODE = 1; // ��� �߰� ��ư ������ ��
+  public final static int WORK = 2; // ���ù� �߰� ��ư ������ ��
+  public final static int SHARE = 3; // ���� ���
 
   private final int MOUSE_PRESSED = 1; // ���콺 ��ư ������ ��
   private final int MOUSE_RELEASED = 2; // ���콺 ��ư ���� ��
@@ -779,7 +779,7 @@ public class MapManagePage extends ManagePage {
   public class Block extends JButton implements ActionListener {
     private int blockNum;
     private int workNum = -1;
-    private int realWorkNum = -1;
+    private int hashWorkNum = -1;
     private int roomNum;
     private int type = NONE;
     private int mouseState = NONE;
@@ -827,7 +827,27 @@ public class MapManagePage extends ManagePage {
 
       addKeyListener(new BlockKeyListener());
     }
+    
+    public void setRoomNum(int roomNum) {
+      this.roomNum = roomNum;
+    }
 
+    public int getShareRoomNum() {
+      return this.shareRoomNum;
+    }
+    
+    public void setShareRoomNum(int shareRoomNum) {
+      this.shareRoomNum = shareRoomNum;
+    }
+
+    public int getShareBlockNum() {
+      return this.shareBlockNum;
+    }
+    
+    public void setShareBlockNum(int shareBlockNum) {
+      this.shareBlockNum = shareBlockNum;
+    }
+    
     public void setType(int type) {
       this.type = type;
     }
@@ -860,25 +880,25 @@ public class MapManagePage extends ManagePage {
       this.workNum = workNum;
     }
 
-    public int getRealWorkNum() {
-      return realWorkNum;
+    public int getHashWorkNum() {
+      return hashWorkNum;
     }
 
-    public void setRealWorkNum(int realWorkNum) {
-      this.realWorkNum = realWorkNum;
+    public void setHashWorkNum(int hashWorkNum) {
+      this.hashWorkNum = hashWorkNum;
     }
 
     public WorkData addWork(String str) {
       WorkData workData = new WorkData();
-      workData.setRealNum(gui.realWorkNumIncrement());
+      workData.setHashNum(gui.realWorkNumIncrement());
 
-      realWorkNum = workData.getRealNum();
+      hashWorkNum = workData.getHashNum();
 
       workData.setWorkNum(gui.getRoomDataList().get(gui.getCurrentRoomNum() - 1)
           .getWorkDataList().size() + 1);
       workData.setRoomNum(gui.getCurrentRoomNum());
       workData.setTitle(str);
-      gui.getWorkHashMap().put(workData.getRealNum(), workData);
+      gui.getWorkHashMap().put(workData.getHashNum(), workData);
       gui.getRoomDataList().get(gui.getCurrentRoomNum() - 1).getWorkDataList()
           .add(workData);
       gui.getRoomDataList().get(gui.getCurrentRoomNum() - 1).workCntIncrement();
@@ -925,7 +945,7 @@ public class MapManagePage extends ManagePage {
       gui.getRoomDataList().get(gui.getCurrentRoomNum() - 1).getWorkDataList()
           .get(block.workNum).setAssigned(false);
       block.workNum = -1;
-      block.realWorkNum = -1;
+      block.hashWorkNum = -1;
       block.type = NONE;
       block.mouseState = NONE;
       block.validate();
@@ -942,7 +962,7 @@ public class MapManagePage extends ManagePage {
       for (int i = 0; i < tempBlock.size(); i++) {
         tempBlock.get(i).mouseState = NONE;
         tempBlock.get(i).workNum = -1;
-        tempBlock.get(i).realWorkNum = -1;
+        tempBlock.get(i).hashWorkNum = -1;
       }
       tempBlock.clear();
     }
@@ -1030,7 +1050,7 @@ public class MapManagePage extends ManagePage {
           addToolTip(workData);
 
           workNum = workData.getWorkNum();
-          realWorkNum = workData.getRealNum();
+          hashWorkNum = workData.getHashNum();
         } else if (e.getSource() == select) {
           Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
 
@@ -1054,7 +1074,7 @@ public class MapManagePage extends ManagePage {
           addToolTip(workData);
 
           workNum = workData.getWorkNum();
-          realWorkNum = workData.getRealNum();
+          hashWorkNum = workData.getHashNum();
         }
         type = WORK;
       } else if (drag) {
@@ -1074,7 +1094,7 @@ public class MapManagePage extends ManagePage {
             tempBlock.get(i).setType(WORK);
             tempBlock.get(i).setMouseState(NONE);
             tempBlock.get(i).workNum = workData.getWorkNum();
-            tempBlock.get(i).realWorkNum = workData.getRealNum();
+            tempBlock.get(i).hashWorkNum = workData.getHashNum();
             tempBlock.get(i).addToolTip(workData);
           }
         } else if (e.getSource() == select) {
@@ -1093,7 +1113,7 @@ public class MapManagePage extends ManagePage {
             tempBlock.get(i).setType(WORK);
             tempBlock.get(i).setMouseState(NONE);
             tempBlock.get(i).workNum = workData.getWorkNum();
-            tempBlock.get(i).realWorkNum = workData.getRealNum();
+            tempBlock.get(i).hashWorkNum = workData.getHashNum();
             tempBlock.get(i).addToolTip(workData);
           }
 

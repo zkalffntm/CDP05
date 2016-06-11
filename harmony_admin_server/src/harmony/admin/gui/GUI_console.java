@@ -1,7 +1,6 @@
 package harmony.admin.gui;
 
 import java.awt.Image;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,21 +9,29 @@ import java.io.ObjectOutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 
 import harmony.admin.controller.AreaController;
+import harmony.admin.controller.BlockController;
 import harmony.admin.controller.ItemController;
 import harmony.admin.controller.ItemImageController;
-import harmony.admin.gui.probremdomain.Data;
+import harmony.admin.controller.NodeController;
+import harmony.admin.controller.RecommendController;
+import harmony.admin.controller.RecommendItemController;
+import harmony.admin.controller.ShareBlockController;
 import harmony.admin.gui.probremdomain.RoomData;
 import harmony.admin.gui.probremdomain.RouteData;
 import harmony.admin.gui.probremdomain.WorkData;
 import harmony.admin.model.Area;
+import harmony.admin.model.Block;
 import harmony.admin.model.Item;
 import harmony.admin.model.ItemImage;
+import harmony.admin.model.Node;
+import harmony.admin.model.Recommend;
+import harmony.admin.model.RecommendItem;
 
 public class GUI_console {
 
@@ -51,8 +58,6 @@ public class GUI_console {
   private ImageIcon mapPageImg, mapPageImg_s;
   private ImageIcon routePageImg, routePageImg_s;
   ///////////////////////////////////////////
-
-  private Data data;
 
   private FileOutputStream fos = null;
   private ObjectOutputStream oos = null;
@@ -516,32 +521,8 @@ public class GUI_console {
    * ������ �� ���ÿ� ����
    */
   public void save() {
-    data.setRoomDataList(roomDataList);
-    data.setRouteList(routeList);
-    data.setWorkHashMap(workHashMap);
-
-    try {
-      fos = new FileOutputStream("data.dat");
-      oos = new ObjectOutputStream(fos);
-
-      oos.writeObject(data);
-    } catch (Exception e) {
-      e.printStackTrace();
-    } finally {
-      if (fos != null)
-        try {
-          fos.close();
-        } catch (Exception e) {
-        }
-      if (oos != null)
-        try {
-          oos.close();
-        } catch (Exception e) {
-        }
-    }
 
     /** 박성준 작업함. 2016.6.8 */
-    // TODO
     // 전시물 데이터 관리에서의 저장
     Area[] areas = new Area[this.roomCnt];
     Item[][] items = new Item[this.roomCnt][];
@@ -563,17 +544,17 @@ public class GUI_console {
         items[i][j].setArtist(workData.getArtist());
         items[i][j].setSimpleContent(workData.getSimpleContents());
         items[i][j].setDetailContent(workData.getContents());
-        items[i][j].setSize(""); // 으앙
+        items[i][j].setSize("");
         items[i][j].setAreaNum(roomData.getRealNum());
 
         itemImages[i][j] = new ItemImage[workData.getImageScr().size()];
         for (int k = 0; k < workData.getImageScr().size(); k++) {
           String itemImagePath = workData.getImageScr().get(k);
           itemImages[i][j][k] = new ItemImage();
-          itemImages[i][j][k].setNum(0); // 으앙
+          itemImages[i][j][k].setNum(workData.getImageRealNum().get(k));
           itemImages[i][j][k].setSeq(k + 1);
           itemImages[i][j][k].setImage(itemImagePath);
-          itemImages[i][j][k].setMain(false); // 으앙
+          itemImages[i][j][k].setMain(k == 0);
           itemImages[i][j][k].setItemNum(workData.getRealNum());
         }
       }
@@ -584,108 +565,244 @@ public class GUI_console {
       e.printStackTrace();
     }
 
+    // roomData, workData의 real num 갱신
+    for (int i = 0; i < areas.length; i++) {
+      RoomData roomData = this.roomDataList.get(i);
+      roomData.setRealNum(areas[i].getNum());
+
+      for (int j = 0; j < items[i].length; j++) {
+        WorkData workData = roomData.getWorkDataList().get(j);
+        workData.setRealNum(items[i][j].getNum());
+
+        for (int k = 0; k < itemImages[i][j].length; k++) {
+          workData.getImageRealNum().set(k, itemImages[i][j][k].getNum());
+        }
+      }
+    }
+
     // 지도 관리에서의 저장
-    // AreaController.saveAreas(areas, items, blocks, blockPairs);
+    Area[] areas2 = new Area[this.roomCnt];
+    Item[][] items2 = new Item[this.roomCnt][];
+    Block[][] blocks = new Block[this.roomCnt][];
+    Node[][] nodes = new Node[this.roomCnt][];
+    for (int i = 0; i < this.roomCnt; i++) {
+      RoomData roomData = this.roomDataList.get(i);
+      areas2[i] = new Area();
+      areas2[i].setNum(roomData.getRealNum());
+      areas2[i].setName(roomData.getName());
+      areas2[i].setImage(roomData.getFilePath());
+
+      items2[i] = new Item[roomData.getBlock().size()];
+      blocks[i] = new Block[roomData.getBlock().size()];
+      nodes[i] = new Node[roomData.getBlock().size()];
+      for (int j = 0; j < roomData.getBlock().size(); j++) {
+        MapManagePage.Block blockData = roomData.getBlock().get(j);
+        if (blockData.getType() == MapManagePage.WORK) {
+          WorkData workData = roomData.getWorkDataList()
+              .get(blockData.getWorkNum());
+          items2[i][j] = new Item();
+          items2[i][j].setNum(workData.getRealNum());
+          items2[i][j].setArtist(workData.getArtist());
+          items2[i][j].setArtist(workData.getArtist());
+          items2[i][j].setSimpleContent(workData.getSimpleContents());
+          items2[i][j].setDetailContent(workData.getContents());
+          items2[i][j].setSize("");
+          items2[i][j].setAreaNum(roomData.getRealNum());
+          nodes[i][j] = null;
+        } else if (blockData.getType() == MapManagePage.NODE) {
+          items[i][j] = null;
+          nodes[i][j] = new Node();
+        } else {
+          items2[i][j] = null;
+          nodes[i][j] = null;
+        }
+
+        blocks[i][j] = new Block();
+        blocks[i][j].setNum(0);
+        blocks[i][j].setSeq(j + 1);
+        blocks[i][j]
+            .setItemNum(items2[i][j] == null ? 0 : items2[i][j].getNum());
+        blocks[i][j].setAreaNum(roomData.getRealNum());
+      }
+    }
+
+    Block[][][] blockPairs = new Block[this.roomCnt][][];
+    for (int i = 0; i < this.roomCnt; i++) {
+
+      RoomData roomData = this.roomDataList.get(i);
+      List<Block[]> pairList = new ArrayList<Block[]>();
+
+      for (int j = 0; j < roomData.getBlock().size(); j++) {
+        MapManagePage.Block blockData = roomData.getBlock().get(j);
+        if (blockData.getType() == MapManagePage.SHARE) {
+          Block[] blockPair = new Block[2];
+          blockPair[0] = blocks[i][j];
+          blockPair[1] = blocks[blockData.getShareRoomNum() - 1][blockData
+              .getShareBlockNum() - 1];
+          pairList.add(blockPair);
+        }
+      }
+      blockPairs[i] = (Block[][]) pairList
+          .toArray(new Block[pairList.size()][]);
+    }
+    try {
+      AreaController.saveAreas(areas, items, blocks, blockPairs, nodes);
+    } catch (SQLException | IOException e) {
+      e.printStackTrace();
+    }
 
     // 추천 경로 관리에서의 저장
-    // RecommendController.saveRecommends(recommends, recommendItems);
+    Recommend[] recommends = new Recommend[this.routeCnt];
+    RecommendItem[][] recommendItems = new RecommendItem[this.routeCnt][];
+    for (int i = 0; i < this.routeCnt; i++) {
+      RouteData routeData = this.routeList.get(i);
+      recommends[i] = new Recommend();
+      recommends[i].setNum(routeData.getRouteNum());
+      recommends[i].setImage(routeData.getImgScr());
+      recommends[i].setContent(routeData.getTitle());
+
+      int itemLength = routeData.getWorkDataList().size();
+      recommendItems[i] = new RecommendItem[itemLength];
+      for (int j = 0; j < itemLength; j++) {
+        recommendItems[i][j] = new RecommendItem();
+        recommendItems[i][j].setNum(0);
+        recommendItems[i][j].setSeq(j + 1);
+        recommendItems[i][j].setRecommendNum(routeData.getRealNum());
+        recommendItems[i][j]
+            .setItemNum(routeData.getWorkDataList().get(j).getRealNum());
+      }
+    }
+    try {
+      RecommendController.saveRecommends(recommends, recommendItems);
+    } catch (SQLException | IOException e) {
+      e.printStackTrace();
+    }
     /** end of 박성준 */
   }
 
   ///////////////// ����� ������ �ҷ����� //////////////////////
   public void load() {
+    /** 박성준 작업 2016.6.11. */
     try {
-      fis = new FileInputStream("data.dat");
-      ois = new ObjectInputStream(fis);
-
-      data = (Data) ois.readObject();
-
-      roomDataList = data.getRoomDataList();
-      workHashMap = data.getWorkHashMap();
-      routeList = data.getRouteList();
-
-      roomCnt = roomDataList.size();
-      workCnt = workHashMap.size();
-      routeCnt = routeList.size();
-
-      System.out.println("���ý� �� : " + roomCnt);
-      System.out.println("��ǰ �� : " + workCnt);
-      System.out.println("��õ ��� �� : " + routeCnt);
-
-    } catch (Exception e) {
-      e.printStackTrace();
-      data = null;
-
-      roomDataList = new ArrayList<RoomData>();
-      routeList = new ArrayList<RouteData>();
-      workHashMap = new HashMap();
-
-    } finally {
-      if (fos != null)
-        try {
-          fis.close();
-        } catch (Exception e) {
-        }
-      if (oos != null)
-        try {
-          ois.close();
-        } catch (Exception e) {
-        }
-    }
-
-    /** 박성준 작업 2016.6.8. */
-    try {
+      // roomData 로드
       Area[] areas = AreaController.getAreas();
-      this.data.setRoomDataList(new ArrayList<RoomData>());
+      this.roomDataList.clear();
+      this.workHashMap.clear();
       for (int i = 0; i < areas.length; i++) {
         RoomData roomData = new RoomData(areas[i].getName());
-        roomData.setRoomNum(areas[i].getNum());
-        roomData.setBlock(null); // 으앙
-        roomData.setFilePath(null); // 으앙
-        roomData.setMap(null); // 으앙
-        roomData.setNodeCnt(-1); // 으앙
-        roomData.setRealNum(-1); // 으앙
-        roomData.setRoomNum(-1); // 으앙
-        roomData.setWorkCnt(-1); // 으앙
-        this.data.getRoomDataList().add(roomData);
+        roomData.setFilePath(areas[i].getImage());
+        roomData.setMap("".equals(areas[i].getImage())
+            ? new ImageIcon(areas[i].getImage()).getImage() : null);
+        roomData.setRealNum(areas[i].getNum());
+        roomData.setRoomNum(i + 1);
+        this.roomDataList.add(roomData);
 
+        // workData 로드
         Item[] items = ItemController.getItemsByAreaNum(areas[i].getNum());
-        this.data.setWorkHashMap(new HashMap());
+        ArrayList<WorkData> workDataList = new ArrayList<WorkData>();
         for (int j = 0; j < items.length; j++) {
           WorkData workData = new WorkData();
           workData.setArtist(items[j].getArtist());
-          workData.setAssigned(false); // 으앙
+          workData.setAssigned(false);
           workData.setContents(items[j].getDetailContent());
-          workData.setEdited(false); // 으앙
+          workData.setEdited(false);
+          workData.setHashNum(items[i].getNum());
+          workData.setName(items[i].getTitle());
+          workData.setRealNum(items[i].getNum());
+          workData.setRoomNum(i + 1);
+          workData.setSimpleContents(items[i].getSimpleContent());
+          workData.setTitle(items[i].getTitle());
+          workData.setWorkNum(j + 1);
+          workDataList.add(workData);
+          this.workHashMap.put(items[i].getNum(), workData);
 
           ItemImage[] itemImages = ItemImageController
               .getItemImagseByItemNum(items[j].getNum());
-          workData.setImage(new ArrayList<Image>());
-          workData.setImageScr(new ArrayList<String>());
+          ArrayList<Image> imgList = new ArrayList<Image>();
+          ArrayList<String> imgScrList = new ArrayList<String>();
+          ArrayList<Integer> imgRealNumList = new ArrayList<Integer>();
           for (int k = 0; k < itemImages.length; k++) {
-            try {
-              Image image = ImageIO.read(new File(itemImages[k].getImage()));
-              workData.getImage().add(image);
-              workData.getImageScr().add(itemImages[k].getImage());
-            } catch (IOException e) {
-              e.printStackTrace();
-            }            
+            imgRealNumList.add(itemImages[k].getNum());
+            imgScrList.add(itemImages[k].getImage());
+            imgList.add("".equals(itemImages[k].getImage())
+                ? new ImageIcon(itemImages[k].getImage()).getImage() : null);
           }
-          workData.setName(null); // 으앙
-          workData.setRealNum(-1); // 으앙
-          workData.setRoomNum(-1); // 으앙
-          workData.setSimpleContents(items[j].getSimpleContent());
-          workData.setTitle(items[j].getTitle());
-          // workData.setWorkData(image, imageScr, title, artist,
-          // simpleContents, contents, roomNum, workNum); 으앙?
-          workData.setWorkNum(-1); // 으앙
-          workData.setEdited(false);
-          this.data.getWorkHashMap().put(workData.getWorkNum(), workData); // 으앙
+          workData.setImage(imgList);
+          workData.setImageScr(imgScrList);
+          workData.setImageRealNum(imgRealNumList);
         }
+        roomData.setWorkCnt(items.length);
+        roomData.setWorkDataList(workDataList);
       }
-    } catch (SQLException e) {
+      this.roomCnt = this.roomDataList.size();
+      this.workCnt = this.workHashMap.size();
+
+      // block 로드
+      for (int i = 0; i < this.roomCnt; i++) {
+        Block[] blocks = BlockController.getBlocksByAreaNum(areas[i].getNum());
+        ArrayList<MapManagePage.Block> blockList = new ArrayList<MapManagePage.Block>();
+        for (int j = 0; j < blocks.length; j++) {
+          MapManagePage.Block block = /* new MapManagePage.Block(j) */null; // !!!!!!!
+          if (blocks[j].getItemNum() != 0) {
+            block.setWorkNum(
+                ((WorkData) this.workHashMap.get(blocks[j].getItemNum()))
+                    .getWorkNum());
+          } else {
+            block.setWorkNum(-1);
+          }
+          block.setHashWorkNum(blocks[j].getItemNum());
+          block.setRoomNum(i + 1);
+
+          if (blocks[j].getItemNum() != 0) {
+            block.setType(MapManagePage.WORK);
+          } else if (NodeController
+              .getNodeByBlockNum(blocks[j].getNum()) != null) {
+            block.setType(MapManagePage.NODE);
+          } else if (ShareBlockController
+              .getShareBlocksByBlockNum1(blocks[j].getNum()) != null) {
+
+            Block toBlock = BlockController.getBlockByNum(ShareBlockController
+                .getShareBlocksByBlockNum1(blocks[j].getNum())[0]
+                    .getBlockNum2());
+
+            block.setType(MapManagePage.SHARE);
+            block.setShareBlockNum(toBlock.getSeq()); // -1 해야할까? 말아야할까? (재민)
+            block.setShareRoomNum(toBlock.getAreaNum()); // -1 해야할까? 말아야할까? (재민)
+          } else {
+            block.setType(MapManagePage.NONE);
+          }
+        }
+        this.roomDataList.get(i).setBlock(blockList);
+      }
+
+      // RouteData 로드
+      Recommend[] recommends = RecommendController.getRecommends();
+      this.routeList.clear();
+      for (int i = 0; i < recommends.length; i++) {
+        RouteData routeData = new RouteData(recommends[i].getContent(), i + 1);
+        routeData.setRealNum(recommends[i].getNum());
+        routeData.setImg("".equals(recommends[i].getImage())
+            ? new ImageIcon(recommends[i].getImage()).getImage() : null);
+        routeData.setImgScr(recommends[i].getImage());
+
+        // RouteData내의  WorkData 로드
+        RecommendItem[] recommendItems = RecommendItemController
+            .getRecommendItemsByRecommendNum(recommends[i].getNum());
+        ArrayList<WorkData> workDataList = new ArrayList<WorkData>();
+        for (int j = 0; j < recommendItems.length; j++) {
+          WorkData workData = (WorkData) this.workHashMap
+              .get(recommendItems[j].getItemNum());
+          workDataList.add(workData);
+        }
+        routeData.setWorkDataList(workDataList);
+
+        this.routeList.add(routeData);
+      }
+
+    } catch (Exception e) {
       e.printStackTrace();
     }
+
     /** end of 박성준 */
   }
 }

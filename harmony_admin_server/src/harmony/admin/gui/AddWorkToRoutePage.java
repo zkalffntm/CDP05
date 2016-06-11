@@ -207,11 +207,11 @@ public class AddWorkToRoutePage extends JDialog implements ActionListener {
           public void mouseClicked(MouseEvent e) {
             if (temp.isSelected()) {
               workList.remove((WorkData) (gui.getWorkHashMap()
-                  .get((int) (temp.getWorkData().getRealNum()))));
+                  .get((int) (temp.getWorkData().getHashNum()))));
               temp.setSelected(false);
             } else {
               workList.add((WorkData) (gui.getWorkHashMap()
-                  .get((int) (temp.getWorkData().getRealNum()))));
+                  .get((int) (temp.getWorkData().getHashNum()))));
               temp.setSelected(true);
             }
             temp.validate();

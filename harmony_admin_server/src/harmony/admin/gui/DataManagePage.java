@@ -73,7 +73,7 @@ public class DataManagePage extends ManagePage {
 					for(int j=0; j<dataManagePanel.dataPanelList.size(); j++){
 						DataManagePage.DataManagePanel.DataPanel dataPanel = dataManagePanel.dataPanelList.get(j);
 
-						roomData.getWorkDataList().get(j).setWorkData(dataPanel.imageList, dataPanel.imageScr, dataPanel.title.getText(), dataPanel.artist.getText(),
+						roomData.getWorkDataList().get(j).setWorkData(dataPanel.imageRealNum, dataPanel.imageList, dataPanel.imageScr, dataPanel.title.getText(), dataPanel.artist.getText(),
 								dataPanel.simpleContents.getText(), dataPanel.contents.getText(), i, gui.getDataCnt());
 					}
 				}
@@ -183,10 +183,10 @@ public class DataManagePage extends ManagePage {
 					constraints.gridy = dataPanelList.size();
 
 					WorkData workData = new WorkData();
-					workData.setRealNum(gui.realWorkNumIncrement());
+					workData.setHashNum(gui.realWorkNumIncrement());
 					workData.setRoomNum(gui.getCurrentRoomNum());
 
-					gui.getWorkHashMap().put(workData.getRealNum(), workData);
+					gui.getWorkHashMap().put(workData.getHashNum(), workData);
 					gui.getRoomDataList().get(gui.getCurrentRoomNum()-1).getWorkDataList().add(workData);
 
 					add(dataPanel, constraints);
@@ -252,6 +252,7 @@ public class DataManagePage extends ManagePage {
 			private Image mainImage = null;
 			private ArrayList<Image> imageList;
 			private ArrayList<String> imageScr;
+			private ArrayList<Integer> imageRealNum;
 
 			private JLabel image;
 			private JTextField title, artist, simpleContents, contents;
@@ -306,6 +307,7 @@ public class DataManagePage extends ManagePage {
 
 							imageList = (ArrayList<Image>) popUpPage.getImageList().clone();
 							imageScr = (ArrayList<String>) popUpPage.getImageScr().clone();
+							imageRealNum = (ArrayList<Integer>) popUpPage.getImageRealNum().clone();
 
 							System.out.println("�гο� ��ϵ� �̹��� �� : " + imageList.size());
 							validate();
@@ -416,6 +418,7 @@ public class DataManagePage extends ManagePage {
 
 							imageList = (ArrayList<Image>) popUpPage.getImageList().clone();
 							imageScr = (ArrayList<String>) popUpPage.getImageScr().clone();
+							imageRealNum = (ArrayList<Integer>) popUpPage.getImageRealNum().clone();
 
 							System.out.println("�гο� ��ϵ� �̹��� �� : " + imageList.size());
 							validate();

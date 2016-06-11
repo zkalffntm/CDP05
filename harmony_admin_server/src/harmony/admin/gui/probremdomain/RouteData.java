@@ -5,10 +5,12 @@ import java.util.ArrayList;
 
 public class RouteData {
 
+  private int realNum = 0;
   private int routeNum; // index
   private String title;
   private ArrayList<WorkData> workDataList;
   private Image img;
+  private String imgScr;
 
   public RouteData(String title, int routeNum) {
     this.routeNum = routeNum;
@@ -17,6 +19,14 @@ public class RouteData {
     workDataList = new ArrayList<WorkData>();
   }
 
+  public int getRealNum() {
+    return this.realNum;
+  }
+  
+  public void setRealNum(int realNum) {
+    this.realNum = realNum;
+  }
+  
   public int getRouteNum() {
     return routeNum;
   }
@@ -47,5 +57,13 @@ public class RouteData {
 
   public void setImg(Image img) {
     this.img = img;
+  }
+  
+  public String getImgScr() {
+    return this.imgScr;
+  }
+  
+  public void setImgScr(String imgScr) {
+    this.imgScr = imgScr;
   }
 }

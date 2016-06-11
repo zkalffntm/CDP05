@@ -46,6 +46,26 @@ public class NodeController {
     return (Node[]) nodeList.toArray(new Node[nodeList.size()]);
   }
 
+  public static Node getNodeByBlockNum(int blockNum) throws SQLException {
+
+    // 레코드 조회 쿼리 실행
+    Connection dbConnection = DbConnector.getInstance().getConnection();
+    String sql = "select * from " + DbLiteral.NODE + " where "
+        + DbLiteral.BL_NUM + "=?";
+    PreparedStatement pstmt = dbConnection.prepareStatement(sql);
+    pstmt.setInt(1, blockNum);
+    ResultSet resultSet = pstmt.executeQuery();
+
+    Node node = null;
+    if (resultSet.next()) {
+      node = new Node();
+      node.setNum(resultSet.getInt(DbLiteral.N_NUM));
+      node.setBlockNum(resultSet.getInt(DbLiteral.BL_NUM));
+    }
+
+    return node;
+  }
+
   /**
    * 
    * @param nodes
@@ -58,7 +78,9 @@ public class NodeController {
 
     // 삽입
     for (int i = 0; i < nodes.length; i++) {
-      nodes[i].setNum(insertNode(nodes[i]));
+      if (nodes[i] != null) {
+        nodes[i].setNum(insertNode(nodes[i]));
+      }
     }
   }
 

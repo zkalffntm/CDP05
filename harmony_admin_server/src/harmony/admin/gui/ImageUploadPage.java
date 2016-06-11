@@ -41,12 +41,12 @@ public class ImageUploadPage extends JDialog{
 	private ImageIcon addImgBtnImg;
 	
 	private ArrayList<Image> imageList;
-	private ArrayList<ImageButton> buttonList;
-	private ArrayList<String> imageScr;
-	
-	private GUI_console gui;
-	
-	public ImageUploadPage(JFrame frame, String title) {
+	private ArrayList<String> imageScr;	
+	private ArrayList<Integer> imageRealNum;
+  private ArrayList<ImageButton> buttonList;
+  
+  private GUI_console gui;
+  public ImageUploadPage(JFrame frame, String title) {
 		
 		super(frame, title, true);
 
@@ -59,6 +59,7 @@ public class ImageUploadPage extends JDialog{
 		imageList = new ArrayList<Image>();
 		buttonList = new ArrayList<ImageButton>();
 		imageScr = new ArrayList<String>();
+		imageRealNum = new ArrayList<Integer>();
 		
 		mainPanel = new JPanel();
 
@@ -110,6 +111,7 @@ public class ImageUploadPage extends JDialog{
 						Image img = ImageIO.read(file);
 						imageList.add(img);
 						imageScr.add(chooser.getSelectedFile().toString());
+						imageRealNum.add(0);
 						
 						ImageButton button = new ImageButton(imageList.size()-1, img);
 						
@@ -187,6 +189,14 @@ public class ImageUploadPage extends JDialog{
 
 	public void setImageList(ArrayList<Image> imageList) {
 		this.imageList = imageList;
+	}
+	
+	public ArrayList<Integer> getImageRealNum() {
+	  return this.imageRealNum;
+	}
+	
+	public void setImageRealNum(ArrayList<Integer> imageRealNum){
+	  this.imageRealNum = imageRealNum;
 	}
 
 	public JPanel getImageListPanel() {
