@@ -14,13 +14,14 @@ public class Museum implements Serializable
 	private int port;
 
 	// Containing Data
+	private String noticeUrl;
 	private long lastUpdate;
 	private List<Area> areaList;
 	private List<Exhibition> exhibitionList;
 	private List<Recommandation> recommandationList;
 	
 	
-	public static void selectMuseum(Museum museum)	{ selectedMuseum = museum; }
+	public void select()							{ selectedMuseum = this; }
 	public static Museum getSelectedMuseum() 		{ return selectedMuseum; }
 	
 	/********************************* Setters *********************************/
@@ -28,6 +29,9 @@ public class Museum implements Serializable
 	public void setName(String name)	{ this.name = name; }
 	public void setIP(String ip)		{ this.ip = ip; }
 	public void setPort(int port)		{ this.port = port; }
+	
+	public void setNoticeUrl(String noticeUrl)
+	{ this.noticeUrl = noticeUrl; }
 	
 	public void setLastUpdate(long lastUpdate)
 	{ this.lastUpdate = lastUpdate; }
@@ -47,6 +51,7 @@ public class Museum implements Serializable
 	public String	getName()	{ return name; }
 	public String	getIP()		{ return ip; }
 	public int		getPort()	{ return port; }
+	public String				getNoticeUrl()			{ return noticeUrl; }
 	public long 				getLastUpdate()			{ return lastUpdate; }
 	public List<Area> 			getAreaList()			{ return areaList; }
 	public List<Exhibition> 	getExhibitionList()		{ return exhibitionList; }

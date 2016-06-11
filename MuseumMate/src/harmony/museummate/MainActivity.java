@@ -3,7 +3,6 @@ package harmony.museummate;
 import java.io.BufferedInputStream;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,6 +52,7 @@ import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
 import datatype.Exhibition;
+import datatype.Museum;
 import tools.CustomMsg;
 
 public class MainActivity	extends 	AppCompatActivity 
@@ -79,11 +79,7 @@ public class MainActivity	extends 	AppCompatActivity
 	private String email;
 	private String id;
 	private Uri photo;
-	
-	// Museum Information
-	private String noticeUrl = "http://www.swgumho.es.kr/upload"
-			+ "/2016/04/19/3f6b73e553b874e14bdec8aabe8a8208.png";
-	
+		
 	// User Account
 	
 	// Loading Activity
@@ -102,7 +98,6 @@ public class MainActivity	extends 	AppCompatActivity
     private TextView				txtEmail;
     private FloatingActionButton	btnFloating;
 	
-    private String					showName = "전시회 이름";
     private String[]				drawerListTitles;
     private static final int[]		drawerListIcons = { R.drawable.ic_reader,
     													R.drawable.ic_thumb_up,
@@ -111,10 +106,10 @@ public class MainActivity	extends 	AppCompatActivity
     													R.drawable.ic_settings };
 	
 	// Fragments
-    private PreferenceFragment	fragmentPref;
-    private VisitedFragment		fragmentVisited;
-    private MapFragment			fragmentMap;
-    private ExhibitionFragment	fragmentExhibition;
+    private PreferenceFragment		fragmentPref;
+    private VisitedFragment			fragmentVisited;
+    private MapFragment				fragmentMap;
+    private ExhibitionFragment		fragmentExhibition;
     private RecommandationFragment	fragmentRecommandation;
     
     
@@ -459,7 +454,7 @@ public class MainActivity	extends 	AppCompatActivity
                 return true;
             }
         });
-        wv.loadUrl(noticeUrl);
+        wv.loadUrl(Museum.getSelectedMuseum().getNoticeUrl());
 
         // Set Exit Button
         btnExit.setOnClickListener(new OnClickListener()
@@ -512,7 +507,7 @@ public class MainActivity	extends 	AppCompatActivity
 	                   .replace(R.id.content_frame, fragment)
 	                   .commit();
 	    
-	    if(position == -1) actionbar.setTitle(showName);
+	    if(position == -1) actionbar.setTitle(Museum.getSelectedMuseum().getName());
 	    else actionbar.setTitle(drawerListTitles[position]);
 	    
 	    curFragmentNum = position;

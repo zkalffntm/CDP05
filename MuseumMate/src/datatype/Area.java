@@ -24,12 +24,12 @@ public class Area implements Serializable
 	public String	getName()			{ return name; }
 	public String	getImage()			{ return image; }
 	
-	public void setNumber(int num)				{ this.num = num; }
-	public void	setName(String name)			{ this.name = name; }
-	public void	setImage(String image)			{ this.image = image; }
+	public void setNumber(int num)		{ this.num = num; }
+	public void	setName(String name)	{ this.name = name; }
+	public void	setImage(String image)	{ this.image = image; }
 	
 	public void addNode(Node node)
 	{ nodeList.append(node.getBlockNumber(), node); }
 	
-	public SparseArray<Node> getPlacements() { return nodeList; }
+	public SparseArray<Node> getNodes() { return nodeList; }
 }

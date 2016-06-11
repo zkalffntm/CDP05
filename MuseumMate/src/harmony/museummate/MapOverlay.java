@@ -9,12 +9,15 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.SparseArray;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import datatype.Area;
 import datatype.Exhibition;
 import datatype.Museum;
@@ -23,17 +26,14 @@ import tools.LocationTracker;
 
 class MapOverlay extends View
 {
-	private static final int BLOCK_SIZE = 30;
-	private static final float SPOT_SIZE = 20;
+	private static final int BLOCK_SIZE = 100;	// pixel scale
+	private static final float SPOT_SIZE = 40;	// dp scale (also used in click event) 
 	
 	private Area area;
-	private List<Point> pointList;
-	private List<Line> lineList;
+	private List<Point> lineList;
 	private Point selectedPoint;
 	
-	private Bitmap selectedSpot;
-	private Bitmap deSelectedSpot;
-	private float density;
+	private Paint paint;
 	private int mapWidth;
 	private int columnCount;
 
@@ -52,81 +52,57 @@ class MapOverlay extends View
 
 	public void initialize()
 	{
-		selectedSpot = BitmapFactory.decodeResource(getResources(), R.drawable.spot_selected);
-		deSelectedSpot = BitmapFactory.decodeResource(getResources(), R.drawable.spot);
-		density = getResources().getDisplayMetrics().density;
-		setLocation(LocationTracker.getInstance().getCurrentExhibition());
+		paint = new Paint();
+		paint.setColor(Color.BLUE);
 	}
 	
 	public void setLocation(Exhibition exhibition)
 	{
-		this.area = exhibition.getArea();
-		pointList = new ArrayList<Point>();
-		lineList = new ArrayList<Line>();
+		area = exhibition.getArea();
 		selectedPoint = null;
-		
-		SparseArray<Node> placementList = area.getPlacements();
-		for(int i = 0; i < placementList.size(); i++)
-		{
-			Node e = placementList.valueAt(i);
-			if(e.getType() == Node.TYPE.EXHIBITION)
-			{
-				int id = ((Exhibition)e).getId();
-				pointList.add(new Point(id % columnCount, id / columnCount));
-			}
-		}
-			
-		invalidate();
 	}
 	
 	public void setMapWidth(int imageWidth)
 	{
 		mapWidth = imageWidth;
 		columnCount = (int)Math.ceil((double)mapWidth / BLOCK_SIZE);
-	}
+	}	
 	
 	protected void onDraw(Canvas canvas)
 	{
 		super.onDraw(canvas);
-		this.getWidth();
-		Paint paint = new Paint();
-		paint.setColor(Color.BLUE);
 		
-		new RectF();
-		for(Point e : pointList)
-			canvas.drawBitmap(deSelectedSpot, null, dst, paint);
-		canvas.drawRect(50, 100, 50+100, 100+100, paint);
-		
+		float magnification = (float)getWidth() / mapWidth;
 		/*
-		Paint paint3 = new Paint();
-		paint3.setColor(Color.BLACK);
-		
-		canvas.drawLine(200, 500, 500, 600, paint3);
-		*/
+		for(Point e : lineList)
+		{
+			float lineStartX	= (BLOCK_SIZE * (e.startX + 0.5f)) * magnification;
+			float lineStartY	= (BLOCK_SIZE * (e.startY + 0.5f)) * magnification;
+			float lineEndX		= (BLOCK_SIZE * (e.endX + 0.5f)) * magnification;
+			float lineEndY		= (BLOCK_SIZE * (e.endY + 0.5f)) * magnification;
+			canvas.drawLine(lineStartX, lineStartY, lineEndX, lineEndY, paint);
+		}*/
 	}
 	
-	class Point
+	private void onClick(float clickX, float clickY)
 	{
-		int row, col;
+		// Get On-Map-Location and Calculate block index on map
+		float magnification = (float)getWidth() / mapWidth;
+		int blockX = (int)((clickX / magnification) / BLOCK_SIZE);
+		int blockY = (int)((clickY / magnification) / BLOCK_SIZE);
+		int blockIndex = blockX + blockY * columnCount;
 		
-		public Point(int row, int col)
+		// Get clicked node and process
+		Node clickedNode = area.getNodes().get(blockIndex);
+		if(clickedNode != null)
 		{
-			this.row = row;
-			this.col = col;
-		}
-	}
-	
-	class Line
-	{
-		int rowFrom, colFrom;
-		int rowTo, colTo;
-		
-		public Line(int rowFrom, int colFrom, int rowTo, int colTo)
-		{
-			this.rowFrom = rowFrom;
-			this.colFrom = colFrom;
-			this.rowTo = rowTo;
-			this.colTo = colTo;
+			Point newlySelected = new Point(blockX, blockY);
+			if(	selectedPoint.x != newlySelected.x ||
+				selectedPoint.y != newlySelected.y)
+			{
+				selectedPoint = newlySelected;
+				invalidate();
+			}
 		}
 	}
 }

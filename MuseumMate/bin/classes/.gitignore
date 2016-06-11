@@ -2,6 +2,5 @@
 /com/
 /harmony/
 /.gitignore
-/tools/
 /datatype/
-/bluetooth/
+/tools/
