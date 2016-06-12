@@ -34,7 +34,7 @@ public class DescriptionDialog extends Dialog
 	}
 	
 	private ViewPager pager;
-    private CustomPagerAdapter pagerAdapter;
+    private ImagePagerAdapter pagerAdapter;
 	private TextView textName;
 	private TextView textAuthor;
 	private TextView textSummary;
@@ -123,7 +123,7 @@ public class DescriptionDialog extends Dialog
 
 		
 		// Set adapter
-		pagerAdapter = new CustomPagerAdapter(getContext());
+		pagerAdapter = new ImagePagerAdapter(getContext());
 		pagerAdapter.addView(image1);
 		pagerAdapter.addView(image2);
 		pager.setAdapter(pagerAdapter);

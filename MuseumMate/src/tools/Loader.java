@@ -38,7 +38,7 @@ public class Loader extends Thread
 		
 
 		List<Area> areaList = new ArrayList<Area>();
-		Area testArea = new Area(1, "");
+		Area testArea = new Area(1, "¹æ1");
 		testEx1.place(testArea, 32);
 		areaList.add(testArea);
 		museum.setAreaList(areaList);
@@ -48,6 +48,9 @@ public class Loader extends Thread
 		museum.setRecommandationList(reclist);
 
 		try { Thread.sleep(2000); } catch(Exception e) {}
+		
+		
+		
 		
 		handler.sendEmptyMessage(CustomMsg.SUCCESS);
 	}

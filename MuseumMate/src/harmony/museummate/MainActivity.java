@@ -16,8 +16,8 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.res.Configuration;
@@ -27,7 +27,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceFragment;
+import android.support.v4.preference.PreferenceFragment;
 import android.support.design.widget.FloatingActionButton;
 import uk.co.senab.photoview.sample.HackyDrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -79,7 +79,7 @@ public class MainActivity	extends 	AppCompatActivity
 	private String email;
 	private String id;
 	private Uri photo;
-		
+	
 	// User Account
 	
 	// Loading Activity
@@ -376,14 +376,6 @@ public class MainActivity	extends 	AppCompatActivity
 	    	fragmentExhibition = new ExhibitionFragment();
 	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.exhibition_sample);
 
-	    	fragmentExhibition.addItem(path, "작품1", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품2", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품3", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품4", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품5", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품6", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품7", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품8", "아티스트", "간략한 설명");
 	    }
 	    
 	    showFragment(fragmentExhibition, EXHIBITION);
@@ -502,7 +494,7 @@ public class MainActivity	extends 	AppCompatActivity
 	{
 		if(position == curFragmentNum) return;
 		
-	    FragmentManager fragmentManager = getFragmentManager();
+	    FragmentManager fragmentManager = getSupportFragmentManager();
 	    fragmentManager.beginTransaction()
 	                   .replace(R.id.content_frame, fragment)
 	                   .commit();
