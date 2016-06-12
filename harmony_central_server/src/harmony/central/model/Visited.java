@@ -42,8 +42,11 @@ public class Visited {
     return this.exhibitionNum;
   }
 
-  public void setExhibitionNum(int exhibitionNum) {
-    this.exhibitionNum = exhibitionNum;
+  public void setExhibitionNum(Integer exhibitionNum) {
+    if (exhibitionNum == null) {
+      this.exhibitionNum = 0;
+    } else {
+      this.exhibitionNum = exhibitionNum;
+    }
   }
-
 }

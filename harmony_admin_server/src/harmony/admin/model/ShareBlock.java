@@ -23,15 +23,23 @@ public class ShareBlock {
     return this.blockNum1;
   }
 
-  public void setBlockNum1(int blockNum1) {
-    this.blockNum1 = blockNum1;
+  public void setBlockNum1(Integer blockNum1) {
+    if (blockNum1 == null) {
+      this.blockNum1 = 0;
+    } else {
+      this.blockNum1 = blockNum1;
+    }
   }
 
   public int getBlockNum2() {
     return this.blockNum2;
   }
 
-  public void setBlockNum2(int blockNum2) {
-    this.blockNum2 = blockNum2;
+  public void setBlockNum2(Integer blockNum2) {
+    if (blockNum2 == null) {
+      this.blockNum2 = 0;
+    } else {
+      this.blockNum2 = blockNum2;
+    }
   }
 }

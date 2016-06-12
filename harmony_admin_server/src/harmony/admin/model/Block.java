@@ -32,15 +32,23 @@ public class Block {
     return this.itemNum;
   }
 
-  public void setItemNum(int itemNum) {
-    this.itemNum = itemNum;
+  public void setItemNum(Integer itemNum) {
+    if (itemNum == null) {
+      this.itemNum = 0;
+    } else {
+      this.itemNum = itemNum;
+    }
   }
 
   public int getAreaNum() {
     return this.areaNum;
   }
 
-  public void setAreaNum(int areaNum) {
-    this.areaNum = areaNum;
+  public void setAreaNum(Integer areaNum) {
+    if (areaNum == null) {
+      this.areaNum = 0;
+    } else {
+      this.areaNum = areaNum;
+    }
   }
 }

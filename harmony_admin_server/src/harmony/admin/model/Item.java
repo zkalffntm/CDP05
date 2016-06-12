@@ -67,7 +67,11 @@ public class Item {
     return this.areaNum;
   }
 
-  public void setAreaNum(int areaNum) {
-    this.areaNum = areaNum;
+  public void setAreaNum(Integer areaNum) {
+    if (areaNum == null) {
+      this.areaNum = 0;
+    } else {
+      this.areaNum = areaNum;
+    }
   }
 }

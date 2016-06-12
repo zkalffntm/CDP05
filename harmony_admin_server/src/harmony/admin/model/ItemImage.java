@@ -51,8 +51,12 @@ public class ItemImage {
     return this.itemNum;
   }
 
-  public void setItemNum(int itemNum) {
-    this.itemNum = itemNum;
+  public void setItemNum(Integer itemNum) {
+    if (itemNum == null) {
+      this.itemNum = 0;
+    } else {
+      this.itemNum = itemNum;
+    }
   }
 
   public boolean isImageEdited() {

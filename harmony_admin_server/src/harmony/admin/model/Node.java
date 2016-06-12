@@ -22,7 +22,11 @@ public class Node {
     return this.blockNum;
   }
 
-  public void setBlockNum(int blockNum) {
-    this.blockNum = blockNum;
+  public void setBlockNum(Integer blockNum) {
+    if (blockNum == null) {
+      this.blockNum = 0;
+    } else {
+      this.blockNum = blockNum;
+    }
   }
 }
