@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
+    <SwitchPreference android:key="AutoDescription" android:title="@string/autodescription_title" android:summary="@string/autodescription_summary"/>
+    <SwitchPreference android:key="TTS" android:title="@string/tts_title" android:summary="@string/tts_summary"/>
+    
+
+</PreferenceScreen>

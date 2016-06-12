@@ -1,0 +1,120 @@
+<uk.co.senab.photoview.sample.HackyDrawerLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+	android:id="@+id/drawer_layout"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
+	tools:context=".MainActivity">
+       
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+   		android:orientation="vertical">
+   		
+		<android.support.v7.widget.Toolbar
+		    android:id="@+id/toolbar"
+		    android:minHeight="?attr/actionBarSize"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:background="#460000"
+    		android:theme="@style/Theme.AppCompat.NoActionBar">
+		    
+		</android.support.v7.widget.Toolbar>
+		
+	    <FrameLayout
+	        android:id="@+id/content_frame"
+	        android:layout_width="match_parent"
+	        android:layout_height="match_parent" >
+
+		    <android.support.design.widget.FloatingActionButton
+				android:id="@+id/btn_floating"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_gravity="end|bottom"
+				android:layout_margin="20dp"
+				android:src="@drawable/home"
+				android:background="#460000"
+				app:borderWidth="0dp"
+				app:rippleColor="#000000" />
+		    
+	    </FrameLayout>
+	    
+	</LinearLayout>
+		
+    <LinearLayout
+        android:id="@+id/drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:orientation="vertical"
+        android:gravity="center" >
+		
+		<LinearLayout
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+	   		android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+		    android:background="#460000"
+    		android:theme="@style/Theme.AppCompat.NoActionBar">
+	   		
+            <ImageView
+        		android:id="@+id/user_photo"
+                android:layout_width="90dp"
+                android:layout_height="90dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp" />
+            
+		    <LinearLayout
+			    android:layout_width="match_parent"
+			    android:layout_height="match_parent"
+                android:paddingStart="0dp"
+                android:paddingEnd="10dp"
+		   		android:orientation="vertical"
+        		android:gravity="center_vertical">
+		   		
+                <TextView
+        			android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="start"
+                    android:textSize="16sp"
+	    			android:textColor="#FFFFFF"/>
+
+                <TextView
+        			android:id="@+id/user_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="start"
+                    android:textSize="12sp" />
+		        
+			</LinearLayout>
+			
+		</LinearLayout>
+			
+		<View
+            android:layout_width="match_parent"
+		    android:layout_height="3dp"
+		    android:background="#FFFFFF" />
+		
+		<View
+            android:layout_width="match_parent"
+		    android:layout_height="10dp"
+		    android:background="#460000" />
+	
+		<ListView
+		    android:id="@+id/drawer_list"
+	        android:layout_width="fill_parent"
+	        android:layout_height="match_parent"
+            android:padding="10dp"
+		    android:choiceMode="singleChoice"
+		    android:divider="@android:color/transparent"
+		    android:dividerHeight="0dp"
+		    android:background="#FFFFFF"/>
+
+    </LinearLayout>
+    
+</uk.co.senab.photoview.sample.HackyDrawerLayout>

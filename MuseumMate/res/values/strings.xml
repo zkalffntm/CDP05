@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">MuseumMate</string>
+    <string name="action_settings">Settings</string>
+    
+    <string-array name="drawer_titles">
+        <item>전시 목록</item>
+        <item>추천 코스</item>
+        <item>가보았던 전시장</item>
+        <item>공지사항</item>
+        <item>환경설정</item>
+    </string-array>
+    <string name="autodescription_title">자동 작품 설명</string>
+    <string name="autodescription_summary">전시물에 접근 시 자동으로 설명을 노출합니다</string>
+    <string name="tts_title">자동 음성 재생</string>
+    <string name="tts_summary">설명 화면 노출 시 음성으로도 재생됩니다</string>
+    <string name="unable_to_connect">서버에 연결할 수 없습니다</string>
+    <string name="remove_from_route">경로에서 제외</string>
+
+</resources>
