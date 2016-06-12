@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -40,6 +41,8 @@ public class DescriptionDialog extends Dialog
 	private TextView textDescription;
 	private ImageView exitButton;
 	private ImageView voiceButton;
+	private ImageButton leftButton;
+	private ImageButton rightButton;
 	
 	private TextToSpeech tts;
 	private String currentTTSString;
@@ -59,6 +62,8 @@ public class DescriptionDialog extends Dialog
 		textDescription = (TextView)findViewById(R.id.txt_description);
 		exitButton = (ImageView)findViewById(R.id.exit_button);
 		voiceButton = (ImageView)findViewById(R.id.voice_button);
+		leftButton = (ImageButton)findViewById(R.id.flip_left_button);
+		rightButton = (ImageButton)findViewById(R.id.flip_right_button);
 		
 		// Set TTS
 		tts = new TextToSpeech(context, ttsListener);
@@ -69,6 +74,27 @@ public class DescriptionDialog extends Dialog
 		
 		voiceButton.setOnClickListener(new View.OnClickListener()
 		{ public void onClick(View v) { setVoiceOn(!voiceOn); } });
+		
+		leftButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				int targetIndex = pager.getCurrentItem() - 1;
+				pager.setCurrentItem((targetIndex < 0) ? 0 : targetIndex);
+			}
+		});
+		
+		rightButton.setOnClickListener(new View.OnClickListener()
+		{
+			@Override
+			public void onClick(View v)
+			{
+				int targetIndex = pager.getCurrentItem() + 1;
+				pager.setCurrentItem((targetIndex > (pager.getChildCount() - 1)) ? 
+						pager.getChildCount() : targetIndex);
+			}
+		});
 	}
     
 	private void setExhibition(Exhibition exhibition)
