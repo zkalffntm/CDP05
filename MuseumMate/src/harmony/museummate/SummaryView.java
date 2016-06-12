@@ -21,7 +21,7 @@ public class SummaryView extends ToolTipView
 	private ExhibitionView targetView;
 	private ViewGroup contentHolder;
 	private ImageView exitButton;
-	private Button removeButton;
+	private ImageView removeButton;
 	
 	private boolean aboveTarget;
 	private float gapX, gapY;
@@ -83,7 +83,8 @@ public class SummaryView extends ToolTipView
     	else if(removeButton != null && view.equals(removeButton))
     	{
     		remove();
-    		Toast.makeText(getContext(), "테스트 : 경로에서 제외", Toast.LENGTH_SHORT).show();
+    		DescriptionDialog.showExhibitionDialog(getContext(), targetView.getExhibition());
+    		//Toast.makeText(getContext(), "테스트 : 경로에서 제외", Toast.LENGTH_SHORT).show();
     	}
     }
 	
@@ -92,16 +93,8 @@ public class SummaryView extends ToolTipView
 	
     public void addRemoveButton()
     {
-    	removeButton = new Button(getContext());
-    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-    			LayoutParams.WRAP_CONTENT, 90);
-    	//params.setMargins(5, 5, 5, 5);
-    	removeButton.setLayoutParams(params);
-    	removeButton.setPadding(0, -15, 0, -15);
-    	removeButton.setText(R.string.remove_from_route);
-    	removeButton.setTextColor(Color.WHITE);
-    	removeButton.setTextSize(14);
-    	removeButton.setBackgroundResource(R.drawable.button_border);
+    	removeButton = new ImageView(getContext());
+    	removeButton.setImageResource(R.drawable.remove_from_route_button);
     	removeButton.setOnClickListener(this);
     	((LinearLayout)findViewById(R.id.additive_layout)).addView(removeButton);
     }
