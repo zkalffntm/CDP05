@@ -16,5 +16,6 @@
     <string name="tts_title">자동 음성 재생</string>
     <string name="tts_summary">설명 화면 노출 시 음성으로도 재생됩니다</string>
     <string name="unable_to_connect">서버에 연결할 수 없습니다</string>
+    <string name="remove_from_route">경로에서 제외</string>
 
 </resources>

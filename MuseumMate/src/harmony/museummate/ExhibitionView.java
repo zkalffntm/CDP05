@@ -7,12 +7,10 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
-import android.widget.FrameLayout;
 import android.widget.FrameLayout.LayoutParams;
 import datatype.Exhibition;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -27,14 +25,15 @@ public class ExhibitionView extends ImageView implements OnClickListener
 	private static int radius = 0;	// Correspond to SPOT_SIZE
 	
 	private Exhibition exhibition;
-	private PhotoViewAttacher mapAttatcher;
+	private MapFragment mapFragment;
+	private PhotoViewAttacher mapAttacher;
 	private int mapIntrinsicWidth;
 	private PointF relCoordinate;
 	private Point absCoordinate;
 	
-	public ExhibitionView(Exhibition exhibition, PhotoViewAttacher mapAttatcher)
+	public ExhibitionView(Exhibition exhibition, MapFragment mapFragment)
 	{
-		super(mapAttatcher.getImageView().getContext());
+		super(mapFragment.getActivity());
 
 		// Static Value Configuration
     	if(radius == 0)
@@ -45,11 +44,16 @@ public class ExhibitionView extends ImageView implements OnClickListener
         	
         	// Get density
     		DisplayMetrics metrics = new DisplayMetrics();
-    		WindowManager windowManager = (WindowManager)mapAttatcher.getImageView().
-    				getContext().getSystemService(Context.WINDOW_SERVICE);
+    		WindowManager windowManager = (WindowManager)mapFragment.getActivity().
+    				getSystemService(Context.WINDOW_SERVICE);
     		windowManager.getDefaultDisplay().getMetrics(metrics);
     		radius = (int)(SPOT_SIZE * metrics.density) / 2;
     	}
+    	
+    	// Set References
+    	this.mapFragment = mapFragment;
+		this.exhibition = exhibition;
+		mapAttacher = mapFragment.getMapAttacher();
     	
     	// Set Resource
     	setImageBitmap(deSelectedSpot);
@@ -59,16 +63,14 @@ public class ExhibitionView extends ImageView implements OnClickListener
 		setLayoutParams(params);
 		
 		// Caculate Location of the Spot
-		mapIntrinsicWidth = mapAttatcher.getImageView().getDrawable().getIntrinsicWidth();
+		mapIntrinsicWidth = mapAttacher.getImageView().getDrawable().getIntrinsicWidth();
 		int columnCount = (int)Math.ceil((double)mapIntrinsicWidth / BLOCK_SIZE);
 		absCoordinate = new Point();
 		relCoordinate = new PointF();
 		relCoordinate.x = (exhibition.getBlockNumber() % columnCount + 0.5f) * BLOCK_SIZE;
 		relCoordinate.y = (exhibition.getBlockNumber() / columnCount + 0.5f) * BLOCK_SIZE;
-		
+
 		// Other Initialization
-		this.exhibition = exhibition;
-		this.mapAttatcher = mapAttatcher;
 		setOnClickListener(this);
 	}
 	
@@ -76,7 +78,6 @@ public class ExhibitionView extends ImageView implements OnClickListener
 	{
 		float magnification = mapRect.width() / mapIntrinsicWidth;
 
-		Log.i("test", "" + mapIntrinsicWidth);
 		LayoutParams params = (LayoutParams)getLayoutParams();
 		absCoordinate.x = (int)(mapRect.left + relCoordinate.x * magnification);
 		absCoordinate.y = (int)(mapRect.top + relCoordinate.y * magnification);
@@ -85,14 +86,9 @@ public class ExhibitionView extends ImageView implements OnClickListener
 		setLayoutParams(params);
 	}
 	
-	public Point getAbsoluteCoordinate()
-	{ return new Point(absCoordinate); }
-
 	@Override
 	public void onClick(View v)
-	{
-		
-	}
+	{ mapFragment.showSummaryToolTip(this); }
 	
 	public Exhibition getExhibition() { return exhibition; }
 }

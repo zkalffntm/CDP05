@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.nhaarman.supertooltips.ToolTip;
 import com.nhaarman.supertooltips.ToolTipRelativeLayout;
+import com.nhaarman.supertooltips.ToolTipView;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -13,6 +14,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.PointF;
 import android.graphics.RectF;
 import android.net.Uri;
 import android.os.Bundle;
@@ -51,8 +53,10 @@ public class MapFragment extends Fragment
 	private FrameLayout frameLayout;
 	private ProgressBar progressBar;
 	private List<ExhibitionView> pointList;
-	private ToolTipRelativeLayout toolTipRelativeLayout;
-	
+	private SummaryRelativeLayout summaryRelativeLayout;
+	private ToolTip toolTip;
+    private SummaryView summaryView;
+    
 	private RectObserver observer;
 	private MapLoadingHandler handler;
 	
@@ -72,7 +76,7 @@ public class MapFragment extends Fragment
     	photoMap = (PhotoView)v.findViewById(R.id.mapview);
     	frameLayout = (FrameLayout)v.findViewById(R.id.map_frame);
     	progressBar = (ProgressBar)v.findViewById(R.id.progress);
-        toolTipRelativeLayout = (ToolTipRelativeLayout)v.findViewById(R.id.tooltipRelativeLayout);
+        summaryRelativeLayout = (SummaryRelativeLayout)v.findViewById(R.id.tooltipRelativeLayout);
 
 		//new DynamicLoader(getActivity()).setAreaImage(photoMap, area.getNumber(), handler);
     	// get informed on bitmap and set image
@@ -96,15 +100,12 @@ public class MapFragment extends Fragment
 		progressBar.setVisibility(View.INVISIBLE);
 		
 		// Set ToopTip
-	    ToolTip toolTip = new ToolTip()
-	                        .withText("A beautiful View")
-	                        .withColor(Color.WHITE)
-	                        .withShadow()
-	                        .withAnimationType(ToolTip.AnimationType.FROM_MASTER_VIEW);
+	    toolTip = new ToolTip().withShadow()
+				                .withAnimationType(ToolTip.AnimationType.NONE);
     	return v;
     }
 
-    public void updateCanvas(final RectF mapRect)
+    public void updateViews(final RectF mapRect)
     {
     	Activity currentActivity = getActivity();
     	if(currentActivity != null) currentActivity.runOnUiThread(new Runnable()
@@ -117,12 +118,17 @@ public class MapFragment extends Fragment
 				canvas.setTop((int)mapRect.top);
 				canvas.setBottom((int)mapRect.bottom);
 				frameLayout.bringToFront();
+				summaryRelativeLayout.invalidate();
 				canvas.invalidate();
+				
 				for(ExhibitionView e : pointList)
 				{
 					e.update(mapRect);
 					e.bringToFront();
 				}
+				
+				if(summaryView != null)
+					try { summaryView.update(); } catch(Exception e) {}
 			}
 		});
     }
@@ -136,12 +142,34 @@ public class MapFragment extends Fragment
 			Node e = nodeList.valueAt(i);
 			if(e.getType() == Node.TYPE.EXHIBITION)
 			{
-				ExhibitionView point = new ExhibitionView((Exhibition)e, attacher);
+				ExhibitionView point = new ExhibitionView((Exhibition)e, this);
 				frameLayout.addView(point);
 				pointList.add(point);
 			}
 		}
     }
+    
+    public void showSummaryToolTip(ExhibitionView targetView)
+    {
+    	if(summaryView != null && summaryView.isShown())
+    	{
+    		if(!targetView.equals(summaryView.getExhibitionView()))
+    		{
+    			summaryView.remove();
+    			summaryView = summaryRelativeLayout.showToolTipForView(toolTip, targetView);
+    		}
+    		else
+    		{
+    			summaryView.remove();
+    			summaryView = null;
+    		}
+    	}
+    	else summaryView = summaryRelativeLayout.showToolTipForView(toolTip, targetView);
+    	summaryView.addRemoveButton();
+    }
+    
+    public PhotoViewAttacher getMapAttacher()
+    { return attacher; }
     
     class RectObserver extends Thread
     {
@@ -149,7 +177,7 @@ public class MapFragment extends Fragment
     	public void run()
     	{
     		RectF mapRectPrev = new RectF(attacher.getDisplayRect());
-			updateCanvas(mapRectPrev);
+			updateViews(mapRectPrev);
 
 			while(!isVisible()) try{ Thread.sleep(16); } catch(Exception e) {}
 			
@@ -165,7 +193,7 @@ public class MapFragment extends Fragment
         			Math.abs(mapRect.bottom - mapRectPrev.bottom) 	> FLOAT_BIAS)
         		{
         			mapRectPrev = mapRect;
-        			updateCanvas(mapRect);
+        			updateViews(mapRect);
         		}
 
             	if(!isVisible()) break;
