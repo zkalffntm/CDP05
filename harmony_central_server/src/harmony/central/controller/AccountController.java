@@ -35,7 +35,7 @@ public class AccountController {
       account = new Account();
       account.setId(id);
       account.setPassword(password);
-      account.setExhibitionNum(resultSet.getInt(DbLiteral.E_NUM));
+      account.setExhibitionNum((Integer) resultSet.getObject(DbLiteral.E_NUM));
     }
 
     return account;

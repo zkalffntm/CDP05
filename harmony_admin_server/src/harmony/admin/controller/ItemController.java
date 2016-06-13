@@ -40,7 +40,7 @@ public class ItemController {
       item.setSimpleContent(resultSet.getString(DbLiteral.I_SIMPLE_CONTENT));
       item.setDetailContent(resultSet.getString(DbLiteral.I_DETAIL_CONTENT));
       item.setSize(resultSet.getString(DbLiteral.I_SIZE));
-      item.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+      item.setAreaNum((Integer) resultSet.getObject(DbLiteral.A_NUM));
       itemList.add(item);
     }
 
@@ -74,7 +74,7 @@ public class ItemController {
       item.setSimpleContent(resultSet.getString(DbLiteral.I_SIMPLE_CONTENT));
       item.setDetailContent(resultSet.getString(DbLiteral.I_DETAIL_CONTENT));
       item.setSize(resultSet.getString(DbLiteral.I_SIZE));
-      item.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+      item.setAreaNum((Integer) resultSet.getObject(DbLiteral.A_NUM));
     }
 
     return item;
@@ -190,7 +190,11 @@ public class ItemController {
     pstmt.setString(4, item.getSimpleContent());
     pstmt.setString(5, item.getDetailContent());
     pstmt.setString(6, item.getSize());
-    pstmt.setInt(7, item.getAreaNum());
+    if (item.getAreaNum() == 0) {
+      pstmt.setObject(7, null);
+    } else {
+      pstmt.setInt(7, item.getAreaNum());
+    }
     pstmt.executeUpdate();
 
     // 커밋
@@ -218,7 +222,11 @@ public class ItemController {
     pstmt.setString(3, item.getSimpleContent());
     pstmt.setString(4, item.getDetailContent());
     pstmt.setString(5, item.getSize());
-    pstmt.setInt(6, item.getAreaNum());
+    if (item.getAreaNum() == 0) {
+      pstmt.setObject(6, null);
+    } else {
+      pstmt.setInt(6, item.getAreaNum());
+    }
     pstmt.setInt(7, item.getNum());
     pstmt.executeUpdate();
 

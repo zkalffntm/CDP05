@@ -47,7 +47,7 @@ public class RecommendItemController {
       recommendItem.setNum(resultSet.getInt(DbLiteral.RI_NUM));
       recommendItem.setSeq(resultSet.getInt(DbLiteral.RI_SEQ));
       recommendItem.setRecommendNum(recommendNum);
-      recommendItem.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      recommendItem.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
       recommendItemList.add(recommendItem);
     }
 
@@ -84,8 +84,16 @@ public class RecommendItemController {
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, num);
     pstmt.setInt(2, recommendItem.getSeq());
-    pstmt.setInt(3, recommendItem.getRecommendNum());
-    pstmt.setInt(4, recommendItem.getItemNum());
+    if (recommendItem.getRecommendNum() == 0) {
+      pstmt.setObject(3, null);
+    } else {
+      pstmt.setInt(3, recommendItem.getRecommendNum());
+    }
+    if (recommendItem.getItemNum() == 0) {
+      pstmt.setObject(4, null);
+    } else {
+      pstmt.setInt(4, recommendItem.getItemNum());
+    }
     pstmt.executeUpdate();
 
     // 커밋

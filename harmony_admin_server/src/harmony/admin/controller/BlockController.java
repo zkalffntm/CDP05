@@ -35,8 +35,8 @@ public class BlockController {
       Block block = new Block();
       block.setNum(resultSet.getInt(DbLiteral.BL_NUM));
       block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
-      block.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
-      block.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+      block.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
+      block.setAreaNum((Integer) resultSet.getObject(DbLiteral.A_NUM));
       blockList.add(block);
     }
 
@@ -61,8 +61,8 @@ public class BlockController {
       block = new Block();
       block.setNum(resultSet.getInt(num));
       block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
-      block.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
-      block.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+      block.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
+      block.setAreaNum((Integer) resultSet.getInt(DbLiteral.A_NUM));
     }
 
     return block;
@@ -86,7 +86,7 @@ public class BlockController {
       block.setNum(resultSet.getInt(DbLiteral.BL_NUM));
       block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
       block.setItemNum(itemNum);
-      block.setAreaNum(resultSet.getInt(DbLiteral.A_NUM));
+      block.setAreaNum((Integer) resultSet.getObject(DbLiteral.A_NUM));
       blockList.add(block);
     }
 
@@ -111,7 +111,7 @@ public class BlockController {
       Block block = new Block();
       block.setNum(resultSet.getInt(DbLiteral.BL_NUM));
       block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
-      block.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      block.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
       block.setAreaNum(areaNum);
       blockList.add(block);
     }
@@ -138,7 +138,7 @@ public class BlockController {
       block = new Block();
       block.setNum(resultSet.getInt(DbLiteral.BL_NUM));
       block.setSeq(seq);
-      block.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      block.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
       block.setAreaNum(areaNum);
     }
 
@@ -175,8 +175,16 @@ public class BlockController {
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, num);
     pstmt.setInt(2, block.getSeq());
-    pstmt.setInt(3, block.getItemNum());
-    pstmt.setInt(4, block.getAreaNum());
+    if (block.getItemNum() == 0) {
+      pstmt.setObject(3, null);
+    } else {
+      pstmt.setInt(3, block.getItemNum());
+    }
+    if (block.getAreaNum() == 0) {
+      pstmt.setObject(4, null);
+    } else {
+      pstmt.setInt(4, block.getAreaNum());
+    }
     pstmt.executeUpdate();
 
     // 커밋

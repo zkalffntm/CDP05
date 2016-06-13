@@ -34,8 +34,8 @@ public class ShareBlockController {
     while (resultSet.next()) {
       ShareBlock shareBlock = new ShareBlock();
       shareBlock.setNum(resultSet.getInt(DbLiteral.SB_NUM));
-      shareBlock.setBlockNum1(resultSet.getInt(DbLiteral.BL_NUM1));
-      shareBlock.setBlockNum2(resultSet.getInt(DbLiteral.BL_NUM2));
+      shareBlock.setBlockNum1((Integer) resultSet.getObject(DbLiteral.BL_NUM1));
+      shareBlock.setBlockNum2((Integer) resultSet.getObject(DbLiteral.BL_NUM2));
       shareBlockList.add(shareBlock);
     }
 
@@ -61,8 +61,8 @@ public class ShareBlockController {
     while (resultSet.next()) {
       ShareBlock shareBlock = new ShareBlock();
       shareBlock.setNum(resultSet.getInt(DbLiteral.SB_NUM));
-      shareBlock.setBlockNum1(resultSet.getInt(blockNum1));
-      shareBlock.setBlockNum2(resultSet.getInt(DbLiteral.BL_NUM2));
+      shareBlock.setBlockNum1((Integer) resultSet.getObject(blockNum1));
+      shareBlock.setBlockNum2((Integer) resultSet.getObject(DbLiteral.BL_NUM2));
       shareBlockList.add(shareBlock);
     }
 
@@ -103,8 +103,16 @@ public class ShareBlockController {
     String sql = "insert into " + DbLiteral.SHARE_BLOCK + " values (?, ?, ?)";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, num);
-    pstmt.setInt(2, shareBlock.getBlockNum1());
-    pstmt.setInt(3, shareBlock.getBlockNum2());
+    if (shareBlock.getBlockNum1() == 0) {
+      pstmt.setObject(2, null);
+    } else {
+      pstmt.setInt(2, shareBlock.getBlockNum1());
+    }
+    if (shareBlock.getBlockNum2() == 0) {
+      pstmt.setObject(3, null);
+    } else {
+      pstmt.setInt(3, shareBlock.getBlockNum2());
+    }
     pstmt.executeUpdate();
 
     // 커밋

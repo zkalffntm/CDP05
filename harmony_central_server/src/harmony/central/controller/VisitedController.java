@@ -45,7 +45,7 @@ public class VisitedController {
       visited.setNum(resultSet.getInt(DbLiteral.V_NUM));
       visited.setUserId(userId);
       visited.setDate(resultSet.getTimestamp(DbLiteral.V_DATE));
-      visited.setExhibitionNum(resultSet.getInt(DbLiteral.E_NUM));
+      visited.setExhibitionNum((Integer) resultSet.getObject(DbLiteral.E_NUM));
       visitedList.add(visited);
     }
 
@@ -128,7 +128,11 @@ public class VisitedController {
     pstmt.setInt(1, visitedNum);
     pstmt.setString(2, visited.getUserId());
     pstmt.setTimestamp(3, visited.getDate());
-    pstmt.setInt(4, visited.getExhibitionNum());
+    if (visited.getExhibitionNum() == 0) {
+      pstmt.setObject(4, null);
+    } else {
+      pstmt.setInt(4, visited.getExhibitionNum());
+    }
     pstmt.executeUpdate();
 
     // 커밋

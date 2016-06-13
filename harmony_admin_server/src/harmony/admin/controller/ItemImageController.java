@@ -42,7 +42,7 @@ public class ItemImageController {
       area.setImage(resultSet.getString(DbLiteral.II_IMAGE));
       area.setImageEdited(false);
       area.setMain(resultSet.getBoolean(DbLiteral.II_MAIN));
-      area.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      area.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
       itemImageList.add(area);
     }
 
@@ -75,7 +75,7 @@ public class ItemImageController {
       itemImage.setSeq(resultSet.getInt(DbLiteral.II_SEQ));
       itemImage.setImage(resultSet.getString(DbLiteral.II_IMAGE));
       itemImage.setMain(resultSet.getBoolean(DbLiteral.II_MAIN));
-      itemImage.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      itemImage.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
       itemImage.setImageEdited(false);
     }
 
@@ -170,7 +170,11 @@ public class ItemImageController {
     pstmt.setInt(2, itemImage.getSeq());
     pstmt.setString(3, itemImage.getImage());
     pstmt.setBoolean(4, itemImage.isMain());
-    pstmt.setInt(5, itemImage.getItemNum());
+    if (itemImage.getItemNum() == 0) {
+      pstmt.setObject(5, null);
+    } else {
+      pstmt.setInt(5, itemImage.getItemNum());
+    }
     pstmt.executeUpdate();
 
     // 커밋
@@ -202,7 +206,11 @@ public class ItemImageController {
     pstmt.setInt(1, itemImage.getSeq());
     pstmt.setString(2, itemImage.getImage());
     pstmt.setBoolean(3, itemImage.isMain());
-    pstmt.setInt(4, itemImage.getItemNum());
+    if (itemImage.getItemNum() == 0) {
+      pstmt.setObject(4, null);
+    } else {
+      pstmt.setInt(4, itemImage.getItemNum());
+    }
     pstmt.setInt(5, itemImage.getNum());
     pstmt.executeUpdate();
 

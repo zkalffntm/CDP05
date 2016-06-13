@@ -37,7 +37,7 @@ public class GpsController {
       gps.setX(resultSet.getDouble(DbLiteral.G_X));
       gps.setY(resultSet.getDouble(DbLiteral.G_Y));
       gps.setCoverage(resultSet.getInt(DbLiteral.G_COVERAGE));
-      gps.setExhibitionNum(resultSet.getInt(DbLiteral.E_NUM));
+      gps.setExhibitionNum((Integer) resultSet.getObject(DbLiteral.E_NUM));
       gpsList.add(gps);
     }
 

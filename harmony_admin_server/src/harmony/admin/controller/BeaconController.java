@@ -34,7 +34,7 @@ public class BeaconController {
       Beacon beacon = new Beacon();
       beacon.setMinor(resultSet.getInt(DbLiteral.BE_MINOR));
       beacon.setComment(resultSet.getString(DbLiteral.BE_COMMENT));
-      beacon.setItemNum(resultSet.getInt(DbLiteral.I_NUM));
+      beacon.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
       beaconList.add(beacon);
     }
 
@@ -108,7 +108,11 @@ public class BeaconController {
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, beacon.getMinor());
     pstmt.setString(2, beacon.getComment());
-    pstmt.setInt(3, beacon.getItemNum());
+    if (beacon.getItemNum() == 0) {
+      pstmt.setObject(3, null);
+    } else {
+      pstmt.setInt(3, beacon.getItemNum());
+    }
     pstmt.executeUpdate();
 
     // 커밋
@@ -130,7 +134,11 @@ public class BeaconController {
         + "=?, " + DbLiteral.I_NUM + "=? where " + DbLiteral.BE_MINOR + "=?";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setString(1, beacon.getComment());
-    pstmt.setInt(2, beacon.getItemNum());
+    if (beacon.getItemNum() == 0) {
+      pstmt.setObject(2, null);
+    } else {
+      pstmt.setInt(2, beacon.getItemNum());
+    }
     pstmt.setInt(3, beacon.getMinor());
     pstmt.executeUpdate();
 

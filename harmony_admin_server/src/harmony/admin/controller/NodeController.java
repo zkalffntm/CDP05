@@ -38,7 +38,7 @@ public class NodeController {
     while (resultSet.next()) {
       Node node = new Node();
       node.setNum(resultSet.getInt(DbLiteral.N_NUM));
-      node.setBlockNum(resultSet.getInt(DbLiteral.BL_NUM));
+      node.setBlockNum((Integer) resultSet.getObject(DbLiteral.BL_NUM));
       nodeList.add(node);
     }
 
@@ -60,7 +60,7 @@ public class NodeController {
     if (resultSet.next()) {
       node = new Node();
       node.setNum(resultSet.getInt(DbLiteral.N_NUM));
-      node.setBlockNum(resultSet.getInt(DbLiteral.BL_NUM));
+      node.setBlockNum((Integer) resultSet.getObject(DbLiteral.BL_NUM));
     }
 
     return node;
@@ -96,7 +96,11 @@ public class NodeController {
     String sql = "insert into " + DbLiteral.BLOCK + " values (?, ?)";
     PreparedStatement pstmt = dbConnection.prepareStatement(sql);
     pstmt.setInt(1, num);
-    pstmt.setInt(2, node.getBlockNum());
+    if (node.getBlockNum() == 0) {
+      pstmt.setObject(2, null);
+    } else {
+      pstmt.setInt(2, node.getBlockNum());
+    }
     pstmt.executeUpdate();
 
     // 커밋
