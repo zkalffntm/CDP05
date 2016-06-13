@@ -89,7 +89,7 @@ public class DataManagePage extends ManagePage {
 				/*
 				 * ������ ������ ����
 				 */
-			//	gui.save();
+				gui.save();
 			}
 
 			public void mousePressed(MouseEvent arg0){
@@ -269,11 +269,13 @@ public class DataManagePage extends ManagePage {
 					mainImage = workData.getImage().get(0);
 					imageList = workData.getImage();
 					imageScr = workData.getImageScr();
+					imageRealNum = workData.getImageRealNum();
 				}
 				else {
 					mainImage = null;
 					imageList = new ArrayList<Image>();
 					imageScr = new ArrayList<String>();
+					imageRealNum = new ArrayList<Integer>();
 				}
 				
 
@@ -392,6 +394,8 @@ public class DataManagePage extends ManagePage {
 				setSize(new Dimension(980, 200));
 
 				imageList = new ArrayList<Image>();
+				imageScr = new ArrayList<String>();
+				imageRealNum = new ArrayList<Integer>();
 
 				image = new JLabel("���� ����"){
 					public void paintComponent(Graphics g){

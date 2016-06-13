@@ -9,13 +9,13 @@ import java.sql.SQLException;
  * 
  * @author Seongjun Park
  * @since 2016/3/22
- * @version 2016/6/2
+ * @version 2016/6/14
  */
 public class DbConnector {
   private static DbConnector instance = null;
   private static final String DRIVER_NAME = "com.mysql.jdbc.Driver";
   private static final String URL = "jdbc:mysql://psjpi.iptime.org:9393/"
-      + DbLiteral.DB_NAME;
+      + DbLiteral.DB_NAME + "?useUnicode=true&characterEncoding=utf8";
   private static final String USER = "test";
   private static final String PASSWORD = "test";
 

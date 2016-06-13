@@ -532,7 +532,8 @@ public class GUI_console {
       areas[i] = new Area();
       areas[i].setNum(roomData.getRealNum());
       areas[i].setName(roomData.getName());
-      areas[i].setImage(roomData.getFilePath());
+      areas[i].setImage(
+          (roomData.getFilePath() == null ? "" : roomData.getFilePath()));
 
       items[i] = new Item[roomData.getWorkCnt()];
       itemImages[i] = new ItemImage[roomData.getWorkCnt()][];
@@ -549,7 +550,8 @@ public class GUI_console {
 
         itemImages[i][j] = new ItemImage[workData.getImageScr().size()];
         for (int k = 0; k < workData.getImageScr().size(); k++) {
-          String itemImagePath = workData.getImageScr().get(k);
+          String itemImagePath = (workData.getImageScr().get(k) == null ? ""
+              : workData.getImageScr().get(k));
           itemImages[i][j][k] = new ItemImage();
           itemImages[i][j][k].setNum(workData.getImageRealNum().get(k));
           itemImages[i][j][k].setSeq(k + 1);
@@ -658,7 +660,8 @@ public class GUI_console {
       RouteData routeData = this.routeList.get(i);
       recommends[i] = new Recommend();
       recommends[i].setNum(routeData.getRouteNum());
-      recommends[i].setImage(routeData.getImgScr());
+      recommends[i].setImage(
+          (routeData.getImgScr() == null ? "" : routeData.getImgScr()));
       recommends[i].setContent(routeData.getTitle());
 
       int itemLength = routeData.getWorkDataList().size();
@@ -785,7 +788,7 @@ public class GUI_console {
             ? new ImageIcon(recommends[i].getImage()).getImage() : null);
         routeData.setImgScr(recommends[i].getImage());
 
-        // RouteData내의  WorkData 로드
+        // RouteData내의 WorkData 로드
         RecommendItem[] recommendItems = RecommendItemController
             .getRecommendItemsByRecommendNum(recommends[i].getNum());
         ArrayList<WorkData> workDataList = new ArrayList<WorkData>();

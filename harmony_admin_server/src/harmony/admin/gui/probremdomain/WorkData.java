@@ -5,9 +5,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 
 public class WorkData implements Serializable {
-  private ArrayList<Integer> imageRealNum = null;
-  private ArrayList<Image> image = null;
-  private ArrayList<String> imageScr = null;
+  private ArrayList<Integer> imageRealNum = new ArrayList<Integer>();
+  private ArrayList<Image> image = new ArrayList<Image>();
+  private ArrayList<String> imageScr = new ArrayList<String>();
 
   private String title = "";
   private String artist = "";
@@ -46,11 +46,11 @@ public class WorkData implements Serializable {
   public ArrayList<Integer> getImageRealNum() {
     return this.imageRealNum;
   }
-  
+
   public void setImageRealNum(ArrayList<Integer> imageRealNum) {
     this.imageRealNum = imageRealNum;
   }
-  
+
   public ArrayList<String> getImageScr() {
     return imageScr;
   }
