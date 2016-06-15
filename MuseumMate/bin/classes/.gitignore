@@ -1,5 +1,7 @@
 /android/
 /com/
 /harmony/
-/.gitignore
 /uk/
+/.gitignore
+/tools/
+/datatype/

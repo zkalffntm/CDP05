@@ -12,7 +12,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ImageView;
+import datatype.CentralServer;
 import datatype.Museum;
+import harmony.museummate.R;
 
 /**
  * Used when reading dynamically managed data in cache space.
@@ -26,53 +28,116 @@ import datatype.Museum;
 public class DynamicLoader
 {
 	private String cacheDirStr;
-	private Museum museum;
 	
 	public DynamicLoader(Context context)
+	{ cacheDirStr = context.getCacheDir().getAbsolutePath(); }
+	
+	public static void startAreaImage(ImageView view, int areaNum)
 	{
-		cacheDirStr = context.getCacheDir().getAbsolutePath();
-		this.museum = Museum.getSelectedMuseum();
+		// Test Code
+		if(areaNum == 0)
+		{
+			view.setImageResource(R.drawable.map_sample);
+			return;
+		}
+		
+		// Real Operation
+		DynamicLoader instance = new DynamicLoader(view.getContext());
+		Museum museum = Museum.getSelectedMuseum();
+		instance.startAsync(museum.getName(), museum.getPort(),
+							view, instance.cacheDirStr + "/" + 
+							museum.getMajor() + "/a" + areaNum,
+							PacketLiteral.REQ_AREA_IMAGE, areaNum, null);
 	}
 	
-	public void setAreaImage(ImageView view, int areaNum)
+	public static void startAreaImage(ImageView view, int areaNum, Handler handler)
 	{
-		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/a" + areaNum,
-				PacketLiteral.REQ_AREA_IMAGE, areaNum, null);
-	}
-	
-	public void setAreaImage(ImageView view, int areaNum, Handler handler)
-	{
-		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/a" + areaNum,
-				PacketLiteral.REQ_AREA_IMAGE, areaNum, handler);
+		// Test Code
+		if(areaNum == 0)
+		{
+			view.setImageResource(R.drawable.map_sample);
+			
+			Message msg = new Message();
+			msg.what = CustomMsg.SUCCESS;
+			msg.arg1 = view.getDrawable().getIntrinsicWidth();
+			msg.arg2 = view.getDrawable().getIntrinsicHeight();
+			handler.sendMessage(msg);
+			return;
+		}
+		
+		// Real Operation
+		DynamicLoader instance = new DynamicLoader(view.getContext());
+		Museum museum = Museum.getSelectedMuseum();
+		instance.startAsync(museum.getName(), museum.getPort(),
+							view, instance.cacheDirStr + "/" + 
+							museum.getMajor() + "/a" + areaNum,
+							PacketLiteral.REQ_AREA_IMAGE, areaNum, handler);
 	}
 
-	public void setExhibitionImage(ImageView view, int imageId)
+	public static void startExhibitionImage(ImageView view, int imageId)
 	{
-		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/e" + imageId,
-				PacketLiteral.REQ_ITEM_IMAGE, imageId, null);
+		// Test Code
+		if(imageId == 0)
+		{
+			view.setImageResource(R.drawable.exhibition_sample);
+			return;
+		}
+		
+		// Real Operation
+		DynamicLoader instance = new DynamicLoader(view.getContext());
+		Museum museum = Museum.getSelectedMuseum();
+		instance.startAsync(museum.getName(), museum.getPort(),
+							view, instance.cacheDirStr + "/" + 
+							museum.getMajor() + "/e" + imageId,
+							PacketLiteral.REQ_ITEM_IMAGE, imageId, null);
 	}
 	
-	public void setRecommandationImage(ImageView view, int recommandationNum)
+	public static void startRecommandationImage(ImageView view, int recommandationNum)
 	{
-		loadAsync(view, cacheDirStr + "/" + museum.getMajor() + "/r" + recommandationNum,
-				PacketLiteral.REQ_RECOMMAND_IMAGE, recommandationNum, null);
+		// Test Code
+		if(recommandationNum == 0)
+		{
+			view.setImageResource(R.drawable.recommandation_sample);
+			return;
+		}
+		
+		// Real Operation
+		DynamicLoader instance = new DynamicLoader(view.getContext());
+		Museum museum = Museum.getSelectedMuseum();
+		instance.startAsync(museum.getName(), museum.getPort(),
+							view, instance.cacheDirStr + "/" + 
+							museum.getMajor() + "/r" + recommandationNum,
+							PacketLiteral.REQ_RECOMMAND_IMAGE, recommandationNum, null);
 	}
 	
-	public void setMuseumImage(ImageView view, int major)
+	public static void startMuseumImage(ImageView view, int major)
 	{
-		loadAsync(view, cacheDirStr + "/m" + museum.getMajor(),
-				PacketLiteral.REQ_PROVIDER_IMAGE, major, null);
+		// Test Code
+		if(major == 0)
+		{
+			view.setImageResource(R.drawable.visited_sample);
+			return;
+		}
+		
+		// Real Operation
+		DynamicLoader instance = new DynamicLoader(view.getContext());
+		Museum museum = Museum.getSelectedMuseum();
+		instance.startAsync(CentralServer.IP, CentralServer.PORT,
+							view, instance.cacheDirStr + "/m/" + major,
+							PacketLiteral.REQ_PROVIDER_IMAGE, major, null);
 	}
 	
 	
-	private void loadAsync(ImageView view, String localPath, String remoteRequestKey, 
+	private void startAsync(String ip, Integer port, ImageView view, String localPath, String remoteRequestKey, 
 			Integer imageId, Handler handler)
-	{ new AsyncLoader().execute(view, localPath, remoteRequestKey, imageId, handler); }
+	{ new AsyncLoader().execute(ip, port, view, localPath, remoteRequestKey, imageId, handler); }
 	
 	
 	/**
 	 * Asynchronous ImageView Loader
 	 * 
+	 * @param String ip
+	 * @param Integer port
 	 * @param ImageView view
 	 * @param String localPath
 	 * @param String remoteRequestKey	Should be PacketLiteral.blah~~~
@@ -90,18 +155,18 @@ public class DynamicLoader
 		@Override
 		protected Bitmap doInBackground(Object... params)
 		{
-			view = (ImageView)params[0];
-			handler = (Handler)params[4];
-			Bitmap bitmap = BitmapFactory.decodeFile((String)params[1]);
+			view = (ImageView)params[2];
+			handler = (Handler)params[6];
+			Bitmap bitmap = BitmapFactory.decodeFile((String)params[3]);
 			
 			if(bitmap == null)
 			{
 				try
 				{
 					JSONTransactionClient jsonClient = 
-							JSONTransactionClient.getClient(museum.getIP(), museum.getPort());
+							JSONTransactionClient.getClient((String)params[0], (Integer)params[1]);
 					
-					jsonClient.requestImage((String)params[2], params[3], (String)params[1]);
+					jsonClient.requestImage((String)params[4], params[5], (String)params[3]);
 				}
 				catch (IOException e) { Log.e("test", "error", e); } 
 				catch (JSONException e) { Log.e("test", "error", e); }

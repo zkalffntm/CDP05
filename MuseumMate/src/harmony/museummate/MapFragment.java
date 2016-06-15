@@ -27,6 +27,7 @@ import datatype.Area;
 import datatype.Exhibition;
 import datatype.Node;
 import tools.CustomMsg;
+import tools.DynamicLoader;
 import tools.LocationTracker;
 import uk.co.senab.photoview.PhotoView;
 import uk.co.senab.photoview.PhotoViewAttacher;
@@ -34,6 +35,13 @@ import uk.co.senab.photoview.PhotoViewAttacher;
 public class MapFragment extends Fragment
 {
 	private static final float FLOAT_BIAS = 0.01f;
+	
+	// Singleton /////////////////////////////////////////////////
+	private static MapFragment self;							//
+	public static MapFragment getInstance()						//
+	{ if(self == null) self = new MapFragment(); return self; }	//
+	private MapFragment() {}									//
+	//////////////////////////////////////////////////////////////
 	
 	private PhotoView photoMap;
 	private PhotoViewAttacher attacher;
@@ -46,15 +54,9 @@ public class MapFragment extends Fragment
     private SummaryView summaryView;
     
 	private RectObserver observer;
-	private MapLoadingHandler handler;
+	private MapLoadingHandler mapLoadingHandler;
 	
 	private Area area;
-
-	
-	public MapFragment()
-	{
-		
-	}
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -66,17 +68,12 @@ public class MapFragment extends Fragment
     	progressBar = (ProgressBar)v.findViewById(R.id.progress);
         summaryRelativeLayout = (SummaryRelativeLayout)v.findViewById(R.id.tooltipRelativeLayout);
 
-		//new DynamicLoader(getActivity()).setAreaImage(photoMap, area.getNumber(), handler);
+        // Get Current location
+        area = LocationTracker.getInstance().getCurrentExhibition().getArea();
+        
     	// get informed on bitmap and set image
-		
-    	try
-    	{
-    		ContentResolver cr = getActivity().getContentResolver();
-    		Bitmap bm = Images.Media.getBitmap(cr, 
-    				Uri.parse("android.resource://harmony.museummate/" + R.drawable.map_sample));
-        	photoMap.setImageBitmap(bm);
-        	canvas.setMapWidth(bm.getWidth());
-    	} catch(Exception e) { Log.i("test", e.getMessage()); }
+        mapLoadingHandler = new MapLoadingHandler();
+		DynamicLoader.startAreaImage(photoMap, area.getNumber(), mapLoadingHandler);
     	
     	// Set Views
     	attacher = new PhotoViewAttacher(photoMap);
@@ -194,6 +191,7 @@ public class MapFragment extends Fragment
 		@Override
 		public void handleMessage(Message msg)
 		{
+			try { Thread.sleep(500); } catch(Exception e) {} // test code
 			progressBar.setVisibility(View.INVISIBLE);
 			
 			switch(msg.what)

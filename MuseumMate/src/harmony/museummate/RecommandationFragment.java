@@ -1,9 +1,8 @@
 package harmony.museummate;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.support.v4.app.Fragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,24 +11,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import datatype.Museum;
+import datatype.Recommandation;
+import tools.DynamicLoader;
 
 public class RecommandationFragment extends Fragment
 {
-	class ItemData
-	{
-		public ItemData(Uri photo, String name, String summary)
-		{
-			this.photo = photo;
-			this.name = name;
-			this.summary = summary;
-		}
+	// Singleton /////////////////////////////////////////////////////////////
+	private static RecommandationFragment self;								//
+	public static RecommandationFragment getInstance()						//
+	{ if(self == null) self = new RecommandationFragment(); return self; }	//
+	private RecommandationFragment() {}										//
+	//////////////////////////////////////////////////////////////////////////
 		
-		Uri photo;
-		String name;
-		String summary;
-	}
-	
-	private ArrayList<ItemData> itemdata = new ArrayList<ItemData>();
+	private List<Recommandation> recommandationList;
 	
     private RecyclerView recyclerView;
     private RecyclerView.Adapter<CustomAdapter.ViewHolder> adapter;
@@ -45,11 +40,9 @@ public class RecommandationFragment extends Fragment
     	recyclerView.setLayoutManager(layoutManager);
     	adapter = new CustomAdapter();
         recyclerView.setAdapter(adapter);
+        recommandationList = Museum.getSelectedMuseum().getRecommandationList();
     	return v;
     }
-    
-    public void addItem(Uri photo, String name, String summary)
-    { itemdata.add(new ItemData(photo, name, summary)); }
     
     class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>
     {
@@ -81,13 +74,14 @@ public class RecommandationFragment extends Fragment
 		@Override
 		public void onBindViewHolder(ViewHolder holder, int position)
 		{
-	        holder.imagePhoto.setImageURI(itemdata.get(position).photo);
-	        holder.txtName.setText(itemdata.get(position).name);
-	        holder.txtSummary.setText(itemdata.get(position).summary);
+			Recommandation e = recommandationList.get(position);
+	        DynamicLoader.startRecommandationImage(holder.imagePhoto, e.getNumber());
+	        holder.txtName.setText(e.getName());
+	        holder.txtSummary.setText(e.getSummary());
 		}
 
 		@Override
 		public int getItemCount()
-		{ return itemdata.size(); }
+		{ return recommandationList.size(); }
     }
 }
