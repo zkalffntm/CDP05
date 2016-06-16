@@ -5,16 +5,10 @@
     android:layout_height="match_parent"
 	android:layout_gravity="center"> 
 	    
-    <harmony.museummate.MapOverlay
-        android:id="@+id/canvas"
+    <com.andrewson.mapview.MapView
+        android:id="@+id/mapview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#00000000" />
-
-	<uk.co.senab.photoview.PhotoView
-	    android:id="@+id/mapview"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent" />
+        android:layout_height="match_parent" />
 
 	<ProgressBar
 	    android:id="@+id/progress"

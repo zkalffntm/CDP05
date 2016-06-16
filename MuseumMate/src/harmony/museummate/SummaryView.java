@@ -15,13 +15,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import datatype.Exhibition;
 
 public class SummaryView extends ToolTipView
 {
-	private ExhibitionView targetView;
+	private View targetView;
 	private ViewGroup contentHolder;
 	private ImageView exitButton;
 	private ImageView removeButton;
+	
+	private Exhibition exhibition;
 	
 	private boolean aboveTarget;
 	private float gapX, gapY;
@@ -51,18 +54,23 @@ public class SummaryView extends ToolTipView
 	public void setToolTip(final ToolTip toolTip, final View view)
 	{
 		super.setToolTip(toolTip, view);
-		targetView = (ExhibitionView)view;
+		targetView = view;
 		aboveTarget = view.getY() > getY();
 		gapX = getX() - (targetView.getX() + targetView.getWidth() / 2);
 		gapY = getY() - (targetView.getY() + (aboveTarget ? 0.0f : targetView.getHeight()));
-		
+	}
+    
+    public void setExhibition(Exhibition exhibition)
+    {
+    	this.exhibition = exhibition;
+    	
     	// Set Views
     	TextView textViewName = (TextView)findViewById(R.id.name);
-    	textViewName.setText(targetView.getExhibition().getName());
+    	textViewName.setText(exhibition.getName());
     	TextView textViewSummary = (TextView)findViewById(R.id.summary);
-    	textViewSummary.setText(targetView.getExhibition().getSummary());
+    	textViewSummary.setText(exhibition.getSummary());
     	// To do Image Load
-	}
+    }
 	
 	public void update()
 	{
@@ -83,13 +91,10 @@ public class SummaryView extends ToolTipView
     	else if(removeButton != null && view.equals(removeButton))
     	{
     		remove();
-    		DescriptionDialog.showExhibitionDialog(getContext(), targetView.getExhibition());
+    		DescriptionDialog.showExhibitionDialog(getContext(), exhibition);
     		//Toast.makeText(getContext(), "테스트 : 경로에서 제외", Toast.LENGTH_SHORT).show();
     	}
     }
-	
-	public ExhibitionView getExhibitionView()
-	{ return targetView; }
 	
     public void addRemoveButton()
     {

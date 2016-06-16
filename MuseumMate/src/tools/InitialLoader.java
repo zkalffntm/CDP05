@@ -8,7 +8,7 @@ import datatype.Area;
 import datatype.Exhibition;
 import datatype.Link;
 import datatype.Museum;
-import datatype.Recommandation;
+import datatype.Recommendation;
 import datatype.User;
 import datatype.Visited;
 
@@ -55,12 +55,12 @@ public class InitialLoader extends Thread
 		areaList.add(testArea2);
 		museum.setAreaList(areaList);
 		
-		// Recommandations
-		List<Recommandation> reclist = new ArrayList<Recommandation>();
-		reclist.add(new Recommandation(0, "»ùÇÃ1", "ÄÁ¼Á¼³¸í", new int[]{1, 2, 3, 4, 5, 6, 7}));
-		reclist.add(new Recommandation(0, "»ùÇÃ2", "ÄÁ¼Á¼³¸í", new int[]{3, 5, 7}));
-		reclist.add(new Recommandation(0, "»ùÇÃ3", "ÄÁ¼Á¼³¸í", new int[]{1, 2, 4, 7}));
-		museum.setRecommandationList(reclist);
+		// Recommendations
+		List<Recommendation> reclist = new ArrayList<Recommendation>();
+		reclist.add(new Recommendation(0, "»ùÇÃ1", "ÄÁ¼Á¼³¸í", new int[]{1, 2, 3, 4, 5, 6, 7}));
+		reclist.add(new Recommendation(0, "»ùÇÃ2", "ÄÁ¼Á¼³¸í", new int[]{3, 5, 7}));
+		reclist.add(new Recommendation(0, "»ùÇÃ3", "ÄÁ¼Á¼³¸í", new int[]{1, 2, 4, 7}));
+		museum.setRecommendationList(reclist);
 
 		// Visiteds
 		List<Visited> visitedList = new ArrayList<Visited>();

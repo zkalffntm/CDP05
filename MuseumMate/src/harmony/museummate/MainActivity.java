@@ -66,7 +66,7 @@ public class MainActivity	extends 	AppCompatActivity
 	private static final int
 	MAP				= -1,
 	EXHIBITION		= 0,
-	RECOMMANDATION	= 1,
+	RECOMMENDATION	= 1,
 	VISITED			= 2,
 	NOTICE			= 3,
 	SETTING			= 4;
@@ -322,7 +322,7 @@ public class MainActivity	extends 	AppCompatActivity
 	    	switch(position)
 	    	{
 	    	case 0: showFragment(ExhibitionListFragment.getInstance(),	EXHIBITION); 		break;	
-	    	case 1: showFragment(RecommandationFragment.getInstance(),	RECOMMANDATION);	break;
+	    	case 1: showFragment(RecommendationFragment.getInstance(),	RECOMMENDATION);	break;
 	    	case 2: showFragment(VisitedFragment.getInstance(), 		VISITED);			break;
 	    	case 3: showNotice();															break;
 	    	case 4: showFragment(SettingFragment.getInstance(), 		SETTING);			break;

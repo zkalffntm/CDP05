@@ -22,19 +22,7 @@ import datatype.Node.TYPE;
 import tools.DynamicLoader;
 
 class ExhibitionListInnerFragment extends Fragment
-{	
-	/*
-	// Singleton /////////////////////////////////////////////////////////////
-	private static Map<String, ExhibitionListInnerFragment> frameMap = 		//
-			new HashMap<String, ExhibitionListInnerFragment>();				//
-	public static ExhibitionListInnerFragment getInstance(Area area)		//
-	{																		//
-		ExhibitionListInnerFragment self = frameMap.get(area.getName());	//
-		if(self == null) self = new ExhibitionListInnerFragment(area);		//
-		return self;														//
-	}																		//
-	//////////////////////////////////////////////////////////////////////////
-	*/
+{
 	private List<Exhibition> exhibitionList;
 
     private RecyclerView recyclerView;

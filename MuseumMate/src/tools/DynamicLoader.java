@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import org.json.JSONException;
 
+import com.andrewson.mapview.MapView;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import datatype.CentralServer;
 import datatype.Museum;
@@ -32,12 +35,13 @@ public class DynamicLoader
 	public DynamicLoader(Context context)
 	{ cacheDirStr = context.getCacheDir().getAbsolutePath(); }
 	
-	public static void startAreaImage(ImageView view, int areaNum)
+	public static void startAreaImage(View view, int areaNum)
 	{
 		// Test Code
 		if(areaNum == 0)
 		{
-			view.setImageResource(R.drawable.map_sample);
+			((MapView)view).initialize(BitmapFactory.decodeResource(
+					view.getContext().getResources(), R.drawable.map_sample));
 			return;
 		}
 		
@@ -50,17 +54,16 @@ public class DynamicLoader
 							PacketLiteral.REQ_AREA_IMAGE, areaNum, null);
 	}
 	
-	public static void startAreaImage(ImageView view, int areaNum, Handler handler)
+	public static void startAreaImage(View view, int areaNum, Handler handler)
 	{
 		// Test Code
 		if(areaNum == 0)
 		{
-			view.setImageResource(R.drawable.map_sample);
+			((MapView)view).initialize(BitmapFactory.decodeResource(
+					view.getContext().getResources(), R.drawable.map_sample));
 			
 			Message msg = new Message();
 			msg.what = CustomMsg.SUCCESS;
-			msg.arg1 = view.getDrawable().getIntrinsicWidth();
-			msg.arg2 = view.getDrawable().getIntrinsicHeight();
 			handler.sendMessage(msg);
 			return;
 		}
@@ -92,12 +95,12 @@ public class DynamicLoader
 							PacketLiteral.REQ_ITEM_IMAGE, imageId, null);
 	}
 	
-	public static void startRecommandationImage(ImageView view, int recommandationNum)
+	public static void startRecommendationImage(ImageView view, int recommendationNum)
 	{
 		// Test Code
-		if(recommandationNum == 0)
+		if(recommendationNum == 0)
 		{
-			view.setImageResource(R.drawable.recommandation_sample);
+			view.setImageResource(R.drawable.recommendation_sample);
 			return;
 		}
 		
@@ -106,8 +109,8 @@ public class DynamicLoader
 		Museum museum = Museum.getSelectedMuseum();
 		instance.startAsync(museum.getName(), museum.getPort(),
 							view, instance.cacheDirStr + "/" + 
-							museum.getMajor() + "/r" + recommandationNum,
-							PacketLiteral.REQ_RECOMMAND_IMAGE, recommandationNum, null);
+							museum.getMajor() + "/r" + recommendationNum,
+							PacketLiteral.REQ_RECOMMEND_IMAGE, recommendationNum, null);
 	}
 	
 	public static void startMuseumImage(ImageView view, int major)
@@ -128,7 +131,7 @@ public class DynamicLoader
 	}
 	
 	
-	private void startAsync(String ip, Integer port, ImageView view, String localPath, String remoteRequestKey, 
+	private void startAsync(String ip, Integer port, View view, String localPath, String remoteRequestKey, 
 			Integer imageId, Handler handler)
 	{ new AsyncLoader().execute(ip, port, view, localPath, remoteRequestKey, imageId, handler); }
 	
@@ -138,7 +141,7 @@ public class DynamicLoader
 	 * 
 	 * @param String ip
 	 * @param Integer port
-	 * @param ImageView view
+	 * @param View view
 	 * @param String localPath
 	 * @param String remoteRequestKey	Should be PacketLiteral.blah~~~
 	 * @param Integer imageId
@@ -150,12 +153,12 @@ public class DynamicLoader
 	class AsyncLoader extends AsyncTask<Object, Integer, Bitmap>
 	{
 		private Handler handler;
-		private ImageView view;
+		private View view;
 		
 		@Override
 		protected Bitmap doInBackground(Object... params)
 		{
-			view = (ImageView)params[2];
+			view = (View)params[2];
 			handler = (Handler)params[6];
 			Bitmap bitmap = BitmapFactory.decodeFile((String)params[3]);
 			
@@ -180,16 +183,17 @@ public class DynamicLoader
 		@Override
         protected void onPostExecute(Bitmap bitmap)
 		{
-			if(view != null) view.setImageBitmap(bitmap);
-			
 			if(handler != null)
 			{
+				if(view != null) ((MapView)view).initialize(bitmap);
+				
 				Message msg = new Message();
 				msg.what = (bitmap != null) ? CustomMsg.SUCCESS : CustomMsg.FAILED;
 				msg.arg1 = bitmap.getWidth();
 				msg.arg2 = bitmap.getHeight();
 				handler.sendMessage(msg);
 			}
+			else if(view != null) ((ImageView)view).setImageBitmap(bitmap);
 		}
 	}
 }
