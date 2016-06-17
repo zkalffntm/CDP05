@@ -60,7 +60,7 @@ public class NodeController {
     if (resultSet.next()) {
       node = new Node();
       node.setNum(resultSet.getInt(DbLiteral.N_NUM));
-      node.setBlockNum((Integer) resultSet.getObject(DbLiteral.BL_NUM));
+      node.setBlockNum(blockNum);
     }
 
     return node;

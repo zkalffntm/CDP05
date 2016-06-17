@@ -66,12 +66,15 @@ public abstract class AbstractClientThread extends Thread {
     } catch (JSONException e) {
       System.out.println("Client " + clientSocket.getInetAddress().getHostName()
           + " : JSON 예외 - " + e.getMessage());
+      e.printStackTrace();
     } catch (IOException e) {
       System.out.println("Client " + clientSocket.getInetAddress().getHostName()
           + " : IO 예외 - " + e.getMessage());
+      e.printStackTrace();
     } catch (Exception e) {
       System.out.println("Client " + clientSocket.getInetAddress().getHostName()
           + " : 예외 - " + e.getMessage());
+      e.printStackTrace();
     }
 
     // 클라이언트와 접속을 끝내고 서버스레드에 있는 클라이언트 리스트에서

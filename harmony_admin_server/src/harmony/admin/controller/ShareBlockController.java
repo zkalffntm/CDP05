@@ -61,7 +61,7 @@ public class ShareBlockController {
     while (resultSet.next()) {
       ShareBlock shareBlock = new ShareBlock();
       shareBlock.setNum(resultSet.getInt(DbLiteral.SB_NUM));
-      shareBlock.setBlockNum1((Integer) resultSet.getObject(blockNum1));
+      shareBlock.setBlockNum1(blockNum1);
       shareBlock.setBlockNum2((Integer) resultSet.getObject(DbLiteral.BL_NUM2));
       shareBlockList.add(shareBlock);
     }

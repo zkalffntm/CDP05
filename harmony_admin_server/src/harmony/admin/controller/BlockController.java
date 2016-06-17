@@ -59,10 +59,10 @@ public class BlockController {
     Block block = null;
     while (resultSet.next()) {
       block = new Block();
-      block.setNum(resultSet.getInt(num));
+      block.setNum(num);
       block.setSeq(resultSet.getInt(DbLiteral.BL_SEQ));
       block.setItemNum((Integer) resultSet.getObject(DbLiteral.I_NUM));
-      block.setAreaNum((Integer) resultSet.getInt(DbLiteral.A_NUM));
+      block.setAreaNum((Integer) resultSet.getObject(DbLiteral.A_NUM));
     }
 
     return block;
