@@ -1,4 +1,4 @@
-package harmony.admin.service;
+  package harmony.admin.service;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -62,7 +62,7 @@ public class UpdateService extends AbstractService {
 
   /**
    * 
-   * @return Object[][] = {{a_num, a_name}, ...}
+   * @return Object[][] = {{a_num, a_name, a_row, a_col}, ...}
    * @throws SQLException
    *           SQL 관련 예외
    */
@@ -74,6 +74,8 @@ public class UpdateService extends AbstractService {
       List<Object> objList = new ArrayList<Object>();
       objList.add(areas[i].getNum());
       objList.add(areas[i].getName());
+      objList.add(10);
+      objList.add(10);
       objArr2D[i] = (Object[]) objList.toArray(new Object[objList.size()]);
     }
 
