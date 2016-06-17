@@ -103,10 +103,10 @@ public class UpdateService extends AbstractService {
       ItemImage[] itemImages = ItemImageController
           .getItemImagseByItemNum(items[i].getNum());
       for (ItemImage itemImage : itemImages) {
-        if (itemImage.isMain()) {
-          objList.add(0, itemImage.getItemNum());
+        if (itemImage.isMain() && objList.size() >= 6) {
+          objList.add(5, itemImage.getNum());
         } else {
-          objList.add(itemImage.getItemNum());
+          objList.add(itemImage.getNum());
         }
       }
       objArr2D[i] = (Object[]) objList.toArray(new Object[objList.size()]);
