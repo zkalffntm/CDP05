@@ -1,8 +1,5 @@
 package harmony.museummate;
 
-import java.io.BufferedInputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,15 +12,13 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -51,10 +46,10 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
-import datatype.Exhibition;
 import datatype.Museum;
 import datatype.User;
 import tools.CustomMsg;
+import tools.LocationTracker;
 import tools.ProfilePhotoLoader;
 
 public class MainActivity	extends 	AppCompatActivity 
@@ -62,6 +57,10 @@ public class MainActivity	extends 	AppCompatActivity
 {
 	private static final int SIGN_IN = 0;
 	private static final int RESOLUTION = 1;
+	
+	private static MainActivity self;
+	public static MainActivity getInstatnce()
+	{ return self; }
 	
 	private static final int
 	MAP				= -1,
@@ -118,6 +117,7 @@ public class MainActivity	extends 	AppCompatActivity
 		layoutLoading.addView(progBar, lParamProgBar);
 		
 		handler = new LoadingHandler();
+		self = this;
 		
 		// Google Account Load
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -237,6 +237,7 @@ public class MainActivity	extends 	AppCompatActivity
 			{
 			case CustomMsg.SUCCESS:
 				runOnUiThread(new Runnable() { public void run() { loadMain(); } });
+				LocationTracker.initialize(MainActivity.this);
 				break;
 				
 			case CustomMsg.FAILED:
@@ -310,7 +311,7 @@ public class MainActivity	extends 	AppCompatActivity
 		btnFloating.setOnClickListener(new OnClickListener()
 		{ @Override public void onClick(View v) { showFragment(MapFragment.getInstance(), MAP); } });
 		
-		showFragment(MapFragment.getInstance(), MAP);;
+		showFragment(MapFragment.getInstance(), MAP);
 		showNotice();
 	}
 	
@@ -321,11 +322,11 @@ public class MainActivity	extends 	AppCompatActivity
 	    {
 	    	switch(position)
 	    	{
-	    	case 0: showFragment(ExhibitionListFragment.getInstance(),	EXHIBITION); 		break;	
-	    	case 1: showFragment(RecommendationFragment.getInstance(),	RECOMMENDATION);	break;
-	    	case 2: showFragment(VisitedFragment.getInstance(), 		VISITED);			break;
-	    	case 3: showNotice();															break;
-	    	case 4: showFragment(SettingFragment.getInstance(), 		SETTING);			break;
+	    	case 0: showFragment(ExhibitionListFragment.getInstance(),	EXHIBITION);	break;	
+	    	case 1: showFragment(RecommendationFragment.getInstance(), RECOMMENDATION);	break;
+	    	case 2: showFragment(VisitedFragment.getInstance(), VISITED);	break;
+	    	case 3: showNotice();			break;
+	    	case 4: showFragment(SettingFragment.getInstance(), SETTING);	break;
 	    	}
 	    	
 	    	listViewDrawer.setItemChecked(position, true);
@@ -379,7 +380,7 @@ public class MainActivity	extends 	AppCompatActivity
 	
 	/*************************** Fragment Shower ***************************/
 	
-	private void showFragment(Fragment fragment, int position)
+	public void showFragment(Fragment fragment, int position)
 	{
 		if(position == curFragmentNum) return;
 		

@@ -1,7 +1,6 @@
 package com.andrewson.mapview;
 
 import android.graphics.Bitmap;
-import android.graphics.Point;
 import android.graphics.Rect;
 
 public class DrawablePoint

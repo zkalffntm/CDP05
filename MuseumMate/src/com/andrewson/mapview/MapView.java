@@ -23,8 +23,8 @@ import android.view.View;
 
 public class MapView extends View
 {
-	private static final float DEFAULT_MIN_MAGNIFICATION = 0.2f;
-	private static final float DEFAULT_MAX_MAGNIFICATION = 2.0f;
+	private static final float DEFAULT_MIN_MAGNIFICATION = 0.5f;
+	private static final float DEFAULT_MAX_MAGNIFICATION = 10.0f;
 	private static final float DEFAULT_MAGNIFICATION = 0.5f;
 
 	public interface OnCoordinateClickListener
@@ -36,21 +36,21 @@ public class MapView extends View
 	public interface OnDrawablePointClickListener
 	{ public abstract void onDrawablePointClick(DrawablePoint clickedPoint, MotionEvent event); }
 
-	public interface OnMapTransformListener
-	{ public abstract void onMapTransform(); }
+	public interface OnInvalidateListener
+	{ public abstract void onInvalidate(); }
 	
 	// Listeners
 	private ScaleGestureDetector			scaleGestureDetector;
 	private GestureDetector					gestureDetector;
 	private OnCoordinateClickListener		onCoordinateClickListener;
 	private OnPixelClickListener			onPixelClickListener;
-	private OnMapTransformListener			onMapTransformListener;
+	private OnInvalidateListener			onInvalidateListener;
 	private OnDrawablePointClickListener	onDrawablePointClickListener;
 	
 	// Resources
 	private Bitmap 				mapImage;
 	private List<DrawablePoint>	pointList;
-	private List<Point[]>		lineList;	// Point = { start, end }
+	private List<DrawableLine>	lineList;
 	
 	// Drawing Objects
 	private Paint paint;
@@ -91,16 +91,18 @@ public class MapView extends View
 		// Initialize Resources
 		this.mapImage	= mapImage;
 		pointList 		= new ArrayList<DrawablePoint>();
-		
+		lineList 		= new ArrayList<DrawableLine>();
+	    
+		// Initialize Device Properties
+		density = getResources().getDisplayMetrics().density;
+
 		// Initialize Drawing Objects
 		paint = new Paint();
 	    paint.setAntiAlias(true);
 	    paint.setFilterBitmap(true);
 	    paint.setDither(true);
-	    paint.setColor(Color.WHITE);
-	    
-		// Initialize Device Properties
-		density = getResources().getDisplayMetrics().density;
+	    paint.setStrokeWidth(density * 3);
+	    paint.setColor(Color.BLUE);
 	    
 	    // Initialize Drawing Variables
 		sourceWidth 			= mapImage.getWidth();
@@ -119,6 +121,12 @@ public class MapView extends View
 	
 	public int getSourceWidth() { return sourceWidth; }
 	public int getSourceHeight() { return sourceHeight; }
+	public void setLookingCenterInSource(float xInSource, float yInSource)
+	{
+		lookingCenterInSource = new PointF(xInSource, yInSource);
+		invalidate();
+	}
+	
 	
 	public void setOnPixelClickListener(OnPixelClickListener l)
 	{ onPixelClickListener = l; }
@@ -132,17 +140,21 @@ public class MapView extends View
 	{ onDrawablePointClickListener = l; }
 	
 	
-	public void setOnMapTransformListener(OnMapTransformListener l)
-	{ onMapTransformListener = l; }
+	public void setOnMapTransformListener(OnInvalidateListener l)
+	{ onInvalidateListener = l; }
 	
 	
 	public void addDrawablePoint(DrawablePoint drawablePoint)
 	{ pointList.add(drawablePoint); }
-
 	
 	public void clearDrawablePoint()
 	{ pointList.clear(); }
-	
+
+	public void addLine(Point startInSource, Point endInSource)
+	{ lineList.add(new DrawableLine(startInSource, endInSource)); }
+
+	public void clearLine()
+	{ lineList.clear(); }
 	
 	public DrawablePoint getDrawablePoint(int xPixel, int yPixel)
 	{
@@ -157,10 +169,17 @@ public class MapView extends View
 	@Override
 	public void invalidate()
 	{
-		limitLookingCenterBound();
-		calculateTargetBound();
-		calculateDrawablePointsDestination();
+		if(mapImage != null)
+		{
+			limitLookingCenterBound();
+			calculateTargetBound();
+			calculateDrawablePointsDestination();
+			calculateDrawableLinesDestination();
+		}
 		super.invalidate();
+		
+		if(onInvalidateListener != null)
+			onInvalidateListener.onInvalidate();
 	}
 	
 	@Override
@@ -195,15 +214,12 @@ public class MapView extends View
 		for(DrawablePoint e : pointList)
 			canvas.drawBitmap(e.getPointImage(), null, e.getDestinationRect(), paint);
 			
-		/*
-		for(Point e : lineList)
+		// Draw Lines
+		for(DrawableLine e : lineList)
 		{
-			float lineStartX	= (BLOCK_SIZE * (e.startX + 0.5f)) * magnification;
-			float lineStartY	= (BLOCK_SIZE * (e.startY + 0.5f)) * magnification;
-			float lineEndX		= (BLOCK_SIZE * (e.endX + 0.5f)) * magnification;
-			float lineEndY		= (BLOCK_SIZE * (e.endY + 0.5f)) * magnification;
-			canvas.drawLine(lineStartX, lineStartY, lineEndX, lineEndY, paint);
-		}*/
+			canvas.drawLine(e.getDestinationStart().x, e.getDestinationStart().y, 
+							e.getDestinationEnd().x, e.getDestinationEnd().y, paint);
+		}
 	}
 	
 	
@@ -211,8 +227,12 @@ public class MapView extends View
 	@Override
 	public boolean onTouchEvent(MotionEvent event)
 	{
-		scaleGestureDetector.onTouchEvent(event);
-		gestureDetector.onTouchEvent(event);
+		if(mapImage != null)
+		{
+			scaleGestureDetector.onTouchEvent(event);
+			gestureDetector.onTouchEvent(event);
+		}
+		
 		return true;
 	}
 		
@@ -291,9 +311,6 @@ public class MapView extends View
 			
 			invalidate();
 			
-			if(onMapTransformListener != null)
-				onMapTransformListener.onMapTransform();
-			
 			return false;
 		}
 	};
@@ -336,6 +353,21 @@ public class MapView extends View
 			e.getDestinationRect().top 		= (int)(drawingCenterInViewY - pixelHalfHeight);
 			e.getDestinationRect().right 	= (int)(drawingCenterInViewX + pixelHalfWidth);
 			e.getDestinationRect().bottom	= (int)(drawingCenterInViewY + pixelHalfHeight);
+		}
+	}
+	
+	private void calculateDrawableLinesDestination()
+	{
+		for(DrawableLine e : lineList)
+		{
+			e.getDestinationStart().x = getWidth() / 2 + 
+					(int)((e.getStartInSource().x - lookingCenterInSource.x) * magnification);
+			e.getDestinationStart().y = getHeight() / 2 + 
+					(int)((e.getStartInSource().y - lookingCenterInSource.y) * magnification);
+			e.getDestinationEnd().x = getWidth() / 2 + 
+					(int)((e.getEndInSource().x - lookingCenterInSource.x) * magnification);
+			e.getDestinationEnd().y = getHeight() / 2 + 
+					(int)((e.getEndInSource().y - lookingCenterInSource.y) * magnification);
 		}
 	}
 }

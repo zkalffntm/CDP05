@@ -53,8 +53,7 @@ public class ImageManager {
    */
   public static void writeImageFromByteString(String byteString,
       String imageFileName) throws IOException {
-    FileOutputStream fileOutputStream = new FileOutputStream(
-        new File(imageFileName));
+    FileOutputStream fileOutputStream = new FileOutputStream(imageFileName);
     fileOutputStream.write(Base64.decode(byteString, Base64.DEFAULT));
     fileOutputStream.close();
   }

@@ -3,6 +3,7 @@ package harmony.museummate;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +29,7 @@ public class ExhibitionListFragment extends Fragment
 	
     private TabLayout tabLayout;
     private ViewPager viewPager;
+    private List<Integer> childIds;
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -37,17 +39,36 @@ public class ExhibitionListFragment extends Fragment
         // ****TEMP**** Set TabLayout
         tabLayout = (TabLayout)v.findViewById(R.id.tab_layout);
         viewPager = (ViewPager)v.findViewById(R.id.viewpager);
-        
+
         RecyclerViewPagerAdapter adapter = 
         		new RecyclerViewPagerAdapter(getActivity().getSupportFragmentManager());
-        List<Area> areaList = Museum.getSelectedMuseum().getAreaList();
         
+        List<Area> areaList = Museum.getSelectedMuseum().getAreaList();
+        childIds = new ArrayList<Integer>();
         for(Area e : areaList)
-        	adapter.addFrag(new ExhibitionListInnerFragment(e), e.getName());
+        {
+        	Fragment childFragment = new ExhibitionListInnerFragment(e);
+        	childIds.add(childFragment.getId());
+        	adapter.addFrag(childFragment, e.getName());
+        }
         
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
+        
     	return v;
+    }
+    
+    @Override
+    public void onDestroyView()
+    {
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        
+        for(Integer e : childIds)
+            transaction.remove(fragmentManager.findFragmentById(e));
+        transaction.commit();
+        		
+        super.onDestroyView();
     }
     
     class RecyclerViewPagerAdapter extends FragmentPagerAdapter

@@ -5,10 +5,10 @@ import java.io.IOException;
 import org.json.JSONException;
 
 import com.andrewson.mapview.MapView;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.Message;
@@ -34,33 +34,19 @@ public class DynamicLoader
 	
 	public DynamicLoader(Context context)
 	{ cacheDirStr = context.getCacheDir().getAbsolutePath(); }
-	
-	public static void startAreaImage(View view, int areaNum)
-	{
-		// Test Code
-		if(areaNum == 0)
-		{
-			((MapView)view).initialize(BitmapFactory.decodeResource(
-					view.getContext().getResources(), R.drawable.map_sample));
-			return;
-		}
 		
-		// Real Operation
-		DynamicLoader instance = new DynamicLoader(view.getContext());
-		Museum museum = Museum.getSelectedMuseum();
-		instance.startAsync(museum.getName(), museum.getPort(),
-							view, instance.cacheDirStr + "/" + 
-							museum.getMajor() + "/a" + areaNum,
-							PacketLiteral.REQ_AREA_IMAGE, areaNum, null);
-	}
-	
 	public static void startAreaImage(View view, int areaNum, Handler handler)
 	{
 		// Test Code
 		if(areaNum == 0)
 		{
-			((MapView)view).initialize(BitmapFactory.decodeResource(
-					view.getContext().getResources(), R.drawable.map_sample));
+			Options opts = new Options();
+			opts.inDither = true;
+			opts.inPreferredConfig = Bitmap.Config.RGB_565;
+			opts.inScaled = false;
+			Bitmap sampleMap = BitmapFactory.decodeResource(view.getContext().getResources(),
+                    R.drawable.map_sample, opts);
+			((MapView)view).initialize(sampleMap);
 			
 			Message msg = new Message();
 			msg.what = CustomMsg.SUCCESS;
@@ -71,9 +57,9 @@ public class DynamicLoader
 		// Real Operation
 		DynamicLoader instance = new DynamicLoader(view.getContext());
 		Museum museum = Museum.getSelectedMuseum();
-		instance.startAsync(museum.getName(), museum.getPort(),
-							view, instance.cacheDirStr + "/" + 
-							museum.getMajor() + "/a" + areaNum,
+		instance.startAsync(museum.getIP(), museum.getPort(),
+							view, instance.cacheDirStr + "/" +
+							museum.getMajor() + "_a" + areaNum,
 							PacketLiteral.REQ_AREA_IMAGE, areaNum, handler);
 	}
 
@@ -89,9 +75,9 @@ public class DynamicLoader
 		// Real Operation
 		DynamicLoader instance = new DynamicLoader(view.getContext());
 		Museum museum = Museum.getSelectedMuseum();
-		instance.startAsync(museum.getName(), museum.getPort(),
-							view, instance.cacheDirStr + "/" + 
-							museum.getMajor() + "/e" + imageId,
+		instance.startAsync(museum.getIP(), museum.getPort(),
+							view, instance.cacheDirStr + "/" +
+							museum.getMajor() + "_e" + imageId,
 							PacketLiteral.REQ_ITEM_IMAGE, imageId, null);
 	}
 	
@@ -107,9 +93,9 @@ public class DynamicLoader
 		// Real Operation
 		DynamicLoader instance = new DynamicLoader(view.getContext());
 		Museum museum = Museum.getSelectedMuseum();
-		instance.startAsync(museum.getName(), museum.getPort(),
-							view, instance.cacheDirStr + "/" + 
-							museum.getMajor() + "/r" + recommendationNum,
+		instance.startAsync(museum.getIP(), museum.getPort(),
+							view, instance.cacheDirStr + "/" +
+							museum.getMajor() + "_r" + recommendationNum,
 							PacketLiteral.REQ_RECOMMEND_IMAGE, recommendationNum, null);
 	}
 	
@@ -124,9 +110,8 @@ public class DynamicLoader
 		
 		// Real Operation
 		DynamicLoader instance = new DynamicLoader(view.getContext());
-		Museum museum = Museum.getSelectedMuseum();
 		instance.startAsync(CentralServer.IP, CentralServer.PORT,
-							view, instance.cacheDirStr + "/m/" + major,
+							view, instance.cacheDirStr + "/m" + major,
 							PacketLiteral.REQ_PROVIDER_IMAGE, major, null);
 	}
 	
@@ -169,12 +154,12 @@ public class DynamicLoader
 					JSONTransactionClient jsonClient = 
 							JSONTransactionClient.getClient((String)params[0], (Integer)params[1]);
 					
-					jsonClient.requestImage((String)params[4], params[5], (String)params[3]);
+					jsonClient.requestImage((String)params[4], (int)params[5], (String)params[3]);
 				}
-				catch (IOException e) { Log.e("test", "error", e); } 
+				catch (IOException e) { Log.e("test", "error", e); }
 				catch (JSONException e) { Log.e("test", "error", e); }
 				
-				bitmap = BitmapFactory.decodeFile((String)params[1]);
+				bitmap = BitmapFactory.decodeFile((String)params[3]);
 			}
 			
 			return bitmap;

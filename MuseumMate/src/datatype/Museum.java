@@ -18,6 +18,7 @@ public class Museum implements Serializable
 	private long lastUpdate;
 	private List<Area> areaList;
 	private List<Exhibition> exhibitionList;
+	private List<Node> nodeList;
 	private List<Recommendation> recommendationList;
 	
 	
@@ -41,6 +42,9 @@ public class Museum implements Serializable
 	
 	public void setExhibitionList(List<Exhibition> exhibitionList)
 	{ this.exhibitionList = exhibitionList; }
+
+	public void setNodeList(List<Node> nodeList)
+	{ this.nodeList = nodeList; }
 	
 	public void setRecommendationList(List<Recommendation> recommendationList)
 	{ this.recommendationList = recommendationList; }
@@ -55,6 +59,7 @@ public class Museum implements Serializable
 	public long 				getLastUpdate()			{ return lastUpdate; }
 	public List<Area> 			getAreaList()			{ return areaList; }
 	public List<Exhibition> 	getExhibitionList()		{ return exhibitionList; }
+	public List<Node> 			getNodeList()			{ return nodeList; }
 	public List<Recommendation> getRecommendationList()	{ return recommendationList; }
 	/***************************************************************************/
 }

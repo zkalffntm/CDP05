@@ -1,9 +1,7 @@
 package harmony.museummate;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -19,7 +18,9 @@ import datatype.Area;
 import datatype.Exhibition;
 import datatype.Node;
 import datatype.Node.TYPE;
+import pathsearch.Dijkstra;
 import tools.DynamicLoader;
+import tools.LocationTracker;
 
 class ExhibitionListInnerFragment extends Fragment
 {
@@ -34,20 +35,24 @@ class ExhibitionListInnerFragment extends Fragment
     	super();
     	//frameMap.put(area.getName(), this);
     	exhibitionList = new ArrayList<Exhibition>();
-    	
-    	for(int i = 0; i < area.getNodes().size(); i++)
-    	{
-    		Node e = area.getNodes().valueAt(i);
-    		if(e.getType() == TYPE.EXHIBITION)
-    			exhibitionList.add((Exhibition)e);
-    	}
-    	Log.i("test", "¸¶¤Ó¤¤µé¾îÁü");
+
+		int rowCount = area.getRowCount();
+		int columnCount = area.getColumnCount();
+		for(int i = 0; i < rowCount; i++)
+		{
+			for(int j = 0; j < columnCount; j++)
+			{
+	    		Node e = area.getNode(i, j);
+	    		if(e != null && e.getType() == TYPE.EXHIBITION)
+	    			exhibitionList.add((Exhibition)e);
+			}
+			
+		}
     }
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
-    	Log.i("test", "111");
     	View v = inflater.inflate(R.layout.recycler_view, container, false);
     	
     	// Set Recycler View
@@ -65,6 +70,7 @@ class ExhibitionListInnerFragment extends Fragment
     {
     	public class ViewHolder extends RecyclerView.ViewHolder
         {
+    		public View view;
             public ImageView imagePhoto;
             public TextView txtName;
             public TextView txtArtist;
@@ -73,6 +79,7 @@ class ExhibitionListInnerFragment extends Fragment
             public ViewHolder(View view)
             {
                 super(view);
+                this.view = view;
                 imagePhoto = (ImageView)view.findViewById(R.id.photo);
                 txtName = (TextView)view.findViewById(R.id.name);
                 txtArtist = (TextView)view.findViewById(R.id.artist);
@@ -93,9 +100,36 @@ class ExhibitionListInnerFragment extends Fragment
 		public void onBindViewHolder(ViewHolder holder, int position)
 		{
 			Exhibition e = exhibitionList.get(position);
+			final int tag = e.getTag();
 			DynamicLoader.startExhibitionImage(holder.imagePhoto, e.getId());
-	        holder.txtName.setText(e.getName());
-	        holder.txtArtist.setText(e.getAuthor());
+			holder.view.setOnClickListener(new OnClickListener()
+			{
+				@Override
+				public void onClick(View v)
+				{
+					new Thread()
+					{
+						public void run()
+						{
+							int dist = Dijkstra.calculatePath(LocationTracker.getInstance().
+									getCurrentExhibition().getTag(), tag);
+							final List<Integer> path = Dijkstra.getPath();
+							
+							getActivity().runOnUiThread(new Thread()
+							{
+								public void run()
+								{
+									MapFragment.getInstance().setRoute(path, 0);
+									MainActivity.getInstatnce().showFragment(MapFragment.getInstance(), -1);
+								}
+							});
+						}
+					}.start();
+				}});
+			
+	        holder.txtName.setText(getResources().getString(R.string.exhibition_name) + " : " + e.getName());
+	        holder.txtArtist.setText(getResources().getString(R.string.author) + " : " + 
+	        		(e.getAuthor().isEmpty() ? getResources().getString(R.string.unknown) : e.getAuthor()));
 	        holder.txtContent.setText(e.getSummary());
 		}
 

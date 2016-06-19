@@ -16,11 +16,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import datatype.Exhibition;
+import tools.DynamicLoader;
 
 public class SummaryView extends ToolTipView
 {
 	private View targetView;
 	private ViewGroup contentHolder;
+	private ImageView exhibitionImage;
 	private ImageView exitButton;
 	private ImageView removeButton;
 	
@@ -38,6 +40,7 @@ public class SummaryView extends ToolTipView
     	LayoutInflater inflater = (LayoutInflater)context.
     			getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	inflater.inflate(R.layout.summary_view, contentHolder);
+    	exhibitionImage = (ImageView)findViewById(R.id.photo);
     	
     	// Exit Button
     	exitButton = new ImageView(context);
@@ -70,6 +73,7 @@ public class SummaryView extends ToolTipView
     	TextView textViewSummary = (TextView)findViewById(R.id.summary);
     	textViewSummary.setText(exhibition.getSummary());
     	// To do Image Load
+    	DynamicLoader.startExhibitionImage(exhibitionImage, exhibition.getImageIds()[0]);
     }
 	
 	public void update()

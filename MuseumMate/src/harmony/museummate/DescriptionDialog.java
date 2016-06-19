@@ -10,17 +10,17 @@ import android.support.v4.view.ViewPager;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.Window;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 import datatype.Exhibition;
+import tools.DynamicLoader;
 
 public class DescriptionDialog extends Dialog
 {
-	private static final int THRESHOULD_FLIP = 20;
-	
 	private static DescriptionDialog self;
 	private static Exhibition currentExhibition;
 	private static boolean voiceOn;
@@ -52,7 +52,8 @@ public class DescriptionDialog extends Dialog
 	private DescriptionDialog(Context context)
 	{
 		super(context);
-
+		this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+		
 		// Setup Views
 		setContentView(R.layout.description_dialog);
 		pager = (ViewPager)findViewById(R.id.view_pager);
@@ -70,7 +71,13 @@ public class DescriptionDialog extends Dialog
 		
 		// Set Listeners
 		exitButton.setOnClickListener(new View.OnClickListener()
-		{ public void onClick(View v) { self.dismiss(); } });
+		{
+			public void onClick(View v)
+			{ 
+				self.dismiss(); 
+				if(tts.isSpeaking()) tts.stop();
+			} 
+		});
 		
 		voiceButton.setOnClickListener(new View.OnClickListener()
 		{ public void onClick(View v) { setVoiceOn(!voiceOn); } });
@@ -112,20 +119,16 @@ public class DescriptionDialog extends Dialog
 		textSummary.setText(exhibition.getSummary());
 		textDescription.setText(exhibition.getDescription());
 
-		// To do : dynamic load
-		// test code
+		// Set adapter and image load
 		pager.removeAllViews();
-		ImageView image1 = new ImageView(getContext());
-		image1.setImageResource(R.drawable.exhibition_sample);
-		
-		ImageView image2 = new ImageView(getContext());
-		image2.setImageResource(R.drawable.exhibition_sample);
-
-		
-		// Set adapter
 		pagerAdapter = new ImagePagerAdapter(getContext());
-		pagerAdapter.addView(image1);
-		pagerAdapter.addView(image2);
+		int[] imageIds = exhibition.getImageIds();
+		for(int e : imageIds)
+		{
+			ImageView image = new ImageView(getContext());
+	    	DynamicLoader.startExhibitionImage(image, e);
+			pagerAdapter.addView(image);
+		}
 		pager.setAdapter(pagerAdapter);
 	}
 	
@@ -134,7 +137,7 @@ public class DescriptionDialog extends Dialog
 		// To do if voiceOn : Stop voice
 		voiceOn = b;
 		self.voiceButton.setImageResource(voiceOn ? R.drawable.voice_on : R.drawable.voice_off);
-		if(voiceOn) 
+		if(voiceOn)
 		{
 			if(self.ttsLoaded) self.tts.speak(self.currentTTSString, TextToSpeech.QUEUE_FLUSH, null);
 			else self.ttsPended = true;
