@@ -1,8 +1,5 @@
 package harmony.museummate;
 
-import java.io.BufferedInputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -15,21 +12,19 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
+import android.app.Activity;
 import android.app.Dialog;
-import android.app.Fragment;
-import android.app.FragmentManager;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.content.Intent;
 import android.content.IntentSender.SendIntentException;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.preference.PreferenceFragment;
+import android.support.v4.preference.PreferenceFragment;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.widget.DrawerLayout;
+import uk.co.senab.photoview.sample.HackyDrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -51,7 +46,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 import android.widget.TextView;
+import datatype.Museum;
+import datatype.User;
 import tools.CustomMsg;
+import tools.LocationTracker;
+import tools.ProfilePhotoLoader;
 
 public class MainActivity	extends 	AppCompatActivity 
 							implements	OnConnectionFailedListener
@@ -59,30 +58,24 @@ public class MainActivity	extends 	AppCompatActivity
 	private static final int SIGN_IN = 0;
 	private static final int RESOLUTION = 1;
 	
-	private static final int
-	MAP			= -1,
-	EXHIBITION	= 0,
-	RECOMMANDED = 1,
-	VISITED		= 2,
-	NOTICE		= 3,
-	PREFERENCE	= 4;
+	private static MainActivity self;
+	public static MainActivity getInstatnce()
+	{ return self; }
 	
-	// Stata Variable
+	private static final int
+	MAP				= -1,
+	EXHIBITION		= 0,
+	RECOMMENDATION	= 1,
+	VISITED			= 2,
+	NOTICE			= 3,
+	SETTING			= 4;
+	
+	// State Variable
 	private boolean loading;
 	private int curFragmentNum;
 	
 	// Google Account
 	private GoogleApiClient client;
-	private String name;
-	private String email;
-	private String id;
-	private Uri photo;
-	
-	// Museum Information
-	private String noticeUrl = "http://www.swgumho.es.kr/upload"
-			+ "/2016/04/19/3f6b73e553b874e14bdec8aabe8a8208.png";
-	
-	// User Account
 	
 	// Loading Activity
 	private ProgressBar	progBar;
@@ -91,31 +84,27 @@ public class MainActivity	extends 	AppCompatActivity
 	// Main Activity
 	private Toolbar					toolbar;
 	private ActionBar				actionbar;
-	private DrawerLayout			layoutDrawer;
+	private HackyDrawerLayout		layoutDrawer;
 	private ActionBarDrawerToggle	toggleDrawer;
-    private ListView				listViewDrawer;
-    private	LinearLayout			drawer;
-    private ImageView				imageUserPhoto;
-    private TextView				txtUserName;
-    private TextView				txtEmail;
-    private FloatingActionButton	btnFloating;
+	private ListView				listViewDrawer;
+	private	LinearLayout			drawer;
+	private ImageView				imageUserPhoto;
+	private TextView				txtUserName;
+	private TextView				txtEmail;
+	private FloatingActionButton	btnFloating;
 	
-    private String					showName = "전시회 이름";
-    private String[]				drawerListTitles;
-    private static final int[]		drawerListIcons = { R.drawable.ic_reader,
-    													R.drawable.ic_thumb_up,
-    													R.drawable.ic_directions_walk,
-    													R.drawable.ic_notifications,
-    													R.drawable.ic_settings };
+	private String[]				drawerListTitles;
+	private static final int[]		drawerListIcons = { R.drawable.ic_reader,
+														R.drawable.ic_thumb_up,
+														R.drawable.ic_directions_walk,
+														R.drawable.ic_notifications,
+														R.drawable.ic_settings };
 	
 	// Fragments
-    private PreferenceFragment	fragmentPref;
-    private VisitedFragment		fragmentVisited;
-    private MapFragment			fragmentMap;
-    private ExhibitionFragment	fragmentExhibition;
-    private RecommandedFragment	fragmentRecommanded;
-    
-    
+	private PreferenceFragment		fragmentPref;
+	private VisitedFragment			fragmentVisited;
+	
+	    
 	@Override
 	protected void onCreate(Bundle savedInstanceState)
 	{
@@ -128,7 +117,9 @@ public class MainActivity	extends 	AppCompatActivity
 		layoutLoading.addView(progBar, lParamProgBar);
 		
 		handler = new LoadingHandler();
+		self = this;
 		
+		// Google Account Load
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestEmail()
                 .build();
@@ -137,7 +128,7 @@ public class MainActivity	extends 	AppCompatActivity
                 .addApi(Auth.GOOGLE_SIGN_IN_API, options)
                 .build();
 	}
-	
+		
 	@Override
 	protected void onStart()
 	{
@@ -165,25 +156,22 @@ public class MainActivity	extends 	AppCompatActivity
 	
 	@Override
 	public void onConfigurationChanged(Configuration newConfig)
-
 	{
 	    super.onConfigurationChanged(newConfig);
-	    if(toggleDrawer != null) toggleDrawer.onConfigurationChanged(newConfig);
+	    if(toggleDrawer != null)
+	    	toggleDrawer.onConfigurationChanged(newConfig);
 	}
  
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item)
 	{
-		
 	    Log.i("test", Integer.toString(item.getItemId()));
 	    return toggleDrawer.onOptionsItemSelected(item);
 	}
 	
 	@Override
 	public void	onBackPressed()
-	{
-		super.onBackPressed();
-	}
+	{ super.onBackPressed(); }
 	
 	/*************************** Google Account Operations ***************************/
 	
@@ -205,7 +193,7 @@ public class MainActivity	extends 	AppCompatActivity
 	}
 	
 	@Override
-    protected void onActivityResult(int requestCode, int responseCode, Intent intent)
+	protected void onActivityResult(int requestCode, int responseCode, Intent intent)
 	{
 	    super.onActivityResult(requestCode, responseCode, intent);
 	    
@@ -221,23 +209,23 @@ public class MainActivity	extends 	AppCompatActivity
 	        if(result.isSuccess())
 	        {
 	            GoogleSignInAccount account = result.getSignInAccount();
-	        	name = account.getDisplayName();
-	        	email = account.getEmail();
-	        	id = account.getId();
-	        	photo = account.getPhotoUrl();
+	            User.setCurrentUser(new User(	account.getDisplayName(),
+	            								account.getEmail(),
+	            								account.getId(),
+	            								account.getPhotoUrl()));
 	    		// start server connection
-	    		new tools.Loader(handler).start();
+	    		new tools.InitialLoader(handler).start();
 	        }
 	        else
 	        {
 				Log.i("test", result.getStatus().toString());
-				Log.i("test", "구글 받아오기 실패");
+				Log.i("test", "Failed to load Google Account");
 				// server login failed
 	        }
 	    }
 	}
 	
-
+	
 	/*************************** Main Activity Handler ***************************/
 	
 	class LoadingHandler extends Handler
@@ -249,15 +237,17 @@ public class MainActivity	extends 	AppCompatActivity
 			{
 			case CustomMsg.SUCCESS:
 				runOnUiThread(new Runnable() { public void run() { loadMain(); } });
+				LocationTracker.initialize(MainActivity.this);
 				break;
 				
 			case CustomMsg.FAILED:
-				Log.i("test", "서버 받아오기 실패");
+				Log.i("test", "Failed to load Account and server data");
+				System.runFinalizersOnExit(true);
+				System.exit(0);
 				// server login failed
 			}
 		}
 	}
-
 	
 	/*************************** Main Activity Interface Loader ***************************/
 	
@@ -266,7 +256,7 @@ public class MainActivity	extends 	AppCompatActivity
 		Log.i("test", "loaded");
 		setContentView(R.layout.activity_main);
 		toolbar 		= (Toolbar)findViewById(R.id.toolbar);
-	    layoutDrawer 	= (DrawerLayout)findViewById(R.id.drawer_layout);
+	    layoutDrawer 	= (HackyDrawerLayout)findViewById(R.id.drawer_layout);
 	    listViewDrawer 	= (ListView)findViewById(R.id.drawer_list);
 	    drawer 			= (LinearLayout)findViewById(R.id.drawer);
 	    imageUserPhoto 	= (ImageView)findViewById(R.id.user_photo);
@@ -275,9 +265,10 @@ public class MainActivity	extends 	AppCompatActivity
 	    btnFloating		= (FloatingActionButton)findViewById(R.id.btn_floating);
 	    
 	    // Update Profile
-	    new Thread() { public void run() { loadPhoto(photo); } }.start();
-	    txtUserName.setText(name);
-	    txtEmail.setText(email);
+	    User user =  User.getCurrentUser();
+	    ProfilePhotoLoader.start(imageUserPhoto, user.getPhotoUri());
+	    txtUserName.setText(user.getName());
+	    txtEmail.setText(user.getEmail());
 	    
 	    // Setup Drawer
 	    List<ListViewItem> drawerListItems = new LinkedList<ListViewItem>();
@@ -318,26 +309,10 @@ public class MainActivity	extends 	AppCompatActivity
 		// Setup Floating Button
 		btnFloating.setBackgroundColor(0xFF460000);
 		btnFloating.setOnClickListener(new OnClickListener()
-		{ @Override public void onClick(View v) { showMap(); } });
+		{ @Override public void onClick(View v) { showFragment(MapFragment.getInstance(), MAP); } });
 		
-		showMap();
+		showFragment(MapFragment.getInstance(), MAP);
 		showNotice();
-	}
-	
-	private void loadPhoto(Uri uri)
-	{
-		try
-		{ 
-            URL url = new URL(uri.toString());
-            URLConnection conn = url.openConnection(); 
-            conn.connect(); 
-            BufferedInputStream bis = new BufferedInputStream(conn.getInputStream()); 
-            Bitmap before = BitmapFactory.decodeStream(bis); 
-            final Bitmap after = tools.BitmapTool.getRoundedCornerBitmap(before, 0xFF460000);
-            bis.close();
-			runOnUiThread(new Runnable() { public void run() { imageUserPhoto.setImageBitmap(after); } });
-        }
-		catch (Exception e) { Log.i("test", e.getMessage()); } 
 	}
 	
 	private class DrawerItemClickListener implements ListView.OnItemClickListener
@@ -347,92 +322,16 @@ public class MainActivity	extends 	AppCompatActivity
 	    {
 	    	switch(position)
 	    	{
-	    	case 0: showExhibition();	break;
-	    	case 1: showRecommanded();	break;
-	    	case 2: showVisited();		break;
-	    	case 3: showNotice();		break;
-	    	case 4: showPreference();	break;
+	    	case 0: showFragment(ExhibitionListFragment.getInstance(),	EXHIBITION);	break;	
+	    	case 1: showFragment(RecommendationFragment.getInstance(), RECOMMENDATION);	break;
+	    	case 2: showFragment(VisitedFragment.getInstance(), VISITED);	break;
+	    	case 3: showNotice();			break;
+	    	case 4: showFragment(SettingFragment.getInstance(), SETTING);	break;
 	    	}
 	    	
 	    	listViewDrawer.setItemChecked(position, true);
 	    	layoutDrawer.closeDrawer(drawer);
 	    }
-	}
-
-	
-	/*************************** Map Fragment Shower ***************************/
-	
-	private void showMap()
-	{
-	    if(fragmentMap == null)
-	    {
-	    	fragmentMap = new MapFragment();
-	    }
-	    
-	    showFragment(fragmentMap, MAP);
-	}
-	
-	/*************************** Exhibition Fragment Shower ***************************/
-
-	private void showExhibition()
-	{
-	    if(fragmentExhibition == null)
-	    {
-	    	fragmentExhibition = new ExhibitionFragment();
-	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.exhibition_sample);
-
-	    	fragmentExhibition.addItem(path, "작품1", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품2", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품3", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품4", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품5", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품6", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품7", "아티스트", "간략한 설명");
-	    	fragmentExhibition.addItem(path, "작품8", "아티스트", "간략한 설명");
-	    }
-	    
-	    showFragment(fragmentExhibition, EXHIBITION);
-	}
-	
-	/*************************** Recommanded Fragment Shower ***************************/
-
-	private void showRecommanded()
-	{
-	    if(fragmentRecommanded == null)
-	    {
-	    	fragmentRecommanded = new RecommandedFragment();
-	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.recommanded_sample);
-
-	    	fragmentRecommanded.addItem(path, "추천코스1", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스2", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스3", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스4", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스5", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스6", "간략한 설명");
-	    	fragmentRecommanded.addItem(path, "추천코스7", "간략한 설명");
-	    }
-	    
-	    showFragment(fragmentRecommanded, RECOMMANDED);
-	}
-	
-	/*************************** Visited Fragment Shower ***************************/
-
-	private void showVisited()
-	{
-	    if(fragmentVisited == null)
-	    {
-	    	fragmentVisited = new VisitedFragment();
-	    	Uri path = Uri.parse("android.resource://harmony.museummate/" + R.drawable.visited_sample);
-	    	fragmentVisited.addItem(path, "전시관1", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관2", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관3", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관4", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관5", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관6", "전시회 이름", "기간");
-	    	fragmentVisited.addItem(path, "전시관7", "전시회 이름", "기간");
-	    }
-	    
-	    showFragment(fragmentVisited, VISITED);
 	}
 	
 	/*************************** Notice WebView Shower ***************************/
@@ -440,82 +339,60 @@ public class MainActivity	extends 	AppCompatActivity
 	private void showNotice()
 	{
 		// Load XML
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.notice);
-        WebView wv = (WebView)dialog.findViewById(R.id.webview);
-        ImageButton btnExit	= (ImageButton)dialog.findViewById(R.id.btn_exit);
-        
-        // Set WebView
-        wv.setHorizontalScrollBarEnabled(false);
-        wv.getSettings().setJavaScriptEnabled(true);
+	    final Dialog dialog = new Dialog(this);
+	    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	    dialog.setContentView(R.layout.notice);
+	    WebView wv = (WebView)dialog.findViewById(R.id.webview);
+	    ImageButton btnExit	= (ImageButton)dialog.findViewById(R.id.btn_exit);
+	    
+	    // Set WebView
+	    wv.setHorizontalScrollBarEnabled(false);
+	    wv.getSettings().setJavaScriptEnabled(true);
 		wv.getSettings().setSupportZoom(false);
 		wv.setWebViewClient(new WebViewClient()
-        {
+	    {
 			@Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) 
-            {
-                view.loadUrl(url);
-                return true;
-            }
-        });
-        wv.loadUrl(noticeUrl);
-
-        // Set Exit Button
-        btnExit.setOnClickListener(new OnClickListener()
-        {
+	        public boolean shouldOverrideUrlLoading(WebView view, String url) 
+	        {
+	            view.loadUrl(url);
+	            return true;
+	        }
+	    });
+	    wv.loadUrl(Museum.getSelectedMuseum().getNoticeUrl());
+	
+	    // Set Exit Button
+	    btnExit.setOnClickListener(new OnClickListener()
+	    {
 			@Override
 			public void onClick(View v)
 			{ dialog.dismiss(); }
 		});
-        
-        // Resize and Set Dialog
-        WindowManager.LayoutParams lpDialog = new WindowManager.LayoutParams();
-        lpDialog.copyFrom(dialog.getWindow().getAttributes());
-        lpDialog.width = LayoutParams.MATCH_PARENT;
-        lpDialog.height = LayoutParams.MATCH_PARENT;
-        dialog.setCancelable(true);
-        dialog.show();
-        dialog.getWindow().setAttributes(lpDialog);
-	}
-	
-	
-	/*************************** Preference Fragment Shower ***************************/
-
-	private void showPreference()
-	{
-	    if(fragmentPref == null)
-	    {
-	    	fragmentPref = new PreferenceFragment()
-		    {
-		        @Override
-		        public void onCreate(Bundle savedInstanceState)
-		        {
-		        	super.onCreate(savedInstanceState);
-		        	addPreferencesFromResource(R.xml.pref_screen);
-		        }     
-		    };
-	    }
 	    
-	    showFragment(fragmentPref, PREFERENCE);
+	    // Resize and Set Dialog
+	    WindowManager.LayoutParams lpDialog = new WindowManager.LayoutParams();
+	    lpDialog.copyFrom(dialog.getWindow().getAttributes());
+	    lpDialog.width = LayoutParams.MATCH_PARENT;
+	    lpDialog.height = LayoutParams.MATCH_PARENT;
+	    dialog.setCancelable(true);
+	    dialog.show();
+	    dialog.getWindow().setAttributes(lpDialog);
 	}
-	
 	
 	/*************************** Fragment Shower ***************************/
 	
-	private void showFragment(Fragment fragment, int position)
+	public void showFragment(Fragment fragment, int position)
 	{
 		if(position == curFragmentNum) return;
 		
-	    FragmentManager fragmentManager = getFragmentManager();
+	    FragmentManager fragmentManager = getSupportFragmentManager();
 	    fragmentManager.beginTransaction()
 	                   .replace(R.id.content_frame, fragment)
 	                   .commit();
 	    
-	    if(position == -1) actionbar.setTitle(showName);
+	    if(position == -1) actionbar.setTitle(Museum.getSelectedMuseum().getName());
 	    else actionbar.setTitle(drawerListTitles[position]);
 	    
 	    curFragmentNum = position;
 	}
-	
+
 }

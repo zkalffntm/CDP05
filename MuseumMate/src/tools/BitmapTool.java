@@ -9,8 +9,20 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.Bitmap.Config;
 import android.graphics.PorterDuff.Mode;
 
+/**
+ * Some custom function tools on Bitmap
+ * 
+ * @author Kyuho
+ *
+ */
 public class BitmapTool
 {
+	/**
+	 * 
+	 * @param bitmap			Source(To be gerbage collected)
+	 * @param backgroundColor
+	 * @return					Completely new instance from source
+	 */
     public static Bitmap getRoundedCornerBitmap(Bitmap bitmap, int backgroundColor)
     {
         Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Config.ARGB_8888);
