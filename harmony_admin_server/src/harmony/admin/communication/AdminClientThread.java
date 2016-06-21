@@ -11,6 +11,7 @@ import harmony.admin.service.ItemContentService;
 import harmony.admin.service.ItemImageService;
 import harmony.admin.service.MapImageService;
 import harmony.admin.service.NoitceService;
+import harmony.admin.service.RecommendImageService;
 import harmony.admin.service.UpdateDateService;
 import harmony.admin.service.UpdateService;
 import harmony.common.AbstractClientThread;
@@ -66,7 +67,7 @@ public class AdminClientThread extends AbstractClientThread {
     case PacketLiteral.REQ_ITEM_IMAGE:
       this.doItemImageService(value);
       break;
-    case PacketLiteral.REQ_MAP_IMAGE:
+    case PacketLiteral.REQ_AREA_IMAGE:
       this.doMapImageService(value);
       break;
     case PacketLiteral.REQ_NOTICE:
@@ -77,6 +78,9 @@ public class AdminClientThread extends AbstractClientThread {
       break;
     case PacketLiteral.REQ_UPDATE:
       this.doUpdateService();
+      break;
+    case PacketLiteral.REQ_RECOMMEND_IMAGE:
+      this.doRecommendImageService(value);
       break;
     default:
       throw new Exception("unacceptable message");
@@ -147,7 +151,7 @@ public class AdminClientThread extends AbstractClientThread {
       throws JSONException, SQLException, IOException {
     JSONObject sendJson = new JSONObject();
 
-    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_MAP_IMAGE);
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_AREA_IMAGE);
     sendJson.put(PacketLiteral.VALUE, new MapImageService().doService(value));
 
     this.getPrintWriter().println(sendJson.toString());
@@ -213,6 +217,18 @@ public class AdminClientThread extends AbstractClientThread {
 
     sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_UPDATE);
     sendJson.put(PacketLiteral.VALUE, new UpdateService().doService(null));
+
+    this.getPrintWriter().println(sendJson.toString());
+    this.getPrintWriter().flush();
+  }
+
+  private void doRecommendImageService(Object value)
+      throws JSONException, SQLException, IOException {
+    JSONObject sendJson = new JSONObject();
+
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.RES_RECOMMEND_IMAGE);
+    sendJson.put(PacketLiteral.VALUE,
+        new RecommendImageService().doService(value));
 
     this.getPrintWriter().println(sendJson.toString());
     this.getPrintWriter().flush();

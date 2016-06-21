@@ -1,11 +1,5 @@
 package harmony.common;
 
-/**
- * 
- * @author PSJ
- * @since 2016/4/25
- * @version 0216/6/6
- */
 public class PacketLiteral {
   public static final String KEY = "key";
   public static final String VALUE = "value";
@@ -14,14 +8,16 @@ public class PacketLiteral {
   public static final String RES_ITEM_CONTENT = "res_item_content";
   public static final String REQ_ITEM_IMAGE = "req_item_image";
   public static final String RES_ITEM_IMAGE = "res_item_image";
-  public static final String REQ_MAP_IMAGE = "req_map_image";
-  public static final String RES_MAP_IMAGE = "res_map_image";
+  public static final String REQ_AREA_IMAGE = "req_area_image";
+  public static final String RES_AREA_IMAGE = "res_area_image";
   public static final String REQ_NOTICE = "req_notice";
   public static final String RES_NOTICE = "res_notice";
   public static final String REQ_UPDATE_DATE = "req_update_date";
   public static final String RES_UPDATE_DATE = "res_update_date";
   public static final String REQ_UPDATE = "req_update";
   public static final String RES_UPDATE = "res_update";
+  public static final String REQ_RECOMMEND_IMAGE = "req_recommend_image";
+  public static final String RES_RECOMMEND_IMAGE = "res_recommend_image";
 
   public static final String REQ_LOGIN_ADMIN = "req_login_admin";
   public static final String RES_LOGIN_ADMIN = "res_login_admin";

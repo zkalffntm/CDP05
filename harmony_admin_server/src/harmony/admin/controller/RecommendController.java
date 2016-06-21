@@ -122,7 +122,7 @@ public class RecommendController {
     }
   }
 
-  private static Recommend getRecommendByNum(int num) throws SQLException {
+  public static Recommend getRecommendByNum(int num) throws SQLException {
 
     // 레코드 조회 쿼리 실행
     Connection dbConnection = DbConnector.getInstance().getConnection();
@@ -136,7 +136,7 @@ public class RecommendController {
     Recommend recommend = null;
     if (resultSet.next()) {
       recommend = new Recommend();
-      recommend.setNum(resultSet.getInt(DbLiteral.R_NUM));
+      recommend.setNum(num);
       recommend.setContent(resultSet.getString(DbLiteral.R_CONTENT));
       recommend.setImage(resultSet.getString(DbLiteral.R_IMAGE));
       recommend.setImageEdited(false);

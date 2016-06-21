@@ -28,11 +28,11 @@ public class TestResetter {
 
     dbConnection
         .prepareStatement(
-            "insert into area values (1,'제1전시실','image/area/test1')")
+            "insert into area values (1,'제1전시실','image/area/test1.png')")
         .executeUpdate();
     dbConnection
         .prepareStatement(
-            "insert into area values (2,'제2전시실','image/area/test2')")
+            "insert into area values (2,'제2전시실','image/area/test2.png')")
         .executeUpdate();
 
     dbConnection
@@ -110,7 +110,7 @@ public class TestResetter {
         .executeUpdate();
     for (int i = 100; i < 200; i++) {
       dbConnection.prepareStatement(
-          "insert into block values (" + (i + 1) + "," + (i + 1) + ",null,2)")
+          "insert into block values (" + (i + 1) + "," + (i - 99) + ",null,2)")
           .executeUpdate();
     }
     dbConnection.prepareStatement("update block set i_num=3 where bl_num=200")
@@ -123,64 +123,65 @@ public class TestResetter {
     dbConnection.prepareStatement("insert into share_block values (2,101,10)")
         .executeUpdate();
 
+    int num = 0;
     for (int i = 0; i < 100; i++) {
-      if (i % 10 == 0 || i % 10 == 9 || i / 10 == 0 || i >= 90) {
+      if (i % 10 == 0 || i % 10 == 9 || i <= 9 || i >= 90) {
         dbConnection
             .prepareStatement(
-                "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
             .executeUpdate();
       }
     }
     
-    for (int i=100;i<200;i++) {
-      if (i % 10 == 0 || i % 10 == 9 || i / 110 == 0 || i >= 190) {
+    for (int i = 100; i < 200; i++) {
+      if (i % 10 == 0 || i % 10 == 9 || i <= 109 || i >= 190) {
         dbConnection
             .prepareStatement(
-                "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
             .executeUpdate();
-      } else if(i == 110 && i == 111) {
+      } else if (i == 110 || i == 111) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
-      } else if(i == 121 && i == 122) {
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
+      } else if (i == 121 || i == 122) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
-      } else if(i == 132 && i == 133) {
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
+      } else if (i == 132 || i == 133) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
-      } else if(i == 143 && i == 144) {
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
+      } else if (i == 143 || i == 144) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
-      } else if(i == 154 && i == 155) {
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
+      } else if (i == 154 || i == 155) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
-      } else if(i == 165 && i == 166) {
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
+      } else if (i == 165 || i == 166) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
-      } else if(i == 176 && i == 177) {
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
+      } else if (i == 176 || i == 177) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
-      } else if(i == 187 && i == 188) {
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
+      } else if (i == 187 || i == 188) {
         dbConnection
-        .prepareStatement(
-            "insert into node values (" + (i + 1) + ", " + (i + 1) + ")")
-        .executeUpdate();        
+            .prepareStatement(
+                "insert into node values (" + (++num) + ", " + (i + 1) + ")")
+            .executeUpdate();
       }
     }
-    
+
     // 커밋
     dbConnection.commit();
     dbConnection.setAutoCommit(prevAutoCommit);

@@ -45,7 +45,8 @@ public class ProviderListService extends AbstractService {
     JSONArray gpsInfo = (JSONArray) argument;
     double x = gpsInfo.getDouble(0);
     double y = gpsInfo.getDouble(1);
-
+    
+    
     List<Object[]> objArrList = new ArrayList<Object[]>();
     List<Integer> exhibitionNumList = new ArrayList<Integer>();
     Gps[] gpss = GpsController.getGpssWithXYCoverage(x, y);

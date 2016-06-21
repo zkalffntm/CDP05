@@ -49,7 +49,7 @@ public class TestAdminClient {
     System.out.println("test : " + PacketLiteral.REQ_ITEM_IMAGE);
     doItemImageTest(bufferedReader, printWriter);
 
-    System.out.println("test : " + PacketLiteral.REQ_MAP_IMAGE);
+    System.out.println("test : " + PacketLiteral.REQ_AREA_IMAGE);
     doMapImageTest(bufferedReader, printWriter);
 
     System.out.println("test : " + PacketLiteral.REQ_NOTICE);
@@ -151,7 +151,7 @@ public class TestAdminClient {
       PrintWriter printWriter) throws Exception {
     // 1. 요청 메시지 전송
     JSONObject sendJson = new JSONObject();
-    sendJson.put(PacketLiteral.KEY, PacketLiteral.REQ_MAP_IMAGE);
+    sendJson.put(PacketLiteral.KEY, PacketLiteral.REQ_AREA_IMAGE);
     sendJson.put(PacketLiteral.VALUE, 1);
     printWriter.println(sendJson.toString());
     printWriter.flush();
@@ -159,7 +159,7 @@ public class TestAdminClient {
     // 2. 응답 메시지 수신
     String line = bufferedReader.readLine();
     if (line == null) {
-      throw new Exception(PacketLiteral.REQ_MAP_IMAGE + " 응답 수신 실패");
+      throw new Exception(PacketLiteral.REQ_AREA_IMAGE + " 응답 수신 실패");
     }
     JSONObject recvJson = new JSONObject(line);
 
