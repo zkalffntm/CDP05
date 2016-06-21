@@ -1,8 +1,11 @@
 package harmony.admin.service;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.io.IOException;
 import java.sql.SQLException;
+
+import harmony.admin.controller.ItemController;
+import harmony.admin.model.Item;
+import harmony.common.AbstractService;
 
 /**
  * 고객으로부터 전시물 번호 정보를 받고, 그에 대한 전시물 설명을<br>
@@ -14,34 +17,32 @@ import java.sql.SQLException;
  */
 public class ItemContentService extends AbstractService {
 
-	/**
-	 * sql select문을 이용하여 전시물 명, 작가, 설명을 찾음
-	 * 
-	 * @param argument
-	 *          전시물 번호를 담은 int
-	 * @return String[] = {"작품명", "작가", 설명 내용"}
-	 */
-	@Override
-	protected Object doQuery(Object argument) throws SQLException {
+  /**
+   * 전시물명, 작가, 설명을 제공
+   * 
+   * @param argument
+   *          전시물 번호를 담은 int
+   * @return String[] = {"작품명", "작가", 설명 내용"}
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   */
+  @Override
+  public Object doService(Object argument) throws SQLException, IOException {
 
-		// 전시물 번호
-		int itemNum = (int) argument;
+    // 쿼리 실행
+    Item item = ItemController.getItemByNum((int) argument);
 
-		// 쿼리 실행
-		String sql = "select item_title, item_artist, item_content from item where item_num=?";
-		PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
-		pstmt.setInt(1, itemNum);
-		ResultSet resultSet = pstmt.executeQuery();
+    // 결과 레코드를 객체에 저장
+    String[] strings = null;
+    if (item != null) {
+      strings = new String[3];
+      strings[0] = item.getTitle();
+      strings[1] = item.getArtist();
+      strings[2] = item.getDetailContent();
+    }
 
-		// 결과 레코드를 객체에 저장
-		String[] strings = null;
-		if (resultSet.next()) {
-			strings = new String[3];
-			strings[0] = resultSet.getString("item_title");
-			strings[1] = resultSet.getString("item_artist");
-			strings[2] = resultSet.getString("item_content");
-		}
-
-		return strings;
-	}
+    return strings;
+  }
 }

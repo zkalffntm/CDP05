@@ -1,0 +1,9 @@
+create table exhibition (
+	e_num int,
+	e_name varchar(30),
+	e_beacon_major int,
+	e_ip varchar(20),
+	e_port int,
+
+	primary key(e_num)
+);

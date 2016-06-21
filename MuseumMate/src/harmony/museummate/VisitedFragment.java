@@ -1,9 +1,8 @@
 package harmony.museummate;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import android.support.v4.app.Fragment;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,30 +11,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import datatype.User;
+import datatype.Visited;
+import tools.DynamicLoader;
 
 public class VisitedFragment extends Fragment
 {
-	class ItemData
-	{
-		public ItemData(Uri photo, String location, String event, String term)
-		{
-			this.photo = photo;
-			this.location = location;
-			this.event = event;
-			this.term = term;
-		}
-		
-		Uri photo;
-		String location;
-		String event;
-		String term;
-	}
+	// Singleton /////////////////////////////////////////////////////
+	private static VisitedFragment self;							//
+	public static VisitedFragment getInstance()						//
+	{ if(self == null) self = new VisitedFragment(); return self; }	//
+	private VisitedFragment() {}									//
+	//////////////////////////////////////////////////////////////////
 	
-	private ArrayList<ItemData> itemdata = new ArrayList<ItemData>();
+	private List<Visited> visitedList;
 	
     private RecyclerView recyclerView;
     private RecyclerView.Adapter<CustomAdapter.ViewHolder> adapter;
     private RecyclerView.LayoutManager layoutManager;
+    
     
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
@@ -47,28 +41,22 @@ public class VisitedFragment extends Fragment
     	recyclerView.setLayoutManager(layoutManager);
     	adapter = new CustomAdapter();
         recyclerView.setAdapter(adapter);
+        visitedList = User.getCurrentUser().getVisitedList();
     	return v;
     }
-    
-    public void addItem(Uri photo, String location, String event, String term)
-    { itemdata.add(new ItemData(photo, location, event, term)); }
     
     class CustomAdapter extends RecyclerView.Adapter<CustomAdapter.ViewHolder>
     {
     	public class ViewHolder extends RecyclerView.ViewHolder
         {
             public ImageView imagePhoto;
-            public TextView txtLocation;
-            public TextView txtEvent;
-            public TextView txtTerm;
+            public TextView txtName;
 
             public ViewHolder(View view)
             {
                 super(view);
                 imagePhoto = (ImageView)view.findViewById(R.id.photo);
-                txtLocation = (TextView)view.findViewById(R.id.location);
-                txtEvent = (TextView)view.findViewById(R.id.event);
-                txtTerm = (TextView)view.findViewById(R.id.term);
+                txtName = (TextView)view.findViewById(R.id.name);
             }
         }
     	
@@ -85,14 +73,13 @@ public class VisitedFragment extends Fragment
 		@Override
 		public void onBindViewHolder(ViewHolder holder, int position)
 		{
-	        holder.imagePhoto.setImageURI(itemdata.get(position).photo);
-	        holder.txtLocation.setText(itemdata.get(position).location);
-	        holder.txtEvent.setText(itemdata.get(position).event);
-	        holder.txtTerm.setText(itemdata.get(position).term);
+			Visited e = visitedList.get(position);
+			DynamicLoader.startMuseumImage(holder.imagePhoto, e.getMajor());
+	        holder.txtName.setText(e.getName());
 		}
 
 		@Override
 		public int getItemCount()
-		{ return itemdata.size(); }
+		{ return visitedList.size(); }
     }
 }

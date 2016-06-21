@@ -7,10 +7,10 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,6 +26,9 @@ public class JSONTransactionClient
 {
 	private static Map<String, JSONTransactionClient> clientList = 
 			new HashMap<String, JSONTransactionClient>();
+	
+	private String ip;
+	private int port;
 	
 	private String key;
 	private int requestCount;
@@ -56,13 +59,10 @@ public class JSONTransactionClient
 		}
 	}
 	
-	private JSONTransactionClient(String ip, int port) throws IOException
+	public JSONTransactionClient(String ip, int port) throws IOException
 	{
-		socket = new Socket(ip, port);
-	    bufferedReader = new BufferedReader(
-	        new InputStreamReader(new DataInputStream(socket.getInputStream())));
-	    printWriter = new PrintWriter(
-	        new DataOutputStream(socket.getOutputStream()));
+		this.ip = ip;
+		this.port = port;
 	    
 		requestCount = 0;
 		key = ip + ":" + port;
@@ -78,7 +78,7 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message or saving image
 	 */
-	public void requestImage(String requestKey, Object requestValue, String filepath) 
+	public void requestImage(String requestKey, int requestValue, String filepath) 
 			throws JSONException, IOException
 	{
 		requestCount++;
@@ -87,6 +87,8 @@ public class JSONTransactionClient
 		{
 			try
 			{
+				if(socket == null || !socket.isConnected()) connect();
+				
 				// Generate JSON Message
 			    JSONObject sendJson = new JSONObject();
 			    sendJson.put(PacketLiteral.KEY, requestKey);
@@ -125,7 +127,7 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message
 	 */
-	public JSONObject requestObject(String requestKey, Object requestValue) 
+	public JSONObject request(String requestKey, Object requestValue) 
 			throws JSONException, IOException
 	{
 		JSONObject result;
@@ -135,6 +137,8 @@ public class JSONTransactionClient
 		{
 			try
 			{
+				if(socket == null || !socket.isConnected()) connect();
+				
 				// Generate JSON Message
 			    JSONObject sendJson = new JSONObject();
 			    sendJson.put(PacketLiteral.KEY, requestKey);
@@ -171,7 +175,7 @@ public class JSONTransactionClient
 	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
 	 * @throws IOException		if any error while sending or receiving JSON message
 	 */
-	public JSONObject requestObject(String requestKey, Object[] requestValue) 
+	public JSONObject request(String requestKey, Object[] requestValue) 
 			throws JSONException, IOException
 	{
 		JSONObject result;
@@ -181,6 +185,8 @@ public class JSONTransactionClient
 		{
 			try
 			{
+				if(socket == null || !socket.isConnected()) connect();
+				
 				// Generate JSON Message
 			    JSONObject sendJson = new JSONObject();
 			    sendJson.put(PacketLiteral.KEY, requestKey);
@@ -206,111 +212,21 @@ public class JSONTransactionClient
 			lookRequestCount();
 		}
 
-		lookRequestCount();
 		return result;
 	}
 
-	/**
-	 * 
-	 * @param requestKey
-	 * @param requestValue
-	 * @return
-	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
-	 * @throws IOException		if any error while sending or receiving JSON message
-	 */
-	public JSONArray requestArray(String requestKey, Object requestValue) 
-			throws JSONException, IOException
+	private void connect() throws UnknownHostException, IOException
 	{
-		JSONArray result;
-		requestCount++;
-
-		synchronized(this)
-		{
-			try
-			{
-				// Generate JSON Message
-			    JSONObject sendJson = new JSONObject();
-			    sendJson.put(PacketLiteral.KEY, requestKey);
-			    sendJson.put(PacketLiteral.VALUE, requestValue);
-			    printWriter.println(sendJson.toString());
-			    printWriter.flush();
-
-				// Send and Receive JSON Message
-			    String line = bufferedReader.readLine();
-			    result = new JSONArray(line);
-			}
-			catch(JSONException e)
-			{
-				lookRequestCount();
-				throw e;
-			}
-			catch(IOException e)
-			{
-				lookRequestCount();
-				throw e;
-			}
-			
-			lookRequestCount();
-		}
-
-		lookRequestCount();
-		return result;
-		
-	}
-
-	/**
-	 * 
-	 * @param requestKey
-	 * @param requestValue
-	 * @return
-	 * @throws JSONException	if the parse fails or doesn't yield a JSONObject or error in creating JSONObject
-	 * @throws IOException		if any error while sending or receiving JSON message
-	 */
-	public JSONArray requestArray(String requestKey, Object[] requestValue) 
-			throws JSONException, IOException
-	{
-		JSONArray result;
-		requestCount++;
-
-		synchronized(this)
-		{
-			try
-			{
-				// Generate JSON Message
-			    JSONObject sendJson = new JSONObject();
-			    sendJson.put(PacketLiteral.KEY, requestKey);
-			    sendJson.put(PacketLiteral.VALUE, requestValue);
-			    printWriter.println(sendJson.toString());
-			    printWriter.flush();
-
-				// Send and Receive JSON Message
-			    String line = bufferedReader.readLine();
-			    result = new JSONArray(line);
-			}
-			catch(JSONException e)
-			{
-				lookRequestCount();
-				throw e;
-			}
-			catch(IOException e)
-			{
-				lookRequestCount();
-				throw e;
-			}
-			
-			lookRequestCount();
-		}
-		
-		lookRequestCount();
-		return result;
+		socket = new Socket(ip, port);
+	    bufferedReader = new BufferedReader(
+	        new InputStreamReader(new DataInputStream(socket.getInputStream())));
+	    printWriter = new PrintWriter(
+	        new DataOutputStream(socket.getOutputStream()));
 	}
 	
 	private void lookRequestCount()
 	{
-		if(--requestCount == 0)
-		{
-			try { socket.close(); } catch (IOException e) { }
-			clientList.remove(key);
-		}
+		//if(--requestCount == 0)
+		//{ try { socket.close(); } catch (IOException e) { } }
 	}
 }

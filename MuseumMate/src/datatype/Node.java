@@ -8,6 +8,7 @@ public class Node implements Serializable
 	
 	private Area area;
 	private int blockNum;
+	private int tag;
 	
 	public TYPE getType() { return TYPE.NODE; }
 	
@@ -20,4 +21,7 @@ public class Node implements Serializable
 	
 	public Area	getArea()			{ return area; }
 	public int	getBlockNumber()	{ return blockNum; }
+	
+	public int 	getTag()			{ return tag; }
+	public void setTag(int tag) 	{ this.tag = tag; }
 }

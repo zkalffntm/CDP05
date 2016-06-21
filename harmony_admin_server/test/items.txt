@@ -1,0 +1,6 @@
+1
+1;test_item1;tester1;simple_test1;detail_test1;1024 x 1024;1
+2;test_item2;tester2;simple_test2;detail_test2;512 x 512;1
+2
+3;test_item3;tester3;simple_test3;detail_test3;256 x 256;2
+4;test_item4;tester4;simple_test4;detail_test4;128 x 128;2

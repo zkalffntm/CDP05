@@ -18,8 +18,8 @@ public class PacketLiteral
 	RES_UPDATE_DATE 	= "res_update_date",
 	REQ_UPDATE			= "req_update",
 	RES_UPDATE	 		= "res_update",
-	REQ_RECOMMAND_IMAGE	= "req_recommand_image",
-	RES_RECOMMAND_IMAGE	= "res_recommand_image",
+	REQ_RECOMMEND_IMAGE	= "req_recommend_image",
+	RES_RECOMMEND_IMAGE	= "res_recommend_image",
 
 	REQ_LOGIN_ADMIN		= "req_login_admin",
 	RES_LOGIN_ADMIN 	= "res_login_admin",

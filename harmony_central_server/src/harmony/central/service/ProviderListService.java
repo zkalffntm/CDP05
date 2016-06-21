@@ -1,8 +1,18 @@
 package harmony.central.service;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import harmony.central.controller.ExhibitionController;
+import harmony.central.controller.GpsController;
+import harmony.central.model.Exhibition;
+import harmony.central.model.Gps;
+import harmony.common.AbstractService;
 
 /**
  * 고객으로부터 GPS(x,y) 정보를 받고, 해당 위치에 근접한 박물관/전시회의 <br>
@@ -10,41 +20,59 @@ import java.sql.SQLException;
  * 
  * @author Seongjun Park
  * @since 2016/3/22
- * @version 2016/3/22
+ * @version 2016/6/6
  */
 public class ProviderListService extends AbstractService {
 
-	/**
-	 * sql select문을 이용하여 ip를 찾음
-	 * 
-	 * @param argument
-	 *          gps(x,y)정보를 담은 double[2]
-	 * @return {박물관명,byte,byte,byte,byte}
-	 */
-	@Override
-	protected Object doQuery(Object argument) throws SQLException {
+  /**
+   * sql select문을 이용하여 ip를 찾음
+   * 
+   * @param argument
+   *          JSONArray = {double, double}
+   * @return Object[][7] = {{박물관명,ip1,ip2,ip3,ip4,port,major},...}
+   * @throws SQLException
+   *           SQL 관련 예외
+   * @throws IOException
+   *           IO 관련 예외
+   * @throws JSONException
+   *           JSON 관련 예외
+   */
+  @Override
+  public Object doService(Object argument)
+      throws SQLException, IOException, JSONException {
 
-		// gps 정보
-		double[] gpsInfo = (double[]) argument;
+    // gps 정보
+    JSONArray gpsInfo = (JSONArray) argument;
+    double x = gpsInfo.getDouble(0);
+    double y = gpsInfo.getDouble(1);
+    
+    
+    List<Object[]> objArrList = new ArrayList<Object[]>();
+    List<Integer> exhibitionNumList = new ArrayList<Integer>();
+    Gps[] gpss = GpsController.getGpssWithXYCoverage(x, y);
 
-		// 쿼리 실행
-		String sql = "select exhibition_name, exhibition_ip from exhibition where gps_x=? and gps_y=?";
-		PreparedStatement pstmt = this.getDbConnection().prepareStatement(sql);
-		pstmt.setDouble(1, gpsInfo[0]);
-		pstmt.setDouble(2, gpsInfo[1]);
-		ResultSet resultSet = pstmt.executeQuery();
+    for (Gps gps : gpss) {
+      int exhibitionNum = gps.getExhibitionNum();
 
-		// 결과 레코드를 객체에 저장
-		Object[] objects = null;
-		if (resultSet.next()) {
-			objects = new Object[5];
-			objects[0] = resultSet.getString("exhibition_name");
-			String[] ips = resultSet.getString("exhibition_ip").split(".");
-			for (int i = 1; i < objects.length; i++) {
-				objects[i] = ips[i - 1];
-			}
-		}
+      if (!exhibitionNumList.contains(exhibitionNum)) {
+        exhibitionNumList.add(exhibitionNum);
 
-		return objects;
-	}
+        Exhibition exhibition = ExhibitionController
+            .getExhibitionByNum(exhibitionNum);
+
+        Object[] objArr = new Object[7];
+        objArr[0] = exhibition.getName();
+        String[] ipParts = exhibition.getIp().split("\\.");
+        for (int i = 0; i < 4; i++) {
+          objArr[i + 1] = Integer.parseInt(ipParts[i]);
+        }
+        objArr[5] = exhibition.getPort();
+        objArr[6] = exhibition.getBeaconMajor();
+        objArrList.add(objArr);
+      }
+    }
+
+    // List<Object[]> to Object[][]
+    return (Object[][]) objArrList.toArray(new Object[objArrList.size()][]);
+  }
 }
